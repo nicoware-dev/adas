@@ -1,0 +1,719 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhook",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "User Input",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "adas-user-input"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Parse user input and determine which agent(s) to route to\nconst userInput = $input.item.json.body.message;\nconst context = $input.item.json.body.context || {};\n\n// Simple intent classification\nconst intents = {\n  analytics: [\n    'price', 'market', 'trend', 'chart', 'value', 'worth', 'portfolio',\n    'tvl', 'volume', 'analysis', 'compare', 'performance', 'history'\n  ],\n  defi: [\n    'swap', 'trade', 'exchange', 'buy', 'sell', 'stake', 'unstake',\n    'borrow', 'lend', 'supply', 'withdraw', 'repay', 'liquidity',\n    'joule', 'amnis', 'thala', 'transaction'\n  ],\n  expert: [\n    'how', 'explain', 'what is', 'guide', 'tutorial', 'help', 'understand',\n    'move', 'code', 'contract', 'aptos', 'blockchain', 'gas', 'fee'\n  ]\n};\n\n// Determine which agent(s) to route to\nconst matchedIntents = {};\nObject.keys(intents).forEach(intent => {\n  const keywords = intents[intent];\n  const matches = keywords.filter(keyword => \n    userInput.toLowerCase().includes(keyword.toLowerCase())\n  );\n  matchedIntents[intent] = matches.length;\n});\n\n// Determine primary and secondary agents\nlet primaryAgent = null;\nlet secondaryAgent = null;\nlet maxMatches = 0;\nlet secondMaxMatches = 0;\n\nObject.keys(matchedIntents).forEach(intent => {\n  const matches = matchedIntents[intent];\n  if (matches > maxMatches) {\n    secondaryAgent = primaryAgent;\n    secondMaxMatches = maxMatches;\n    primaryAgent = intent;\n    maxMatches = matches;\n  } else if (matches > secondMaxMatches) {\n    secondaryAgent = intent;\n    secondMaxMatches = matches;\n  }\n});\n\n// If no clear intent, default to expert agent\nif (maxMatches === 0) {\n  primaryAgent = 'expert';\n}\n\nreturn {\n  userInput,\n  context,\n  primaryAgent,\n  secondaryAgent: secondMaxMatches > 0 ? secondaryAgent : null,\n  needsMultiAgentResponse: secondMaxMatches > 1\n};"
+      },
+      "name": "Intent Classifier",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.primaryAgent }}",
+              "operation": "equal",
+              "value2": "analytics"
+            }
+          ]
+        }
+      },
+      "name": "Route to Analytics",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.primaryAgent }}",
+              "operation": "equal",
+              "value2": "defi"
+            }
+          ]
+        }
+      },
+      "name": "Route to DeFi",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        650,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.primaryAgent }}",
+              "operation": "equal",
+              "value2": "expert"
+            }
+          ]
+        }
+      },
+      "name": "Route to Expert",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        650,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/api/analytics-agent",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.userInput }}"
+            },
+            {
+              "name": "context",
+              "value": "={{ $json.context }}"
+            }
+          ]
+        }
+      },
+      "name": "Call Analytics Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        850,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/api/defi-agent",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.userInput }}"
+            },
+            {
+              "name": "context",
+              "value": "={{ $json.context }}"
+            }
+          ]
+        }
+      },
+      "name": "Call DeFi Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        850,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/api/expert-agent",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.userInput }}"
+            },
+            {
+              "name": "context",
+              "value": "={{ $json.context }}"
+            }
+          ]
+        }
+      },
+      "name": "Call Expert Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        850,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.needsMultiAgentResponse }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Needs Multi-Agent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Get responses from multiple agents and combine them\nconst primaryResponse = $input.item.json.primaryResponse;\nconst secondaryResponse = $input.item.json.secondaryResponse;\n\n// Combine responses\nlet combinedResponse = `Primary Agent (${$input.item.json.primaryAgent}): ${primaryResponse}\\n\\n`;\n\nif (secondaryResponse) {\n  combinedResponse += `Secondary Agent (${$input.item.json.secondaryAgent}): ${secondaryResponse}`;\n}\n\nreturn {\n  response: combinedResponse,\n  context: {\n    ...$input.item.json.context,\n    lastPrimaryAgent: $input.item.json.primaryAgent,\n    lastSecondaryAgent: $input.item.json.secondaryAgent\n  }\n};"
+      },
+      "name": "Combine Responses",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1250,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Format single agent response\nconst agentResponse = $input.item.json.data.body.response;\n\nreturn {\n  response: agentResponse,\n  context: {\n    ...$input.item.json.context,\n    lastPrimaryAgent: $input.item.json.primaryAgent\n  }\n};"
+      },
+      "name": "Format Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1250,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.secondaryAgent }}",
+              "operation": "equal",
+              "value2": "analytics"
+            }
+          ]
+        }
+      },
+      "name": "Secondary Analytics?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.secondaryAgent }}",
+              "operation": "equal",
+              "value2": "defi"
+            }
+          ]
+        }
+      },
+      "name": "Secondary DeFi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/api/analytics-agent",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.userInput }}"
+            },
+            {
+              "name": "context",
+              "value": "={{ $json.context }}"
+            }
+          ]
+        }
+      },
+      "name": "Secondary Analytics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1250,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/api/defi-agent",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.userInput }}"
+            },
+            {
+              "name": "context",
+              "value": "={{ $json.context }}"
+            }
+          ]
+        }
+      },
+      "name": "Secondary DeFi",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1250,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/api/expert-agent",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.userInput }}"
+            },
+            {
+              "name": "context",
+              "value": "={{ $json.context }}"
+            }
+          ]
+        }
+      },
+      "name": "Secondary Expert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1250,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.secondaryAgent }}",
+              "operation": "equal",
+              "value2": "expert"
+            }
+          ]
+        }
+      },
+      "name": "Secondary Expert?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Prepare data for response combination\nreturn {\n  primaryResponse: $input.item.json.data.body.response,\n  secondaryResponse: $('Secondary Analytics').item.json.data.body.response,\n  primaryAgent: $input.item.json.primaryAgent,\n  secondaryAgent: $input.item.json.secondaryAgent,\n  context: $input.item.json.context\n};"
+      },
+      "name": "Prepare Analytics Combo",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1450,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Prepare data for response combination\nreturn {\n  primaryResponse: $input.item.json.data.body.response,\n  secondaryResponse: $('Secondary DeFi').item.json.data.body.response,\n  primaryAgent: $input.item.json.primaryAgent,\n  secondaryAgent: $input.item.json.secondaryAgent,\n  context: $input.item.json.context\n};"
+      },
+      "name": "Prepare DeFi Combo",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1450,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Prepare data for response combination\nreturn {\n  primaryResponse: $input.item.json.data.body.response,\n  secondaryResponse: $('Secondary Expert').item.json.data.body.response,\n  primaryAgent: $input.item.json.primaryAgent,\n  secondaryAgent: $input.item.json.secondaryAgent,\n  context: $input.item.json.context\n};"
+      },
+      "name": "Prepare Expert Combo",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1450,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "content": "={{ $json.response }}",
+        "options": {}
+      },
+      "name": "Respond to User",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1650,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "User Input": {
+      "main": [
+        [
+          {
+            "node": "Intent Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intent Classifier": {
+      "main": [
+        [
+          {
+            "node": "Route to Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to Analytics": {
+      "main": [
+        [
+          {
+            "node": "Call Analytics Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route to DeFi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to DeFi": {
+      "main": [
+        [
+          {
+            "node": "Call DeFi Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route to Expert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to Expert": {
+      "main": [
+        [
+          {
+            "node": "Call Expert Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Analytics Agent": {
+      "main": [
+        [
+          {
+            "node": "Needs Multi-Agent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call DeFi Agent": {
+      "main": [
+        [
+          {
+            "node": "Needs Multi-Agent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Expert Agent": {
+      "main": [
+        [
+          {
+            "node": "Needs Multi-Agent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs Multi-Agent?": {
+      "main": [
+        [
+          {
+            "node": "Secondary Analytics?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Responses": {
+      "main": [
+        [
+          {
+            "node": "Respond to User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Secondary Analytics?": {
+      "main": [
+        [
+          {
+            "node": "Secondary Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Secondary DeFi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Secondary DeFi?": {
+      "main": [
+        [
+          {
+            "node": "Secondary DeFi",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Secondary Expert?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Secondary Analytics": {
+      "main": [
+        [
+          {
+            "node": "Prepare Analytics Combo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Secondary DeFi": {
+      "main": [
+        [
+          {
+            "node": "Prepare DeFi Combo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Secondary Expert": {
+      "main": [
+        [
+          {
+            "node": "Prepare Expert Combo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Secondary Expert?": {
+      "main": [
+        [
+          {
+            "node": "Secondary Expert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Analytics Combo": {
+      "main": [
+        [
+          {
+            "node": "Combine Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare DeFi Combo": {
+      "main": [
+        [
+          {
+            "node": "Combine Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Expert Combo": {
+      "main": [
+        [
+          {
+            "node": "Combine Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "1",
+  "id": "1",
+  "meta": {
+    "instanceId": "1"
+  },
+  "tags": [
+    {
+      "name": "ADAS",
+      "color": "#61d36f"
+    }
+  ]
+} 
