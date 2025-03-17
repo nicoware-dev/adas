@@ -8,6 +8,7 @@
   "dependencies": {
     "@aptos-labs/ts-sdk": "^1.26.0",
     "@elizaos/core": "workspace:*",
+    "@pythnetwork/pyth-aptos-js": "^1.4.2",
     "@types/axios": "^0.14.4",
     "axios": "^1.8.3",
     "bignumber.js": "9.1.2",

@@ -69,9 +69,9 @@ ADAS is currently in alpha development. The core functionality is implemented, i
 - Core Aptos blockchain operations (token transfers, balance checking)
 - Analytics integrations (CoinGecko, DeFiLlama, GeckoTerminal)
 - Liquidswap token swapping
+- Joule Finance lending operations (deposit, borrow, repay, withdraw)
 
 In progress features include:
-- Joule Finance lending operations
 - Amnis Finance staking operations
 - Thala Labs DEX operations
 - Merkle Trade limit orders

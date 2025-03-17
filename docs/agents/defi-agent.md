@@ -37,10 +37,10 @@ The DeFi Agent can perform a wide range of operations on the Aptos blockchain:
 
 | Operation | Description | Status |
 |-----------|-------------|--------|
-| Deposit | Supply assets to Joule lending pools | 🔄 In Progress |
-| Borrow | Borrow assets against collateral | 🔄 In Progress |
-| Repay | Repay borrowed assets | 🔄 In Progress |
-| Withdraw | Withdraw supplied assets | 🔄 In Progress |
+| Deposit | Supply assets to Joule lending pools | ✅ Implemented |
+| Borrow | Borrow assets against collateral | ✅ Implemented |
+| Repay | Repay borrowed assets | ✅ Implemented |
+| Withdraw | Withdraw supplied assets | ✅ Implemented |
 | Claim Rewards | Claim JOY token rewards | 🔄 In Progress |
 | Check Position | View current lending/borrowing position | 🔄 In Progress |
 | Pool Information | Get details about lending pools | 🔄 In Progress |

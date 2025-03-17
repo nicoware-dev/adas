@@ -81,7 +81,7 @@ The DeFi Agent handles all on-chain operations on the Aptos blockchain, leveragi
 **Key Responsibilities:**
 - Execute token transfers
 - Perform swaps on DEXs (primarily Thala)
-- Manage lending positions (primarily Joule)
+- Manage lending positions (Joule Finance - implemented: deposit, borrow, repay, withdraw)
 - Handle staking operations (primarily Amnis)
 - Monitor transaction status
 

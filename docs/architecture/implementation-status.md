@@ -26,10 +26,10 @@ This document tracks the current implementation status of various protocol integ
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Deposit | 🔄 In Progress | Implementation in progress |
-| Borrow | 🔄 In Progress | Implementation in progress |
-| Repay | 🔄 In Progress | Implementation in progress |
-| Withdraw | 🔄 In Progress | Implementation in progress |
+| Deposit | ✅ Implemented | Deposit functionality working |
+| Borrow | ✅ Implemented | Borrow functionality working |
+| Repay | ✅ Implemented | Repay functionality working |
+| Withdraw | ✅ Implemented | Withdraw functionality working |
 | Claim Rewards | 🔄 In Progress | Implementation in progress |
 | Position Checking | 🔄 In Progress | Implementation in progress |
 | Pool Information | 🔄 In Progress | Implementation in progress |

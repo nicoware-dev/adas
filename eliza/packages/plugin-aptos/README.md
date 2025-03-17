@@ -87,10 +87,10 @@ Show me the modules for account 0x39a77791f641bd4e16a7f1774e5d5df5d38c03e4843d31
 
 #### Joule Finance
 ```
-Deposit 5 APT on Joule
-Borrow 10 USDC from Joule
-Repay my USDC loan on Joule
-Withdraw 2 APT from Joule
+Deposit 0.001 APT on Joule
+Borrow 0.001 APT from Joule
+Repay 0.001 APT loan on Joule
+Withdraw 0.001 APT from Joule
 Claim my rewards on Joule Finance
 Check my position for APT on Joule
 Show all my positions on Joule Finance

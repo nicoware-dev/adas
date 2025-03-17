@@ -52,10 +52,10 @@ Use this checklist to track your testing progress:
 ### Protocol-Specific Actions
 
 #### Joule Finance
-- [ ] JOULE_DEPOSIT - Deposit tokens
-- [ ] JOULE_BORROW - Borrow tokens
-- [ ] JOULE_REPAY - Repay loan
-- [ ] JOULE_WITHDRAW - Withdraw tokens
+- [X] JOULE_DEPOSIT - Deposit tokens
+- [X] JOULE_BORROW - Borrow tokens
+- [X] JOULE_REPAY - Repay loan
+- [X] JOULE_WITHDRAW - Withdraw tokens
 - [ ] JOULE_CLAIM_REWARD - Claim rewards
 - [ ] JOULE_USER_POSITION - Check position
 - [ ] JOULE_USER_ALL_POSITIONS - Check all positions
@@ -126,9 +126,9 @@ Use this checklist to track your testing progress:
 
 | Action | Test Prompt | Expected Result |
 |--------|-------------|----------------|
-| JOULE_DEPOSIT | `Deposit 0.001 APT on Joule` | Confirmation of deposit with transaction hash |
-| JOULE_BORROW | `Borrow 0.0001 USDC from Joule` | Confirmation of borrowing with transaction hash |
-| JOULE_REPAY | `Repay my USDC loan on Joule` | Confirmation of repayment with transaction hash |
+| JOULE_DEPOSIT | `Lend 0.001 APT on Joule` | Confirmation of deposit with transaction hash |
+| JOULE_BORROW | `Borrow 0.0001 APT from Joule` | Confirmation of borrowing with transaction hash |
+| JOULE_REPAY | `Repay 0.0001 APT loan on Joule` | Confirmation of repayment with transaction hash |
 | JOULE_WITHDRAW | `Withdraw 0.001 APT from Joule` | Confirmation of withdrawal with transaction hash |
 | JOULE_CLAIM_REWARD | `Claim my rewards on Joule Finance` | Confirmation of claiming rewards with transaction hash |
 | JOULE_USER_POSITION | `Check my position for APT on Joule` | Details of user's position for APT |
