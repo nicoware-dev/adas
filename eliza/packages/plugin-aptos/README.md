@@ -30,6 +30,7 @@ APTOS_NETWORK=<"mainnet" | "testnet">
 - Token creation and management
 - NFT transfers and management
 - Account and module information
+- Portfolio viewing with token values and NFT holdings
 
 ### Protocol Integrations
 - Joule Finance: Lending, borrowing, withdrawal, repayment and position checking with Move Agent Kit
@@ -78,11 +79,14 @@ Transfer my NFT at 0x1::aptos_token::TokenId to 0x123456789abcdef
 Burn my NFT at 0x1::aptos_token::TokenId
 ```
 
-#### Account and Transaction Information
+#### Account and Portfolio Information
 ```
 Get account info for 0x39a77791f641bd4e16a7f1774e5d5df5d38c03e4843d315c15ac01e01baa0b0c
 Look up transaction 0xee169de8173ce7f87cecd2859852d519f9b65032f8455e11c4958cc508c39c25
 Show me the modules for account 0x39a77791f641bd4e16a7f1774e5d5df5d38c03e4843d315c15ac01e01baa0b0c
+Show my portfolio
+Check the wallet holdings for 0x39a77791f641bd4e16a7f1774e5d5df5d38c03e4843d315c15ac01e01baa0b0c
+What tokens and NFTs do I have in my wallet?
 ```
 
 ### Protocol-Specific Actions
@@ -184,6 +188,9 @@ Retrieves information about modules (smart contracts) published by an account.
 
 #### CREATE_NFT
 Creates a collection and mints a new NFT on the Aptos blockchain, with optional transfer to a recipient.
+
+#### PORTFOLIO
+Displays a comprehensive view of a wallet's holdings, including token balances with USD values and owned NFTs. Supports both the agent's wallet and specified wallet addresses.
 
 ### Joule Finance Actions
 

@@ -30,6 +30,8 @@ The DeFi Agent can perform a wide range of operations on the Aptos blockchain:
 | Account Info | Get account details | ✅ Implemented |
 | | Look up transactions | ✅ Implemented |
 | | Show account modules | ✅ Implemented |
+| Portfolio | View token and NFT holdings | ✅ Implemented |
+| | Track token values | ✅ Implemented |
 
 ### Protocol-Specific Operations
 
@@ -125,6 +127,9 @@ Check my APT balance
 What's my wallet address?
 Get token details for 0x1::aptos_coin::AptosCoin
 What's the current price of APT?
+Show my portfolio
+Check the portfolio for 0x123456789abcdef
+What tokens do I have in my wallet?
 ```
 
 #### Token Management

@@ -32,6 +32,7 @@ Use this checklist to track your testing progress:
 - [X] CHECK_BALANCE - Check APT balance
 - [X] GET_TOKEN_DETAILS - Get token details
 - [X] GET_TOKEN_PRICE - Get token price
+- [ ] PORTFOLIO - View wallet holdings
 
 #### Token Management
 - [X] CREATE_TOKEN - Create new token
@@ -102,6 +103,7 @@ Use this checklist to track your testing progress:
 | CHECK_BALANCE | `Check my APT balance` | Current APT balance displayed |
 | GET_TOKEN_DETAILS | `Get token details for 0x1::aptos_coin::AptosCoin` | Token name, symbol, decimals, and other metadata |
 | GET_TOKEN_PRICE | `What's the current price of APT?` | Current APT price in USD |
+| PORTFOLIO | `Show my portfolio` | List of tokens with balances and values, and NFTs owned |
 
 ### Token Management
 
@@ -126,6 +128,7 @@ Use this checklist to track your testing progress:
 | GET_ACCOUNT | `Get account info for 0x17a8c3f994621216ad8bac210eb7de3346268696bc14e89e254fd4c7a0c0ed82` | Account details including balances and resources |
 | GET_TRANSACTION | `Look up transaction 0xb1ba1d22c162c4f694270858828ba6aafeee758f3054a6efc5978c51f08d73ed` | Transaction details including status and events |
 | GET_MODULES | `Show me the modules for account 0x17a8c3f994621216ad8bac210eb7de3346268696bc14e89e254fd4c7a0c0ed82` | List of modules published by the account |
+| PORTFOLIO | `Check the portfolio for 0x17a8c3f994621216ad8bac210eb7de3346268696bc14e89e254fd4c7a0c0ed82` | Complete listing of tokens with values and NFTs for the address |
 
 ## Protocol-Specific Actions
 

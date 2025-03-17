@@ -67,7 +67,7 @@ The Coordinator Agent consists of several interconnected workflows:
 
 The Coordinator Agent integrates with:
 
-- **Client Interfaces**: Web client, Telegram bot
+- **Client Interfaces**: Telegram bot
 - **Specialized Agents**: ElizaOS agents via REST API
 - **Storage Systems**: Database for conversation history and user preferences
 - **Monitoring Systems**: Logging and performance tracking

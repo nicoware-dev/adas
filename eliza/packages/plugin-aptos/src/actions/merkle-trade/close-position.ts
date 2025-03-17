@@ -75,7 +75,7 @@ Note: Either position ID or pair (or both) should be provided.
 Respond with a JSON markdown block containing only the extracted values.`;
 
 /**
- * Closes a position on Merkle Trade
+ * Close a position on Merkle Trade
  */
 async function closePositionWithMerkleTrade(
     aptosClient: Aptos,
@@ -84,18 +84,20 @@ async function closePositionWithMerkleTrade(
     pair?: string | null
 ): Promise<{ hash: string; position: HumanReadableMerklePosition }> {
     try {
-        // Initialize Merkle Trade client
+        elizaLogger.info(`Closing position on Merkle Trade: ${positionId ? `ID: ${positionId}` : `Pair: ${pair}`}`);
+
+        // Initialize Merkle client
         const merkleConfig = await MerkleClient.mainnetConfig();
         const merkle = new MerkleClient(merkleConfig);
 
         // Fetch user positions
-        const positions = await merkle.getPositions(account.accountAddress.toString());
+        const positions = await merkle.getPositions({ address: account.accountAddress.toString() });
         if (!positions || positions.length === 0) {
             throw new PositionNotFoundError("No positions found for this account");
         }
 
         // Find the position to close
-        let positionToClose: HumanReadableMerklePosition | undefined;
+        let positionToClose: MerklePosition | undefined;
 
         if (positionId !== null && positionId !== undefined) {
             // Find by position ID
@@ -141,11 +143,31 @@ async function closePositionWithMerkleTrade(
 
         if (!signedTransaction.success) {
             elizaLogger.error("Transaction failed:", signedTransaction);
-            throw new FailedSendTransactionError("Close position failed", signedTransaction as UserTransactionResponse);
+            throw new FailedSendTransactionError("Close position failed", signedTransaction);
         }
 
         elizaLogger.info("Position closed successfully");
-        return { hash: signedTransaction.hash, position: positionToClose };
+
+        // Convert string values to numbers for better readability
+        const humanReadablePosition: HumanReadableMerklePosition = {
+            id: positionToClose.id,
+            pairType: positionToClose.pairType,
+            isLong: positionToClose.isLong,
+            size: parseFloat(positionToClose.size),
+            collateral: parseFloat(positionToClose.collateral),
+            avgPrice: parseFloat(positionToClose.avgPrice),
+            stopLossTriggerPrice: parseFloat(positionToClose.stopLossTriggerPrice),
+            takeProfitTriggerPrice: parseFloat(positionToClose.takeProfitTriggerPrice),
+            liquidationPrice: parseFloat(positionToClose.liquidationPrice),
+            leverage: parseFloat(positionToClose.leverage),
+            unrealizedPnl: parseFloat(positionToClose.unrealizedPnl),
+            unrealizedPnlPercentage: parseFloat(positionToClose.unrealizedPnlPercentage)
+        };
+
+        return {
+            hash: signedTransaction.hash,
+            position: humanReadablePosition
+        };
     } catch (error) {
         if (error instanceof MerkleBaseError) {
             throw error;

@@ -1,5 +1,6 @@
 import { elizaLogger } from "@elizaos/core";
 import type { AccountAddress } from "@aptos-labs/ts-sdk";
+import type { InputGenerateTransactionPayloadData } from "@aptos-labs/ts-sdk";
 import { MerkleClientConfig, MerkleOrderPayload, MerklePosition } from "./types";
 import { PositionNotFoundError } from "./error";
 
@@ -10,7 +11,7 @@ export class MerkleClient {
     private readonly config: MerkleClientConfig;
     private readonly network: string;
 
-    constructor(config: MerkleClientConfig, network: string = "mainnet") {
+    constructor(config: MerkleClientConfig, network = "mainnet") {
         this.config = config;
         this.network = network;
         elizaLogger.info(`Initialized MerkleClient with network: ${network}`);
@@ -79,7 +80,7 @@ export class MerkleClient {
             price: string;
             isLong: boolean;
             isIncrease: boolean;
-        }): MerkleOrderPayload => {
+        }): InputGenerateTransactionPayloadData => {
             elizaLogger.info(`Creating limit order payload: ${JSON.stringify({
                 pair, sizeDelta, collateralDelta, price, isLong, isIncrease
             })}`);
@@ -115,7 +116,7 @@ export class MerkleClient {
             collateralDelta: string;
             isLong: boolean;
             isIncrease: boolean;
-        }): MerkleOrderPayload => {
+        }): InputGenerateTransactionPayloadData => {
             elizaLogger.info(`Creating market order payload: ${JSON.stringify({
                 pair, sizeDelta, collateralDelta, isLong, isIncrease
             })}`);
@@ -132,6 +133,27 @@ export class MerkleClient {
                 ],
             };
         },
+
+        /**
+         * Create payload for closing a position
+         */
+        closePosition: ({
+            userAddress,
+            positionId,
+        }: {
+            userAddress: AccountAddress;
+            positionId: string;
+        }): InputGenerateTransactionPayloadData => {
+            elizaLogger.info(`Creating close position payload for position ID: ${positionId}`);
+
+            return {
+                function: `${this.config.moduleAddress}::merkle_trade::close_position`,
+                typeArguments: [],
+                functionArguments: [
+                    positionId,
+                ],
+            };
+        },
     };
 }
 
@@ -139,7 +161,7 @@ export class MerkleClient {
  * Helper to convert a number to a string with the given number of decimals
  */
 export function fromNumber(num: number, decimals: number): string {
-    const factor = Math.pow(10, decimals);
+    const factor = 10 ** decimals;
     return (num * factor).toString();
 }
 
@@ -147,6 +169,6 @@ export function fromNumber(num: number, decimals: number): string {
  * Helper to convert a string to a number with the given number of decimals
  */
 export function toNumber(value: string, decimals: number): number {
-    const factor = Math.pow(10, decimals);
+    const factor = 10 ** decimals;
     return Number(value) / factor;
 }

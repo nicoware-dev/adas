@@ -1,3 +1,5 @@
+import type { InputGenerateTransactionPayloadData } from "@aptos-labs/ts-sdk";
+
 /**
  * Interface for Merkle position
  */
@@ -49,8 +51,5 @@ export interface MerkleClientConfig {
 /**
  * Payload for place order operations
  */
-export interface MerkleOrderPayload {
-    function: string;
-    typeArguments: string[];
-    functionArguments: unknown[];
+export interface MerkleOrderPayload extends InputGenerateTransactionPayloadData {
 }

@@ -24,6 +24,7 @@ This document provides an overview of the implementation status for all actions 
 | BURN_NFT | ✅ | Burns NFTs from circulation |
 | GET_ACCOUNT | ✅ | Retrieves account information |
 | GET_MODULES | ✅ | Lists modules published by an account |
+| PORTFOLIO | ✅ | Displays wallet token and NFT holdings with values |
 
 ## Joule Finance Actions
 

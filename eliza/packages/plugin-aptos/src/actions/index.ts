@@ -12,6 +12,7 @@ import burnNftAction from './burn-nft';
 import getAccountAction from './get-account';
 import getModulesAction from './get-modules';
 import createNftAction from './create-nft';
+import portfolioAction from './portfolio';
 import { jouleActions } from './joule';
 import { amnisActions } from './amnis';
 import { thalaActions } from './thala';
@@ -36,6 +37,7 @@ export const actions = [
     getAccountAction,
     getModulesAction,
     createNftAction,
+    portfolioAction,
 
     // Protocol-specific actions
     ...jouleActions,

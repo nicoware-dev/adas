@@ -41,19 +41,19 @@ We are currently in the Alpha development phase, focusing on implementing core f
 
 ## Upcoming Milestones
 
-### Q3 2023
+### Q2 2025
 - Develop portfolio tracking functionality
 - Enhance analytics dashboard
 - Complete comprehensive testing of all protocol integrations
 - Improve agent coordination for complex operations
 
-### Q4 2023
+### Q3 2025
 - Release beta version for selected users
 - Conduct security audits
 - Implement advanced strategy agents
 - Begin cross-chain expansion planning
 
-### Q1 2024
+### Q4 2025
 - Public beta launch
 - Mobile client development
 - Integration with additional Aptos protocols

@@ -75,11 +75,12 @@ ADAS is currently in alpha development. The core functionality is implemented, i
 - Thala Labs DEX operations (swapping, liquidity provision, staking)
 - Merkle Trade position management and trading (limit orders, market orders)
 - Aries Protocol lending platform integration (profile creation, lending, borrowing, repayment)
+- Portfolio management (view token balances with values and NFT holdings)
 
 In progress features include:
-- Web client development
 - Advanced analytics integrations
 - Additional protocol support
+- Web client development
 
 See the [Implementation Status](./architecture/implementation-status.md) document for detailed information on the current state of development.
 

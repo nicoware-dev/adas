@@ -24,10 +24,18 @@ export class PositionNotFoundError extends MerkleBaseError {
     readonly pair: string;
     readonly isLong: boolean;
 
-    constructor(pair: string, isLong: boolean, message: string) {
-        super("error", "POSITION_NOT_FOUND", message);
-        this.pair = pair;
-        this.isLong = isLong;
+    constructor(message: string);
+    constructor(pair: string, isLong: boolean, message: string);
+    constructor(pairOrMessage: string, isLong?: boolean, message?: string) {
+        if (arguments.length === 1) {
+            super("error", "POSITION_NOT_FOUND", pairOrMessage);
+            this.pair = "";
+            this.isLong = false;
+        } else {
+            super("error", "POSITION_NOT_FOUND", message || "Position not found");
+            this.pair = pairOrMessage;
+            this.isLong = isLong || false;
+        }
         this.name = "PositionNotFoundError";
     }
 }
