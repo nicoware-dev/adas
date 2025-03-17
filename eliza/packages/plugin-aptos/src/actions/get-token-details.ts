@@ -87,48 +87,97 @@ async function getTokenDetails(tokenAddress: string): Promise<TokenDetails> {
         }
 
         // Handle case where no token address is provided - return APT as default
-        if (!tokenAddress || tokenAddress === "") {
+        if (!tokenAddress || tokenAddress === "" || tokenAddress === "null") {
+            elizaLogger.info("No token address provided, returning APT as default");
             const aptToken = tokenData.find((token: TokenDetails) =>
                 token.symbol === "APT" ||
                 token.tokenAddress === "0x1::aptos_coin::AptosCoin"
             );
-            return aptToken || tokenData[0];
+            return aptToken || {
+                name: "Aptos Coin",
+                symbol: "APT",
+                tokenAddress: "0x1::aptos_coin::AptosCoin",
+                decimals: 8,
+                logoURI: "",
+                projectUrl: "https://aptoslabs.com/"
+            };
         }
 
         // Normalize token address for comparison
         const normalizedAddress = tokenAddress.toLowerCase();
 
+        // Parse token path components if present (address::module::struct)
+        const tokenPathParts = normalizedAddress.split("::");
+        const addressPart = tokenPathParts[0];
+
+        // Log the normalized address for debugging
+        elizaLogger.info(`Looking for token with normalized address: ${normalizedAddress}`);
+        elizaLogger.info(`Address part: ${addressPart}, Full parts: ${JSON.stringify(tokenPathParts)}`);
+
         // Try to find the token by exact address match
         let token = tokenData.find(
-            (tokenAddr: TokenDetails) => {
-                const tokenAddrStr = (tokenAddr.tokenAddress || tokenAddr.faAddress || "").toLowerCase();
+            (tokenInfo: TokenDetails) => {
+                const tokenAddrStr = (tokenInfo.tokenAddress || tokenInfo.faAddress || "").toLowerCase();
                 return tokenAddrStr === normalizedAddress;
             }
         );
 
-        // If not found by exact match, try partial match
-        if (!token) {
+        // If not found by exact match, try matching just the address part
+        if (!token && tokenPathParts.length > 1) {
+            elizaLogger.info(`Trying to match by address part: ${addressPart}`);
             token = tokenData.find(
-                (tokenAddr: TokenDetails) => {
-                    const tokenAddrStr = (tokenAddr.tokenAddress || tokenAddr.faAddress || "").toLowerCase();
-                    return tokenAddrStr.includes(normalizedAddress) || normalizedAddress.includes(tokenAddrStr);
+                (tokenInfo: TokenDetails) => {
+                    const tokenAddrStr = (tokenInfo.tokenAddress || tokenInfo.faAddress || "").toLowerCase();
+                    return tokenAddrStr.startsWith(addressPart);
                 }
             );
         }
 
-        // Special case for WrappedUSDT
-        if (!token && tokenAddress.includes("fa_to_coin_wrapper::WrappedUSDT")) {
+        // If still not found, try partial match
+        if (!token) {
+            elizaLogger.info(`Trying partial match for: ${normalizedAddress}`);
             token = tokenData.find(
-                (e: TokenDetails) => e.faAddress === "0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b"
+                (tokenInfo: TokenDetails) => {
+                    const tokenAddrStr = (tokenInfo.tokenAddress || tokenInfo.faAddress || "").toLowerCase();
+                    return tokenAddrStr.includes(addressPart) || addressPart.includes(tokenAddrStr);
+                }
             );
+        }
+
+        // Special case handling for known tokens
+        if (!token) {
+            // Special case for WrappedUSDT
+            if (normalizedAddress.includes("fa_to_coin_wrapper::wrappedustdt")) {
+                token = tokenData.find(
+                    (e: TokenDetails) => e.faAddress === "0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b"
+                );
+            }
+
+            // Special case for Liquidswap token
+            if (normalizedAddress.includes("liquidswap") || normalizedAddress.includes("liquid swap")) {
+                token = tokenData.find(
+                    (e: TokenDetails) => e.symbol === "LIQ" || e.name?.toLowerCase().includes("liquidswap")
+                );
+            }
         }
 
         // If still not found, create a basic token info
         if (!token) {
             elizaLogger.warn(`Token not found in list: ${tokenAddress}, creating basic info`);
+
+            // Try to extract a meaningful symbol from the token path
+            let symbol = "UNKNOWN";
+            if (tokenPathParts.length > 2) {
+                // Use the last part of the path as symbol
+                symbol = tokenPathParts[tokenPathParts.length - 1].toUpperCase();
+            } else {
+                // Otherwise use the last part of the address
+                symbol = addressPart.slice(-6).toUpperCase();
+            }
+
             return {
                 name: "Unknown Token",
-                symbol: tokenAddress.split("::").pop() || "UNKNOWN",
+                symbol: symbol,
                 tokenAddress: tokenAddress,
                 decimals: 8,
                 logoURI: "",

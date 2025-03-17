@@ -27,26 +27,27 @@ Use this checklist to track your testing progress:
 
 ### Core Aptos Actions
 
-#### Token Operations
-- [ ] TRANSFER_TOKEN - Transfer APT tokens
-- [ ] CHECK_BALANCE - Check APT balance
-- [ ] GET_TOKEN_DETAILS - Get token details
-- [ ] GET_TOKEN_PRICE - Get token price
+#### Basic Operations
+- [X] TRANSFER_APT - Transfer APT
+- [X] CHECK_BALANCE - Check APT balance
+- [X] GET_TOKEN_DETAILS - Get token details
+- [X] GET_TOKEN_PRICE - Get token price
 
 #### Token Management
-- [ ] CREATE_TOKEN - Create new token
-- [ ] MINT_TOKEN - Mint tokens
-- [ ] BURN_TOKEN - Burn tokens
-- [ ] TRANSFER_TOKEN - Transfer specific tokens
+- [X] CREATE_TOKEN - Create new token
+- [X] MINT_TOKEN - Mint tokens
+- [X] BURN_TOKEN - Burn tokens
+- [X] TRANSFER_TOKEN - Transfer specific tokens
 
 #### NFT Operations
-- [ ] TRANSFER_NFT - Transfer NFT
+- [X] CREATE_nft - Create NFT
+- [X] TRANSFER_NFT - Transfer NFT
 - [ ] BURN_NFT - Burn NFT
 
 #### Account and Transaction Information
-- [ ] GET_ACCOUNT - Get account info
-- [ ] GET_TRANSACTION - Look up transaction
-- [ ] GET_MODULES - Show account modules
+- [X] GET_ACCOUNT - Get account info
+- [X] GET_TRANSACTION - Look up transaction
+- [X] GET_MODULES - Show account modules
 
 ### Protocol-Specific Actions
 
@@ -68,7 +69,7 @@ Use this checklist to track your testing progress:
 - [ ] AMNIS_CHECK_APY - Check APY
 
 #### Liquidswap
-- [ ] LIQUIDSWAP_SWAP - Swap tokens
+- [X] LIQUIDSWAP_SWAP - Swap tokens
 - [ ] LIQUIDSWAP_ADD_LIQUIDITY - Add liquidity
 - [ ] LIQUIDSWAP_REMOVE_LIQUIDITY - Remove liquidity
 - [ ] LIQUIDSWAP_CREATE_POOL - Create pool
@@ -77,6 +78,12 @@ Use this checklist to track your testing progress:
 - [ ] THALA_SWAP - Swap tokens
 - [ ] THALA_ADD_LIQUIDITY - Add liquidity
 - [ ] THALA_REMOVE_LIQUIDITY - Remove liquidity
+
+
+#### Merlke Trade
+- [ ] MERKLE_LIMIT_ORDER - Execute Limit Order on Merkle Trade
+
+
 
 ## Core Aptos Actions
 

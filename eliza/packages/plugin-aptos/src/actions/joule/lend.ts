@@ -20,19 +20,25 @@ import {
     PrivateKey,
     PrivateKeyVariants,
     type InputGenerateTransactionPayloadData,
-    type MoveStructId
+    type MoveStructId,
+    type UserTransactionResponse,
+    AccountAddress
 } from "@aptos-labs/ts-sdk";
-import { walletProvider } from "../../providers/wallet";
+import { validateAptosConfig } from "../../enviroment";
+import { normalizeTokenSymbol } from "../../utils/token-utils";
 
 // Joule Finance contract address
 const JOULE_CONTRACT_ADDRESS = "0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6";
 
+// APT token address
+const APT_TOKEN_ADDRESS = "0x1::aptos_coin::AptosCoin";
+
 export interface JouleLendContent extends Content {
     amount: string | number;
     tokenType: string;
-    positionId?: string;
-    newPosition?: boolean;
-    isFungibleAsset?: boolean;
+    positionId?: string | null;
+    newPosition?: boolean | string;
+    isFungibleAsset?: boolean | string;
 }
 
 function isJouleLendContent(content: unknown): content is JouleLendContent {
@@ -65,12 +71,180 @@ Example response:
 
 Given the recent messages, extract the following information about the requested Joule Finance lending operation:
 - Amount to lend
-- Token type to lend (e.g., "0x1::aptos_coin::AptosCoin" for APT)
+- Token type to lend (e.g., "APT", "USDC", "USDT", "BTC", "ETH" or a full address like "0x1::aptos_coin::AptosCoin")
 - Position ID (if specified, otherwise null)
 - Whether to create a new position (if specified, otherwise true)
 - Whether the token is a fungible asset (if specified, otherwise false)
 
 Respond with a JSON markdown block containing only the extracted values.`;
+
+/**
+ * Converts a value to a boolean
+ */
+function toBoolean(value: unknown): boolean {
+    if (typeof value === 'boolean') {
+        return value;
+    }
+    if (typeof value === 'string') {
+        const lowercased = value.toLowerCase();
+        return lowercased === 'true' || lowercased === 'yes' || lowercased === '1';
+    }
+    return Boolean(value);
+}
+
+/**
+ * Extracts the address part from a token type string
+ * For example, "0x1::aptos_coin::AptosCoin" -> "0x1"
+ */
+function extractAddressPart(tokenType: string): string {
+    // If it's already just an address, return it
+    if (tokenType.match(/^0x[0-9a-fA-F]+$/)) {
+        return tokenType;
+    }
+
+    // If it's a full module path, extract the address part
+    const parts = tokenType.split("::");
+    if (parts.length > 1) {
+        return parts[0];
+    }
+
+    // Default to APT token address if we can't extract
+    return "0x1";
+}
+
+/**
+ * Lends tokens on Joule Finance
+ */
+async function lendToken(
+    aptosClient: Aptos,
+    account: Account,
+    amount: number,
+    tokenType: string,
+    positionId: string | null,
+    newPosition: boolean,
+    isFungibleAsset: boolean
+): Promise<{ hash: string; positionId: string }> {
+    try {
+        elizaLogger.info(`Lending ${amount} of ${tokenType} on Joule Finance`);
+        elizaLogger.info(`Position ID: ${positionId}, New Position: ${newPosition}, Fungible Asset: ${isFungibleAsset}`);
+
+        // Normalize token type
+        const normalizedTokenType = normalizeTokenSymbol(tokenType);
+        elizaLogger.info(`Normalized token type: ${normalizedTokenType}`);
+
+        // Convert amount to a number with appropriate decimals
+        // Most Aptos tokens use 8 decimals
+        const DECIMALS = 8;
+        const adjustedAmount = Math.floor(amount * (10 ** DECIMALS));
+        elizaLogger.info(`Adjusted amount: ${adjustedAmount}`);
+
+        // Prepare transaction data based on token type
+        let txData: InputGenerateTransactionPayloadData;
+
+        // Based on the successful transaction, we need to use position ID "1" for new positions
+        // This is likely because the first position for a user is always "1"
+        const effectivePositionId = newPosition ? "1" : (positionId || "1");
+        elizaLogger.info(`Using effective position ID: ${effectivePositionId}`);
+
+        if (isFungibleAsset) {
+            // For fungible assets
+            const tokenAddress = extractAddressPart(normalizedTokenType);
+            elizaLogger.info(`Using token address for fungible asset: ${tokenAddress}`);
+
+            txData = {
+                function: `${JOULE_CONTRACT_ADDRESS}::pool::lend_fa`,
+                functionArguments: [
+                    effectivePositionId,
+                    tokenAddress,
+                    newPosition,
+                    adjustedAmount
+                ],
+            };
+            elizaLogger.info(`Using lend_fa with args: ${JSON.stringify(txData.functionArguments)}`);
+        } else {
+            // For standard coins - match the successful transaction
+            txData = {
+                function: `${JOULE_CONTRACT_ADDRESS}::pool::lend`,
+                typeArguments: [normalizedTokenType],
+                functionArguments: [
+                    effectivePositionId,
+                    adjustedAmount,
+                    newPosition
+                ],
+            };
+            elizaLogger.info(`Using lend with args: ${JSON.stringify(txData.functionArguments)}`);
+        }
+
+        elizaLogger.info("Building Joule lend transaction with data:", JSON.stringify(txData, null, 2));
+        elizaLogger.info("Function arguments types:", txData.functionArguments.map(arg => `${arg} (${typeof arg})`));
+
+        // Build the transaction
+        const tx = await aptosClient.transaction.build.simple({
+            sender: account.accountAddress,
+            data: txData,
+        });
+
+        // Sign and submit the transaction
+        const committedTransaction = await aptosClient.signAndSubmitTransaction({
+            signer: account,
+            transaction: tx,
+        });
+
+        elizaLogger.info(`Transaction submitted with hash: ${committedTransaction.hash}`);
+
+        // Wait for the transaction to be processed
+        const executedTransaction = await aptosClient.waitForTransaction({
+            transactionHash: committedTransaction.hash,
+        });
+
+        if (!executedTransaction.success) {
+            elizaLogger.error("Lending transaction failed", executedTransaction);
+            throw new Error(`Lending transaction failed: ${executedTransaction.vm_status || "Unknown error"}`);
+        }
+
+        elizaLogger.info("Transaction executed successfully");
+
+        // Try to extract position ID from transaction events
+        let resultPositionId = positionId || "";
+        try {
+            // Cast to UserTransactionResponse to access events
+            const txWithEvents = executedTransaction as UserTransactionResponse;
+
+            elizaLogger.info(`Transaction has ${txWithEvents.events?.length || 0} events`);
+
+            if (txWithEvents.events && txWithEvents.events.length > 0) {
+                for (const event of txWithEvents.events) {
+                    elizaLogger.info(`Checking event of type: ${event.type}`);
+                    if (event.type?.includes("pool::LendEvent")) {
+                        elizaLogger.info(`Found LendEvent: ${JSON.stringify(event.data)}`);
+                        if (event.data && typeof event.data === 'object') {
+                            const eventData = event.data as Record<string, unknown>;
+                            if ('position_id' in eventData && eventData.position_id !== undefined) {
+                                resultPositionId = String(eventData.position_id);
+                                elizaLogger.info(`Extracted position ID from events: ${resultPositionId}`);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (eventError) {
+            elizaLogger.warn("Could not extract position ID from transaction events:", eventError);
+            // Continue with the default position ID
+        }
+
+        return {
+            hash: executedTransaction.hash,
+            positionId: resultPositionId
+        };
+    } catch (error) {
+        elizaLogger.error("Error lending on Joule Finance:", error);
+        if (error instanceof Error) {
+            throw new Error(`Lending failed: ${error.message}`);
+        }
+        throw new Error("Lending failed with unknown error");
+    }
+}
 
 export default {
     name: "JOULE_LEND",
@@ -81,10 +255,6 @@ export default {
         "LEND_ON_JOULE",
         "DEPOSIT_ON_JOULE",
     ],
-    validate: async (_runtime: IAgentRuntime, message: Memory) => {
-        elizaLogger.info("Validating Joule lend from user:", message.userId);
-        return true;
-    },
     description: "Lend tokens on Joule Finance",
     handler: async (
         runtime: IAgentRuntime,
@@ -95,158 +265,145 @@ export default {
     ): Promise<boolean> => {
         elizaLogger.info("Starting JOULE_LEND handler...");
 
-        const walletInfo = await walletProvider.get(runtime, message, state);
-        state.walletInfo = walletInfo;
+        try {
+            // Compose lend context
+            const lendContext = composeContext({
+                state,
+                template: jouleLendTemplate,
+            });
 
-        // Initialize or update state
-        let currentState = state;
-        if (!currentState) {
-            currentState = (await runtime.composeState(message)) as State;
-        } else {
-            currentState = await runtime.updateRecentMessageState(currentState);
-        }
+            // Generate lend content
+            const content = await generateObjectDeprecated({
+                runtime,
+                context: lendContext,
+                modelClass: ModelClass.SMALL,
+            });
 
-        // Compose lend context
-        const lendContext = composeContext({
-            state: currentState,
-            template: jouleLendTemplate,
-        });
+            elizaLogger.info("Generated content:", JSON.stringify(content, null, 2));
 
-        // Generate lend content
-        const content = await generateObjectDeprecated({
-            runtime,
-            context: lendContext,
-            modelClass: ModelClass.SMALL,
-        });
+            // Validate lend content
+            if (!isJouleLendContent(content)) {
+                elizaLogger.error("Invalid content for JOULE_LEND action.");
+                if (callback) {
+                    callback({
+                        text: "Unable to process lending request. Please provide token type and amount to lend.",
+                        content: { action: "JOULE_LEND", status: "error", error: "Invalid lending content" },
+                    });
+                }
+                return false;
+            }
 
-        // Validate lend content
-        if (!isJouleLendContent(content)) {
-            elizaLogger.error("Invalid content for JOULE_LEND action.");
+            // Get token display name for better UX
+            let tokenDisplay = content.tokenType;
+            if (content.tokenType.toLowerCase() === "apt" ||
+                content.tokenType.toLowerCase() === "aptos" ||
+                content.tokenType === "0x1::aptos_coin::AptosCoin") {
+                tokenDisplay = "APT";
+            } else if (content.tokenType.includes("::")) {
+                const parts = content.tokenType.split("::");
+                tokenDisplay = parts.length > 0 ? parts[parts.length - 1] : content.tokenType;
+            }
+
+            // Send a confirmation message first
             if (callback) {
                 callback({
-                    text: "Unable to process lending request. Invalid content provided.",
-                    content: { error: "Invalid lending content" },
+                    text: `Processing request to lend ${content.amount} ${tokenDisplay} on Joule Finance...`,
+                    content: {
+                        action: "JOULE_LEND",
+                        status: "pending",
+                        amount: content.amount,
+                        tokenType: content.tokenType
+                    },
                 });
             }
-            return false;
-        }
 
-        try {
-            const privateKey = runtime.getSetting("APTOS_PRIVATE_KEY");
-            const aptosAccount = Account.fromPrivateKey({
-                privateKey: new Ed25519PrivateKey(
-                    PrivateKey.formatPrivateKey(
-                        privateKey,
-                        PrivateKeyVariants.Ed25519
-                    )
-                ),
+            // Initialize Aptos client and account
+            const config = await validateAptosConfig(runtime);
+            const aptosConfig = new AptosConfig({
+                network: config.APTOS_NETWORK as Network
             });
-            const network = runtime.getSetting("APTOS_NETWORK") as Network;
-            const aptosClient = new Aptos(
-                new AptosConfig({
-                    network,
-                })
-            );
+            const aptosClient = new Aptos(aptosConfig);
 
-            // Set defaults for optional parameters
-            const positionId = content.positionId || "0"; // Default position ID
-            const newPosition = content.newPosition !== undefined ? content.newPosition : true;
-            const isFungibleAsset = content.isFungibleAsset || false;
+            // Create account from private key
+            const privateKey = new Ed25519PrivateKey(
+                PrivateKey.formatPrivateKey(
+                    config.APTOS_PRIVATE_KEY,
+                    PrivateKeyVariants.Ed25519
+                )
+            );
+            const account = Account.fromPrivateKey({ privateKey });
+
+            // Set defaults for optional parameters and ensure proper types
+            // Based on the successful transaction, we should use "1" as the default position ID
+            let positionId: string | null = null;
+            if (content.positionId && content.positionId !== "null" && content.positionId !== null) {
+                positionId = content.positionId;
+            } else if (!content.newPosition || content.newPosition === "false") {
+                // If not creating a new position, we need a valid position ID
+                positionId = "1"; // Default to position ID 1 based on the successful transaction
+            }
+            elizaLogger.info(`Using position ID: ${positionId}`);
+
+            // Use newPosition from content or default to true
+            const newPosition = content.newPosition === undefined ? true : toBoolean(content.newPosition);
+            elizaLogger.info(`Using newPosition: ${newPosition} (${typeof newPosition})`);
+
+            // For APT, we should always use standard coin mode, not fungible asset mode
+            let isFungibleAsset = content.isFungibleAsset === undefined ? false : toBoolean(content.isFungibleAsset);
+
+            // Override fungible asset flag for APT
+            if (content.tokenType.toLowerCase() === "apt" ||
+                content.tokenType.toLowerCase() === "aptos" ||
+                content.tokenType === "0x1::aptos_coin::AptosCoin") {
+                isFungibleAsset = false;
+                elizaLogger.info("Overriding isFungibleAsset to false for APT token");
+            }
+
+            elizaLogger.info(`Using isFungibleAsset: ${isFungibleAsset} (${typeof isFungibleAsset})`);
 
             // Convert amount to number
             const amount = Number(content.amount);
-
-            // Prepare transaction data based on token type
-            let txData: InputGenerateTransactionPayloadData;
-
-            if (isFungibleAsset) {
-                // Fungible asset lending
-                txData = {
-                    function: `${JOULE_CONTRACT_ADDRESS}::pool::lend_fa`,
-                    functionArguments: [positionId, content.tokenType, newPosition, amount],
-                };
-            } else {
-                // Standard coin lending
-                txData = {
-                    function: `${JOULE_CONTRACT_ADDRESS}::pool::lend`,
-                    typeArguments: [content.tokenType],
-                    functionArguments: [positionId, amount, newPosition],
-                };
+            if (Number.isNaN(amount) || amount <= 0) {
+                throw new Error("Invalid amount. Must be a positive number.");
             }
 
-            elizaLogger.info("Building Joule lend transaction with data:", txData);
+            // Lend tokens on Joule
+            const result = await lendToken(
+                aptosClient,
+                account,
+                amount,
+                content.tokenType,
+                positionId,
+                newPosition,
+                isFungibleAsset
+            );
 
-            const tx = await aptosClient.transaction.build.simple({
-                sender: aptosAccount.accountAddress.toStringLong(),
-                data: txData,
-            });
-
-            const committedTransaction =
-                await aptosClient.signAndSubmitTransaction({
-                    signer: aptosAccount,
-                    transaction: tx,
-                });
-
-            const executedTransaction = await aptosClient.waitForTransaction({
-                transactionHash: committedTransaction.hash,
-            });
-
-            if (!executedTransaction.success) {
-                throw new Error("Lending transaction failed");
-            }
-
-            elizaLogger.info("Joule lending successful:", executedTransaction.hash);
-
-            // Extract token name for display
-            let tokenName = "tokens";
-            if (content.tokenType === "0x1::aptos_coin::AptosCoin") {
-                tokenName = "APT";
-            } else {
-                const tokenParts = content.tokenType.split("::");
-                tokenName = tokenParts.length > 2 ? tokenParts[2] : "tokens";
-            }
-
-            // Try to extract position ID from transaction events
-            let resultPositionId = positionId;
-            try {
-                // Access transaction events if available
-                // Note: This is a simplified approach and may need adjustment based on the actual API response structure
-                const txResponse = executedTransaction as unknown;
-                // Check if the transaction response has events
-                if (
-                    txResponse &&
-                    typeof txResponse === 'object' &&
-                    'events' in txResponse &&
-                    Array.isArray((txResponse as Record<string, unknown>).events) &&
-                    ((txResponse as Record<string, unknown>).events as unknown[]).length > 0
-                ) {
-                    const events = (txResponse as Record<string, unknown>).events as Array<Record<string, unknown>>;
-                    for (const event of events) {
-                        if (
-                            event.data &&
-                            typeof event.data === 'object' &&
-                            'position_id' in (event.data as object)
-                        ) {
-                            resultPositionId = String((event.data as Record<string, unknown>).position_id);
-                            break;
-                        }
-                    }
-                }
-            } catch (eventError) {
-                elizaLogger.warn("Could not extract position ID from transaction events:", eventError);
-                // Continue with the default position ID
-            }
+            // Format the response
+            const response = [
+                "# Lending Successful on Joule Finance",
+                "",
+                `**Amount**: ${content.amount} ${tokenDisplay}`,
+                `**Position ID**: ${result.positionId}`,
+                `**Transaction Hash**: \`${result.hash}\``,
+                "",
+                "Your tokens have been successfully lent on Joule Finance.",
+                "You can view your position on the Joule Finance dashboard."
+            ].join("\n");
 
             if (callback) {
                 callback({
-                    text: `Successfully lent ${content.amount} ${tokenName} on Joule Finance. Position ID: ${resultPositionId}, Transaction: ${executedTransaction.hash}`,
+                    text: response,
                     content: {
-                        success: true,
-                        hash: executedTransaction.hash,
-                        amount: content.amount,
-                        tokenType: content.tokenType,
-                        positionId: resultPositionId,
-                        newPosition: newPosition,
+                        action: "JOULE_LEND",
+                        status: "complete",
+                        lend: {
+                            amount: content.amount,
+                            tokenType: content.tokenType,
+                            tokenDisplay,
+                            positionId: result.positionId,
+                            transactionHash: result.hash,
+                            newPosition
+                        }
                     },
                 });
             }
@@ -255,9 +412,14 @@ export default {
         } catch (error) {
             elizaLogger.error("Error during Joule lending:", error);
             if (callback) {
+                const errorMessage = error instanceof Error ? error.message : "Unknown error";
                 callback({
-                    text: `Error lending on Joule Finance: ${error.message}`,
-                    content: { error: error.message },
+                    text: `Error lending on Joule Finance: ${errorMessage}`,
+                    content: {
+                        action: "JOULE_LEND",
+                        status: "error",
+                        error: errorMessage
+                    },
                 });
             }
             return false;
@@ -275,16 +437,45 @@ export default {
             {
                 user: "{{user2}}",
                 content: {
-                    text: "I'll process your lending request on Joule Finance...",
+                    text: "Processing request to lend 100 APT on Joule Finance...",
                     action: "JOULE_LEND",
                 },
             },
             {
                 user: "{{user2}}",
                 content: {
-                    text: "Successfully lent 100 APT on Joule Finance. Position ID: 123456, Transaction: 0x39a8c432d9bdad993a33cc1faf2e9b58fb7dd940c0425f1d6db3997e4b4b05c0",
+                    text: "# Lending Successful on Joule Finance\n\n**Amount**: 100 APT\n**Position ID**: 123456\n**Transaction Hash**: `0x39a8c432d9bdad993a33cc1faf2e9b58fb7dd940c0425f1d6db3997e4b4b05c0`\n\nYour tokens have been successfully lent on Joule Finance.\nYou can view your position on the Joule Finance dashboard.",
                 },
             },
         ],
     ] as ActionExample[][],
+    validate: async (_runtime: IAgentRuntime, message: Memory) => {
+        const messageText = message.content?.text?.toLowerCase() || "";
+        elizaLogger.info("JOULE_LEND validation for user:", message.userId, "with message:", messageText);
+
+        // Check for Joule-specific keywords
+        const hasJouleKeywords =
+            messageText.includes("joule") ||
+            messageText.includes("lending protocol");
+
+        // Check for lending-related verbs
+        const hasLendingVerb =
+            messageText.includes("lend") ||
+            messageText.includes("deposit") ||
+            messageText.includes("supply");
+
+        // Check for token indicators
+        const hasTokenIndicator =
+            messageText.includes("apt") ||
+            messageText.includes("usdc") ||
+            messageText.includes("usdt") ||
+            messageText.includes("token") ||
+            messageText.includes("coin");
+
+        const shouldValidate = hasJouleKeywords && hasLendingVerb && hasTokenIndicator;
+        elizaLogger.info("JOULE_LEND validation result:", { shouldValidate, hasJouleKeywords, hasLendingVerb, hasTokenIndicator });
+
+        return shouldValidate;
+    },
+    suppressInitialMessage: true,
 } as Action;

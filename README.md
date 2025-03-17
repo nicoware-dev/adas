@@ -125,10 +125,13 @@ ADAS is and will always be open source! We strongly encourage users to self-host
 ```bash
 # Clone the repository
 git clone https://github.com/nicoware-dev/adas
-cd adas-v0
+cd adas
 
 # Install dependencies
-pnpm install
+pnpm install --no-frozen-lockfile
+
+# Build project
+pnpm build
 
 # Copy environment file
 cp .env.example .env
@@ -161,7 +164,7 @@ Test Agent:
     pnpm start --characters="characters/test-agent.character.json"
 ```
 
-Or, all agents:
+All agents:
 
 ```bash
     pnpm start --characters="characters/defi-agent.character.json,characters/analytics-agent.character.json,characters/aptos-expert-agent.character.json"

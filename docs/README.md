@@ -5,18 +5,46 @@ This directory contains the documentation for the ADAS (Aptos DefAI Agent Swarm)
 ## Documentation Structure
 
 - **[getting-started/](./getting-started/)**: Quick start guides and installation instructions
+  - [Installation Guide](./getting-started/installation.md)
+  - [Project Overview](./getting-started/overview.md)
+  
 - **[architecture/](./architecture/)**: System architecture and design documentation
+  - [Architecture Overview](./architecture/overview.md)
+  - [Implementation Status](./architecture/implementation-status.md)
+  - [Development Roadmap](./architecture/roadmap.md)
+  
 - **[agents/](./agents/)**: Documentation for each agent in the system
+  - [Agent Overview](./agents/README.md)
+  - [Coordinator Agent](./agents/coordinator-agent.md)
+  - [Analytics Agent](./agents/analytics-agent.md)
+  - [DeFi Agent](./agents/defi-agent.md)
+  - [Aptos Expert Agent](./agents/aptos-expert-agent.md)
+  
 - **[aptos-plugin/](./aptos-plugin/)**: Documentation for the Aptos plugin and Move Agent Kit integration
+  - [Aptos Plugin Overview](./aptos-plugin/README.md)
+  - [Move Agent Kit Integration](./aptos-plugin/move-agent-kit.md)
+  
 - **[api/](./api/)**: API documentation for the ADAS system
+  - [API Overview](./api/README.md)
+  - [Endpoints Reference](./api/endpoints.md)
+  
 - **[deployment/](./deployment/)**: Deployment guides and configuration
+  - [Deployment Overview](./deployment/README.md)
+  - [Docker Deployment](./deployment/docker.md)
+  - [Cloud Deployment](./deployment/cloud.md)
+  
 - **[contributing/](./contributing/)**: Guidelines for contributing to the project
+  - [Contributing Guidelines](./contributing/README.md)
+  - [Code Style Guide](./contributing/code-style.md)
+  - [Pull Request Process](./contributing/pull-requests.md)
 
 ## Quick Links
 
 - [Project Overview](./getting-started/overview.md)
 - [Installation Guide](./getting-started/installation.md)
 - [Architecture Overview](./architecture/overview.md)
+- [Implementation Status](./architecture/implementation-status.md)
+- [Development Roadmap](./architecture/roadmap.md)
 - [Agent Documentation](./agents/README.md)
 - [API Reference](./api/README.md)
 - [Deployment Guide](./deployment/README.md)
@@ -32,6 +60,24 @@ The system consists of four main agents:
 2. **Analytics Agent**: Gathers and analyzes data from multiple sources
 3. **DeFi Agent**: Executes on-chain actions across the Aptos ecosystem
 4. **Aptos Expert Agent**: Provides expert knowledge and guidance
+
+## Current Status
+
+ADAS is currently in alpha development. The core functionality is implemented, including:
+
+- Multi-agent architecture with ElizaOS integration
+- Core Aptos blockchain operations (token transfers, balance checking)
+- Analytics integrations (CoinGecko, DeFiLlama, GeckoTerminal)
+- Liquidswap token swapping
+
+In progress features include:
+- Joule Finance lending operations
+- Amnis Finance staking operations
+- Thala Labs DEX operations
+- Merkle Trade limit orders
+- Web client development
+
+See the [Implementation Status](./architecture/implementation-status.md) document for detailed information on the current state of development.
 
 ## Contributing to Documentation
 
