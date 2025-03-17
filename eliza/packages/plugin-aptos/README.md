@@ -125,7 +125,7 @@ What's the current APT/USDC exchange rate on Thala?
 
 #### Merkle Trade
 ```
-Execute a Limit Order to buy APT at $5 price using USDC
+Execute a Limit Order to buy APT at $5 price using USDC on Merkle Trade
 ```
 
 
