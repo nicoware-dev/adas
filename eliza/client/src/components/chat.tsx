@@ -8,8 +8,8 @@ import { ChatInput } from "@/components/ui/chat/chat-input";
 import { ChatMessageList } from "@/components/ui/chat/chat-message-list";
 import { useTransition, animated, type AnimatedProps } from "@react-spring/web";
 import { Lightbulb, Paperclip, Send, Trash2, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import type { Content, UUID } from "@elizaos/core";
+import { useEffect, useRef, useState, useCallback } from "react";
+import type { Content, UUID, Media } from "@elizaos/core";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { cn, moment } from "@/lib/utils";
@@ -23,7 +23,6 @@ import type { IAttachment } from "@/types";
 import { AudioRecorder } from "./audio-recorder";
 import { Badge } from "./ui/badge";
 import { useAutoScroll } from "./ui/chat/hooks/useAutoScroll";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { ExamplePrompts } from "./example-prompts";
 
 type ExtraContentFields = {
@@ -38,119 +37,31 @@ type AnimatedDivProps = AnimatedProps<{ style: React.CSSProperties }> & {
     children?: React.ReactNode;
 };
 
+// Safe conversion function to ensure type compatibility
+const convertAttachment = (attachment: IAttachment): Media => ({
+    id: `att-${Date.now()}-${Math.random().toString(36).substring(2)}`,
+    url: attachment.url || "",
+    contentType: attachment.contentType || "text/plain",
+    title: attachment.title || "Attachment",
+    source: "user-upload",
+    description: attachment.title || "User attachment",
+    text: ""
+});
+
 export default function Page({ agentId }: { agentId: UUID }) {
     const { toast } = useToast();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [input, setInput] = useState("");
-    const [showPrompts, setShowPrompts] = useState(true);
+    const [showPrompts, setShowPrompts] = useState(false);
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
+    const [messages, setMessages] = useState<ContentWithUser[]>([]);
+    const messageLoadedRef = useRef(false);
 
     const queryClient = useQueryClient();
 
-    // Add local storage for chat history
-    const [storedMessages, setStoredMessages] = useLocalStorage<ContentWithUser[]>(
-        `chat-history-${agentId}`,
-        []
-    );
-
-    // Load stored messages when component mounts
-    useEffect(() => {
-        if (storedMessages.length > 0) {
-            queryClient.setQueryData(["messages", agentId], storedMessages);
-        }
-    }, []);
-
-    // Update stored messages when messages change
-    useEffect(() => {
-        const currentMessages = queryClient.getQueryData<ContentWithUser[]>(["messages", agentId]) || [];
-        if (currentMessages.length > 0) {
-            // Limit to 50 messages
-            const limitedMessages = currentMessages.slice(-50);
-            setStoredMessages(limitedMessages);
-        }
-    }, [queryClient.getQueryData(["messages", agentId])]);
-
-    // Clear chat history
-    const clearHistory = () => {
-        setStoredMessages([]);
-        queryClient.setQueryData(["messages", agentId], []);
-    };
-
-    const getMessageVariant = (role: string) =>
-        role !== "user" ? "received" : "sent";
-
-    const { scrollRef, isAtBottom, scrollToBottom, disableAutoScroll } = useAutoScroll({
-        smooth: true,
-    });
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [queryClient.getQueryData(["messages", agentId])]);
-
-    useEffect(() => {
-        scrollToBottom();
-    }, []);
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            if (e.nativeEvent.isComposing) return;
-            handleSendMessage(e as unknown as React.FormEvent<HTMLFormElement>);
-        }
-    };
-
-    const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (!input) return;
-
-        const attachments: IAttachment[] | undefined = selectedFile
-            ? [
-                  {
-                      url: URL.createObjectURL(selectedFile),
-                      contentType: selectedFile.type,
-                      title: selectedFile.name,
-                  },
-              ]
-            : undefined;
-
-        const newMessages = [
-            {
-                text: input,
-                user: "user",
-                createdAt: Date.now(),
-                attachments,
-            },
-            {
-                text: input,
-                user: "system",
-                isLoading: true,
-                createdAt: Date.now(),
-            },
-        ];
-
-        queryClient.setQueryData(
-            ["messages", agentId],
-            (old: ContentWithUser[] = []) => [...old, ...newMessages]
-        );
-
-        sendMessageMutation.mutate({
-            message: input,
-            selectedFile: selectedFile ? selectedFile : null,
-        });
-
-        setSelectedFile(null);
-        setInput("");
-        formRef.current?.reset();
-    };
-
-    useEffect(() => {
-        if (inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, []);
-
+    // Define the mutation outside to avoid circular dependencies
     const sendMessageMutation = useMutation({
         mutationKey: ["send_message", agentId],
         mutationFn: ({
@@ -161,18 +72,20 @@ export default function Page({ agentId }: { agentId: UUID }) {
             selectedFile?: File | null;
         }) => apiClient.sendMessage(agentId, message, selectedFile),
         onSuccess: (newMessages: ContentWithUser[]) => {
-            queryClient.setQueryData(
-                ["messages", agentId],
-                (old: ContentWithUser[] = []) => [
-                    ...old.filter((msg) => !msg.isLoading),
-                    ...newMessages.map((msg) => ({
-                        ...msg,
-                        createdAt: Date.now(),
-                    })),
-                ]
-            );
+            // Replace loading message with actual response
+            setMessages(prevMessages => {
+                const messagesWithoutLoading = prevMessages.filter(msg => !msg.isLoading);
+                const messageWithTimestamp = newMessages.map((msg: ContentWithUser) => ({
+                    ...msg,
+                    createdAt: Date.now(),
+                }));
+                return [...messagesWithoutLoading, ...messageWithTimestamp];
+            });
         },
         onError: (e) => {
+            // Remove loading message on error
+            setMessages(prevMessages => prevMessages.filter(msg => !msg.isLoading));
+
             toast({
                 variant: "destructive",
                 title: "Unable to send message",
@@ -181,20 +94,181 @@ export default function Page({ agentId }: { agentId: UUID }) {
         },
     });
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Memoize storage key to prevent unnecessary renders
+    const storageKey = `chat-history-${agentId}`;
+
+    // Load messages from localStorage on component mount (ONCE only)
+    useEffect(() => {
+        if (messageLoadedRef.current) return;
+
+        try {
+            const storedMessagesString = localStorage.getItem(storageKey);
+            if (storedMessagesString) {
+                const storedMessages = JSON.parse(storedMessagesString);
+                if (Array.isArray(storedMessages) && storedMessages.length > 0) {
+                    setMessages(storedMessages);
+                }
+            }
+            messageLoadedRef.current = true;
+        } catch (error) {
+            console.error("Error loading messages from localStorage:", error);
+        }
+    }, [storageKey]);
+
+    // Save messages to localStorage when they change
+    // Use a debounced approach to prevent excessive writes
+    const saveMessages = useCallback(() => {
+        try {
+            if (messages.length > 0) {
+                // Limit to 50 messages to prevent localStorage from getting too large
+                const limitedMessages = [...messages].slice(-50);
+                localStorage.setItem(storageKey, JSON.stringify(limitedMessages));
+            } else if (messages.length === 0) {
+                localStorage.removeItem(storageKey);
+            }
+        } catch (error) {
+            console.error("Error saving messages to localStorage:", error);
+        }
+    }, [messages, storageKey]);
+
+    // Apply the debounced saving effect
+    useEffect(() => {
+        const timeoutId = setTimeout(saveMessages, 300);
+        return () => clearTimeout(timeoutId);
+    }, [saveMessages]);
+
+    // Clear chat history
+    const clearHistory = useCallback(() => {
+        try {
+            localStorage.removeItem(storageKey);
+            setMessages([]);
+        } catch (error) {
+            console.error("Error clearing chat history:", error);
+        }
+    }, [storageKey]);
+
+    const getMessageVariant = useCallback((role: string) =>
+        role !== "user" ? "received" : "sent",
+    []);
+
+    const { scrollRef, isAtBottom, scrollToBottom, disableAutoScroll } = useAutoScroll({
+        smooth: true,
+    });
+
+    // Scroll to bottom when messages change - using a layout effect to prevent flash
+    useEffect(() => {
+        // Only auto-scroll if we're already at the bottom or this is a new message from the user/system
+        const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+        const isNewSystemMessage = lastMessage?.user === "system" && lastMessage?.isLoading;
+        const shouldAutoScroll = isAtBottom || messages.length === 0 || isNewSystemMessage;
+
+        if (scrollToBottom && shouldAutoScroll) {
+            // Use setTimeout to ensure DOM is updated before scrolling
+            const timeoutId = setTimeout(() => {
+                scrollToBottom();
+            }, 10);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [messages, scrollToBottom, isAtBottom]);
+
+    // Track initial scroll
+    const initialScrollRef = useRef(false);
+
+    // Always scroll to bottom on first load
+    useEffect(() => {
+        // This effect runs only once after messages are loaded
+        if (!initialScrollRef.current && scrollToBottom && messages.length > 0) {
+            const timeoutId = setTimeout(() => {
+                scrollToBottom();
+                initialScrollRef.current = true;
+            }, 100);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [messages, scrollToBottom]);
+
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            if (e.nativeEvent.isComposing) return;
+
+            if (formRef.current) {
+                const event = new Event('submit', { cancelable: true, bubbles: true });
+                formRef.current.dispatchEvent(event);
+            }
+        }
+    }, []);
+
+    const handleSendMessage = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!input) return;
+
+        // Handle attachments in a type-safe way
+        const attachments = selectedFile
+            ? [{
+                id: `upload-${Date.now()}`,
+                url: URL.createObjectURL(selectedFile),
+                contentType: selectedFile.type,
+                title: selectedFile.name,
+                source: 'user-upload',
+                description: selectedFile.name,
+                text: ''
+            }]
+            : undefined;
+
+        // Create properly typed message objects
+        const newUserMessage: ContentWithUser = {
+            text: input,
+            user: "user",
+            createdAt: Date.now(),
+            attachments: attachments as Media[] | undefined,
+        };
+
+        const loadingMessage: ContentWithUser = {
+            text: input,
+            user: "system",
+            isLoading: true,
+            createdAt: Date.now(),
+        };
+
+        // Update messages state safely
+        setMessages(prev => [...prev, newUserMessage, loadingMessage]);
+
+        // Send the message
+        sendMessageMutation.mutate({
+            message: input,
+            selectedFile: selectedFile ? selectedFile : null,
+        });
+
+        setSelectedFile(null);
+        setInput("");
+
+        // Reset form without causing a state update
+        if (formRef.current) {
+            formRef.current.reset();
+        }
+    }, [input, selectedFile, sendMessageMutation]);
+
+    // Auto-focus input only once on mount
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, []);
+
+    const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file?.type.startsWith("image/")) {
             setSelectedFile(file);
         }
-    };
+    }, []);
 
-    const messages =
-        queryClient.getQueryData<ContentWithUser[]>(["messages", agentId]) ||
-        [];
+    // Type-safe key generation
+    const getMessageKey = useCallback((message: ContentWithUser) => {
+        return `${message.createdAt || Date.now()}-${message.user || 'unknown'}-${(typeof message.text === 'string' ? message.text.substring(0, 20) : 'message')}`;
+    }, []);
 
     const transitions = useTransition(messages, {
-        keys: (message) =>
-            `${message.createdAt}-${message.user}-${message.text}`,
+        keys: getMessageKey,
         from: { opacity: 0, transform: "translateY(50px)" },
         enter: { opacity: 1, transform: "translateY(0px)" },
         leave: { opacity: 0, transform: "translateY(10px)" },
@@ -227,11 +301,14 @@ export default function Page({ agentId }: { agentId: UUID }) {
                 </Button>
             </div>
 
-            {showPrompts && messages.length > 0 && (
+            {showPrompts && (
                 <div className="p-4 border rounded-md mb-4">
                     <ExamplePrompts
                         agentId={agentId}
-                        onSelectPrompt={(prompt) => setInput(prompt)}
+                        onSelectPrompt={(prompt) => {
+                            setInput(prompt);
+                            setShowPrompts(false);
+                        }}
                     />
                 </div>
             )}
@@ -245,11 +322,31 @@ export default function Page({ agentId }: { agentId: UUID }) {
                 >
                     {messages.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full p-6">
-                            <ExamplePrompts
-                                agentId={agentId}
-                                onSelectPrompt={(prompt) => setInput(prompt)}
-                                className="max-w-md w-full"
-                            />
+                            <div className="flex flex-col gap-3 max-w-md w-full">
+                                <p className="text-center text-muted-foreground text-sm mb-2">
+                                    Welcome! How can I assist you today?
+                                </p>
+                                {!showPrompts && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setShowPrompts(true)}
+                                        className="mx-auto"
+                                    >
+                                        <Lightbulb className="h-4 w-4 mr-2" />
+                                        Show Example Prompts
+                                    </Button>
+                                )}
+                                {showPrompts && (
+                                    <ExamplePrompts
+                                        agentId={agentId}
+                                        onSelectPrompt={(prompt) => {
+                                            setInput(prompt);
+                                            setShowPrompts(false);
+                                        }}
+                                        className="w-full"
+                                    />
+                                )}
+                            </div>
                         </div>
                     ) : (
                         transitions((style, message: ContentWithUser) => {
