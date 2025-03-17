@@ -16,6 +16,8 @@ import { jouleActions } from './joule';
 import { amnisActions } from './amnis';
 import { thalaActions } from './thala';
 import { liquidswapActions } from './liquidswap';
+import { ariesActions } from "./aries";
+import { merkleTradeActions } from "./merkle-trade";
 
 // Export all actions
 export const actions = [
@@ -40,6 +42,8 @@ export const actions = [
     ...amnisActions,
     ...thalaActions,
     ...liquidswapActions,
+    ...merkleTradeActions,
+    ...ariesActions,
 ];
 
 // Export individual modules with namespaces
@@ -47,5 +51,7 @@ export * as joule from './joule';
 export * as amnis from './amnis';
 export * as thala from './thala';
 export * as liquidswap from './liquidswap';
+export * as merkleTrade from './merkle-trade';
+export * as aries from './aries';
 
 export default actions;

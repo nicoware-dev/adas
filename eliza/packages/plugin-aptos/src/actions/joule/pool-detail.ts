@@ -62,20 +62,72 @@ async function getJoulePoolDetail(
     token: string
 ): Promise<PoolDetail> {
     try {
-        // In a real implementation, we would query the Joule Finance contract
-        // to get the pool details. For simplicity, we're returning placeholders.
+        elizaLogger.info(`Getting pool details for token: ${token}`);
 
-        // This would involve getting resources from the Joule contract and parsing them
-        // to extract the pool details for the specified token.
+        // Normalize token name/symbol for comparison
+        const normalizedToken = token.toLowerCase();
 
+        // Use the price-api.joule.finance endpoint as used in Move Agent Kit
+        const allPoolDetailsResponse = await fetch("https://price-api.joule.finance/api/market");
+
+        if (!allPoolDetailsResponse.ok) {
+            throw new Error(`Failed to fetch pool details: ${allPoolDetailsResponse.statusText}`);
+        }
+
+        const allPoolDetails = await allPoolDetailsResponse.json();
+
+        if (!allPoolDetails.data || !Array.isArray(allPoolDetails.data)) {
+            throw new Error("Invalid response from Joule API");
+        }
+
+        elizaLogger.info(`Found ${allPoolDetails.data.length} pools in Joule API response`);
+
+        // Find the pool that matches our token
+        // We'll match by token type, name, or symbol
+        const poolDetail = allPoolDetails.data.find((pool: Record<string, unknown>) => {
+            if (!pool.asset) return false;
+
+            const asset = pool.asset as Record<string, unknown>;
+
+            // Check for matches in type, assetName, or symbol
+            return (
+                (typeof asset.type === 'string' && asset.type.toLowerCase().includes(normalizedToken)) ||
+                (typeof asset.assetName === 'string' && asset.assetName.toLowerCase().includes(normalizedToken)) ||
+                (typeof asset.symbol === 'string' && asset.symbol.toLowerCase() === normalizedToken)
+            );
+        });
+
+        if (!poolDetail) {
+            elizaLogger.warn(`Pool not found for token: ${token}`);
+            throw new Error("Pool not found");
+        }
+
+        elizaLogger.info(`Found pool for ${token}: ${JSON.stringify(poolDetail)}`);
+
+        const asset = poolDetail.asset as Record<string, unknown>;
+        const decimals = typeof asset.decimals === 'number' ? asset.decimals : 8;
+
+        // Format the response similar to Move Agent Kit's implementation
         return {
-            token,
-            totalSupply: "1000000",
-            totalBorrow: "500000",
-            supplyApy: "2.5",
-            borrowApy: "5.0",
-            utilizationRate: "50",
-            collateralFactor: "80"
+            token: typeof asset.type === 'string' ? asset.type : token,
+            totalSupply: typeof poolDetail.marketSize === 'string' || typeof poolDetail.marketSize === 'number'
+                ? String(Number(poolDetail.marketSize) / (10 ** decimals))
+                : "0",
+            totalBorrow: typeof poolDetail.totalBorrowed === 'string' || typeof poolDetail.totalBorrowed === 'number'
+                ? String(Number(poolDetail.totalBorrowed) / (10 ** decimals))
+                : "0",
+            supplyApy: typeof poolDetail.depositApy === 'string' || typeof poolDetail.depositApy === 'number'
+                ? String(poolDetail.depositApy)
+                : "0",
+            borrowApy: typeof poolDetail.borrowApy === 'string' || typeof poolDetail.borrowApy === 'number'
+                ? String(poolDetail.borrowApy)
+                : "0",
+            utilizationRate: typeof poolDetail.utilization === 'string' || typeof poolDetail.utilization === 'number'
+                ? String(poolDetail.utilization * 100) // Convert to percentage
+                : "0",
+            collateralFactor: typeof poolDetail.ltv === 'string' || typeof poolDetail.ltv === 'number'
+                ? String(poolDetail.ltv * 100) // Convert to percentage
+                : "80" // Default value
         };
     } catch (error) {
         if (error instanceof Error) {

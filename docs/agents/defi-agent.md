@@ -41,41 +41,55 @@ The DeFi Agent can perform a wide range of operations on the Aptos blockchain:
 | Borrow | Borrow assets against collateral | ✅ Implemented |
 | Repay | Repay borrowed assets | ✅ Implemented |
 | Withdraw | Withdraw supplied assets | ✅ Implemented |
-| Claim Rewards | Claim JOY token rewards | 🔄 In Progress |
-| Check Position | View current lending/borrowing position | 🔄 In Progress |
-| Pool Information | Get details about lending pools | 🔄 In Progress |
+| Claim Rewards | Claim JOY token rewards | ✅ Implemented |
+| Check Position | View current lending/borrowing position | ✅ Implemented |
+| Pool Information | Get details about lending pools | ✅ Implemented |
 
 #### Amnis Finance
 
 | Operation | Description | Status |
 |-----------|-------------|--------|
-| Stake | Stake APT to receive stAPT | 🔄 In Progress |
-| Unstake | Unstake APT from stAPT | 🔄 In Progress |
-| Check Rewards | View staking rewards | 🔄 In Progress |
-| Check APY | Get current staking APY | 🔄 In Progress |
+| Stake | Stake APT to receive stAPT | ✅ Implemented |
+| Unstake | Unstake APT from stAPT | ✅ Implemented |
+
 
 #### Liquidswap
 
 | Operation | Description | Status |
 |-----------|-------------|--------|
 | Swap | Swap tokens on Liquidswap | ✅ Implemented |
-| Add Liquidity | Provide liquidity to pools | ⏱️ Planned |
-| Remove Liquidity | Remove liquidity from pools | ⏱️ Planned |
-| Create Pool | Create new liquidity pools | ⏱️ Planned |
+| Add Liquidity | Provide liquidity to pools | ⚠️ Partial |
+| Remove Liquidity | Remove liquidity from pools | ⚠️ Partial |
+| Create Pool | Create new liquidity pools | ⚠️ Partial |
 
 #### Thala Labs
 
 | Operation | Description | Status |
 |-----------|-------------|--------|
-| Swap | Swap tokens on Thala DEX | ⏱️ Planned |
-| Add Liquidity | Provide liquidity to Thala pools | ⏱️ Planned |
-| Remove Liquidity | Remove liquidity from Thala pools | ⏱️ Planned |
+| Swap | Swap tokens on Thala DEX | ✅ Implemented |
+| Add Liquidity | Provide liquidity to Thala pools | ✅ Implemented |
+| Remove Liquidity | Remove liquidity from Thala pools | ✅ Implemented |
+| Stake | Stake tokens on Thala Protocol | ✅ Implemented |
+| Unstake | Unstake tokens from Thala Protocol | ✅ Implemented |
 
 #### Merkle Trade
 
 | Operation | Description | Status |
 |-----------|-------------|--------|
-| Limit Orders | Create and manage limit orders | ⏱️ Planned |
+| Get Positions | View current trading positions | ✅ Implemented |
+| Place Limit Order | Create limit orders at specified price | ✅ Implemented |
+| Place Market Order | Execute trades at current market price | ✅ Implemented |
+| Close Position | Close existing trading positions | ✅ Implemented |
+
+#### Aries Protocol
+
+| Operation | Description | Status |
+|-----------|-------------|--------|
+| Create Profile | Create a user profile on Aries Protocol | ✅ Implemented |
+| Lend | Lend tokens to Aries lending pools | ✅ Implemented |
+| Borrow | Borrow tokens against collateral | ✅ Implemented |
+| Repay | Repay borrowed tokens | ✅ Implemented |
+| Withdraw | Withdraw lent tokens | ✅ Implemented |
 
 ## Implementation Details
 
@@ -135,6 +149,8 @@ Deposit 5 APT on Joule
 Borrow 10 USDC from Joule
 Repay my USDC loan on Joule
 Withdraw 2 APT from Joule
+Claim my rewards on Joule Finance
+Check my position for APT on Joule
 ```
 
 #### Amnis Finance
@@ -149,6 +165,36 @@ Check my staking rewards on Amnis
 
 ```
 Swap 0.1 APT for USDC on Liquidswap
+Add liquidity with 5 APT and 50 USDC to Liquidswap
+```
+
+#### Thala Labs
+
+```
+Swap 1 APT for USDC on Thala
+Add liquidity with 0.1 APT and 1 USDC to Thala pool
+Remove liquidity from Thala APT/USDC pool
+Stake 1 APT on Thala
+Unstake 0.5 APT from Thala
+```
+
+#### Merkle Trade
+
+```
+Show my positions on Merkle Trade
+Place a limit order to buy 10 APT at $5 on Merkle Trade
+Place a market order to sell 5 APT on Merkle Trade
+Close my APT/USDC position on Merkle Trade
+```
+
+#### Aries Protocol
+
+```
+Create a profile on Aries Protocol with name 'Trading Account'
+Lend 10 APT on Aries Protocol
+Borrow 5 USDC from Aries Protocol
+Repay 2 USDC loan on Aries Protocol
+Withdraw 5 APT from Aries Protocol
 ```
 
 ## Future Development
@@ -157,10 +203,10 @@ The DeFi Agent is continuously being enhanced with new capabilities:
 
 ### Short-term Priorities
 
-1. Complete Joule Finance integration
-2. Implement Amnis Finance staking operations
-3. Add Thala Labs DEX operations
-4. Implement Merkle Trade limit orders
+1. Comprehensive testing of all implemented protocol integrations
+2. Error handling improvements for complex transactions
+3. Performance optimization for chain operations
+4. Enhanced user feedback for transaction status
 
 ### Long-term Goals
 
@@ -175,5 +221,7 @@ The DeFi Agent is continuously being enhanced with new capabilities:
 - [Joule Finance Documentation](https://docs.joule.finance/)
 - [Amnis Finance Documentation](https://docs.amnis.finance/)
 - [Thala Labs Documentation](https://docs.thala.fi/)
+- [Merkle Trade Documentation](https://docs.merkle.trade/)
+- [Aries Protocol Documentation](https://docs.ariesmarkets.xyz/)
 
 *Last updated: [Current Date]* 

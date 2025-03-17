@@ -55,33 +55,65 @@ async function claimJouleRewards(
     token?: string
 ): Promise<string> {
     try {
-        // If token is specified, claim rewards for that specific token
-        // Otherwise, claim all rewards
-        const functionArguments = token ? [token] : [];
-        const typeArguments = token ? [token] : [];
+        elizaLogger.info(`Claiming Joule rewards ${token ? `for token ${token}` : 'for all tokens'}`);
 
-        const transaction = await aptosClient.transaction.build.simple({
+        // Determine which rewards to claim
+        // In Joule, we need to specify the reward coin type
+        // Default to APT rewards if none specified
+        const rewardType = token?.toLowerCase().includes("apt") || !token
+            ? "0x1::aptos_coin::AptosCoin"
+            : token;
+
+        // We need to add a suffix to the token to match the Move Agent Kit approach
+        const coinReward = `${rewardType}1111`.replace("0x", "@");
+        elizaLogger.info(`Using coin reward identifier: ${coinReward}`);
+
+        // Check if the coin type is staked APT (STApt)
+        const isCoinTypeSTApt = rewardType.includes("stapt_token::StakedApt");
+
+        // Prepare the transaction data
+        const txData = {
+            function: "0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6::pool::claim_rewards",
+            typeArguments: [
+                isCoinTypeSTApt
+                    ? "0x111ae3e5bc816a5e63c2da97d0aa3886519e0cd5e4b046659fa35796bd11542a::amapt_token::AmnisApt"
+                    : "0x1::aptos_coin::AptosCoin"
+            ],
+            functionArguments: [
+                coinReward,
+                isCoinTypeSTApt ? "amAPTIncentives" : "APTIncentives"
+            ]
+        };
+
+        elizaLogger.info("Building transaction for claiming rewards", txData);
+
+        // Build the transaction
+        const tx = await aptosClient.transaction.build.simple({
             sender: account.accountAddress,
-            data: {
-                function: "0xc7efb4076dbe143cbcd98cfaaa929ecfc8f299203dfff63b95ccb6bfe19850fa::router::claim_rewards",
-                functionArguments,
-                typeArguments,
-            },
+            data: txData
         });
 
-        const committedTransactionHash = await account.signAndSubmitTransaction({
-            transaction
+        elizaLogger.info("Signing and submitting transaction");
+
+        // Sign and submit the transaction
+        const committedTxHash = await aptosClient.signAndSubmitTransaction({
+            signer: account,
+            transaction: tx
         });
 
+        elizaLogger.info(`Transaction submitted with hash: ${committedTxHash.hash}`);
+
+        // Wait for transaction to be processed
         const signedTransaction = await aptosClient.waitForTransaction({
-            transactionHash: committedTransactionHash,
+            transactionHash: committedTxHash.hash
         });
 
         if (!signedTransaction.success) {
-            elizaLogger.error("Joule reward claiming failed", signedTransaction);
-            throw new Error("Joule reward claiming failed");
+            elizaLogger.error("Transaction failed:", signedTransaction);
+            throw new Error("Claim rewards failed");
         }
 
+        elizaLogger.info("Successfully claimed rewards");
         return signedTransaction.hash;
     } catch (error) {
         if (error instanceof Error) {

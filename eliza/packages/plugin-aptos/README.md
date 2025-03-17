@@ -32,14 +32,16 @@ APTOS_NETWORK=<"mainnet" | "testnet">
 - Account and module information
 
 ### Protocol Integrations
-- Joule Finance: Deposit, borrow, and lending operations
-- Amnis Finance: Staking and yield farming
+- Joule Finance: Lending, borrowing, withdrawal, repayment and position checking with Move Agent Kit
+- Amnis Finance: APT staking and unstaking operations with Move Agent Kit
 - Thala Labs: Swapping, liquidity provision, and DEX operations
 - Liquidswap: Swapping, liquidity provision, and pool creation
+- Merkle Trade: Position management, market orders, and limit orders
+- Aries Protocol: User profile management, lending, borrowing, repayment, and withdrawal
 
 ## Move Agent Kit Integration
 
-The Move Agent Kit provides a comprehensive set of tools for interacting with the Aptos blockchain and its DeFi ecosystem. This plugin implements many of the features from the Move Agent Kit.
+The Move Agent Kit provides a comprehensive set of tools for interacting with the Aptos blockchain and its DeFi ecosystem. This plugin implements many of the features from the Move Agent Kit, ensuring reliable blockchain operations with production-ready code.
 
 ## Testing Guide
 
@@ -87,7 +89,7 @@ Show me the modules for account 0x39a77791f641bd4e16a7f1774e5d5df5d38c03e4843d31
 
 #### Joule Finance
 ```
-Deposit 0.001 APT on Joule
+Lend 0.001 APT on Joule
 Borrow 0.001 APT from Joule
 Repay 0.001 APT loan on Joule
 Withdraw 0.001 APT from Joule
@@ -117,18 +119,28 @@ Create a new Liquidswap pool with 100 USDC and 100 USDT
 #### Thala Labs
 ```
 Swap 1 APT for USDC on Thala
-Add liquidity to Thala APT/USDC pool
-Check my Thala LP positions
-Remove liquidity from Thala
-What's the current APT/USDC exchange rate on Thala?
+Add liquidity with 0.1 APT and 1 USDC to Thala pool
+Remove liquidity from Thala APT/USDC pool
+Stake 1 APT on Thala
+Unstake 0.5 APT from Thala
 ```
 
 #### Merkle Trade
 ```
-Execute a Limit Order to buy APT at $5 price using USDC on Merkle Trade
+Show my positions on Merkle Trade
+Place a limit order to buy 10 APT at $5 on Merkle Trade
+Place a market order to sell 5 APT on Merkle Trade
+Close my APT/USDC position on Merkle Trade
 ```
 
-
+#### Aries Protocol
+```
+Create a profile on Aries Protocol with name 'Trading Account'
+Lend 10 APT on Aries Protocol
+Borrow 5 USDC from Aries Protocol
+Repay 2 USDC loan on Aries Protocol
+Withdraw 5 APT from Aries Protocol
+```
 
 ## Implemented Actions
 
@@ -188,16 +200,16 @@ Repays borrowed tokens on Joule Finance.
 Withdraws tokens from Joule Finance.
 
 #### JOULE_CLAIM_REWARD
-Claims rewards from Joule Finance.
+Claims rewards from Joule Finance using the Move Agent Kit approach.
 
 #### JOULE_USER_POSITION
-Retrieves a user's position for a specific token on Joule Finance.
+Retrieves a user's position for a specific token on Joule Finance, including supply and borrow data.
 
 #### JOULE_USER_ALL_POSITIONS
-Retrieves all of a user's positions on Joule Finance.
+Retrieves all of a user's positions on Joule Finance across multiple tokens.
 
 #### JOULE_POOL_DETAIL
-Gets detailed information about a specific pool on Joule Finance.
+Gets detailed information about a specific pool on Joule Finance, including APY rates and utilization.
 
 #### JOULE_ALL_POOLS
 Lists all available pools on Joule Finance.
@@ -240,6 +252,43 @@ Adds liquidity to Thala pools.
 
 #### THALA_REMOVE_LIQUIDITY
 Removes liquidity from Thala pools.
+
+#### THALA_STAKE
+Stakes tokens on Thala Protocol.
+
+#### THALA_UNSTAKE
+Unstakes tokens from Thala Protocol.
+
+### Merkle Trade Actions
+
+#### MERKLE_GET_POSITIONS
+Retrieves a user's current trading positions on Merkle Trade.
+
+#### MERKLE_PLACE_LIMIT_ORDER
+Places a limit order on Merkle Trade at a specified price.
+
+#### MERKLE_PLACE_MARKET_ORDER
+Places a market order on Merkle Trade at the current market price.
+
+#### MERKLE_CLOSE_POSITION
+Closes an existing trading position on Merkle Trade.
+
+### Aries Protocol Actions
+
+#### ARIES_CREATE_PROFILE
+Creates a user profile on Aries Protocol, required for using other Aries features.
+
+#### ARIES_LEND
+Lends tokens to the Aries Protocol lending pool to earn interest.
+
+#### ARIES_BORROW
+Borrows tokens from Aries Protocol against collateral.
+
+#### ARIES_REPAY
+Repays borrowed tokens to Aries Protocol.
+
+#### ARIES_WITHDRAW
+Withdraws lent tokens from Aries Protocol.
 
 ## Development
 

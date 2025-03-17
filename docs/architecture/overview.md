@@ -80,9 +80,12 @@ The DeFi Agent handles all on-chain operations on the Aptos blockchain, leveragi
 
 **Key Responsibilities:**
 - Execute token transfers
-- Perform swaps on DEXs (primarily Thala)
-- Manage lending positions (Joule Finance - implemented: deposit, borrow, repay, withdraw)
-- Handle staking operations (primarily Amnis)
+- Perform swaps on DEXs (Liquidswap, Thala)
+- Manage lending positions on Joule Finance (deposit, borrow, repay, withdraw, claim rewards)
+- View detailed position information and pool statistics
+- Handle staking operations on Amnis Finance (stake and unstake APT)
+- Execute trading operations on Merkle Trade (limit orders, market orders, position management)
+- Manage lending and borrowing on Aries Protocol (profile creation, lending, borrowing, repayment)
 - Monitor transaction status
 
 **Implementation:**
@@ -124,11 +127,13 @@ ElizaOS serves as the foundation for all specialized agents, providing:
 ### Move Agent Kit
 
 Move Agent Kit is the core integration for blockchain interactions, offering:
-- Support for multiple Aptos protocols
+- Production-ready implementation for multiple Aptos protocols
 - Token operations (transfer, mint, burn)
 - DEX operations (swaps, liquidity)
-- Lending operations (borrow, repay)
+- Lending operations (deposit, borrow, repay, withdraw, position viewing)
 - Staking operations
+- Trading operations (orders, position management)
+- Comprehensive protocol-specific implementations
 
 ### n8n
 

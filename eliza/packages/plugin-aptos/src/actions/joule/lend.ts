@@ -25,10 +25,17 @@ import {
     AccountAddress
 } from "@aptos-labs/ts-sdk";
 import { validateAptosConfig } from "../../enviroment";
-import { normalizeTokenSymbol } from "../../utils/token-utils";
+import {
+    normalizeTokenSymbol,
+    isFungibleAsset as isTokenFungibleAsset,
+    getFungibleAssetAddress
+} from "../../utils/token-utils";
 
 // Joule Finance contract address
 const JOULE_CONTRACT_ADDRESS = "0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6";
+
+// USDC Fungible Asset Address from successful transaction
+const USDC_FUNGIBLE_ASSET_ADDRESS = "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b";
 
 // APT token address
 const APT_TOKEN_ADDRESS = "0x1::aptos_coin::AptosCoin";
@@ -61,7 +68,7 @@ Example response:
 {
     "amount": "1000",
     "tokenType": "0x1::aptos_coin::AptosCoin",
-    "positionId": "123456",
+    "positionId": "1",
     "newPosition": false,
     "isFungibleAsset": false
 }
@@ -72,8 +79,8 @@ Example response:
 Given the recent messages, extract the following information about the requested Joule Finance lending operation:
 - Amount to lend
 - Token type to lend (e.g., "APT", "USDC", "USDT", "BTC", "ETH" or a full address like "0x1::aptos_coin::AptosCoin")
-- Position ID (if specified, otherwise null)
-- Whether to create a new position (if specified, otherwise true)
+- Position ID (if specified, otherwise "1")
+- Whether to create a new position (if specified, otherwise false)
 - Whether the token is a fungible asset (if specified, otherwise false)
 
 Respond with a JSON markdown block containing only the extracted values.`;
@@ -113,6 +120,22 @@ function extractAddressPart(tokenType: string): string {
 }
 
 /**
+ * Updates Token maps with correct fungible asset addresses based on transaction data
+ */
+function getCorrectFungibleAssetAddress(tokenType: string): string {
+    const normalizedType = normalizeTokenSymbol(tokenType);
+
+    // Use transaction data for known tokens
+    if (normalizedType.toLowerCase().includes("usdc")) {
+        elizaLogger.info("Using exact USDC fungible asset address from transaction data");
+        return USDC_FUNGIBLE_ASSET_ADDRESS;
+    }
+
+    // Default extraction logic for other tokens
+    return extractAddressPart(normalizedType);
+}
+
+/**
  * Lends tokens on Joule Finance
  */
 async function lendToken(
@@ -148,7 +171,10 @@ async function lendToken(
 
         if (isFungibleAsset) {
             // For fungible assets
-            const tokenAddress = extractAddressPart(normalizedTokenType);
+            elizaLogger.info("Using fungible asset method for lending");
+
+            // Use the utility function to get the correct address format
+            const tokenAddress = getFungibleAssetAddress(normalizedTokenType);
             elizaLogger.info(`Using token address for fungible asset: ${tokenAddress}`);
 
             txData = {
@@ -222,6 +248,15 @@ async function lendToken(
                             if ('position_id' in eventData && eventData.position_id !== undefined) {
                                 resultPositionId = String(eventData.position_id);
                                 elizaLogger.info(`Extracted position ID from events: ${resultPositionId}`);
+
+                                // Store this position ID in memory for future use
+                                // This is especially important when lending USDC
+                                if (tokenType.toLowerCase().includes("usdc")) {
+                                    elizaLogger.info(`Storing USDC position ID ${resultPositionId} for future reference`);
+                                    // We'd normally store this in a database, but for now we'll log it prominently
+                                    elizaLogger.warn(`IMPORTANT: USDC position ID is ${resultPositionId} - use this ID for future USDC operations`);
+                                }
+
                                 break;
                             }
                         }
@@ -334,18 +369,18 @@ export default {
             const account = Account.fromPrivateKey({ privateKey });
 
             // Set defaults for optional parameters and ensure proper types
-            // Based on the successful transaction, we should use "1" as the default position ID
+            // Prefer using an existing position by default instead of creating a new one
             let positionId: string | null = null;
             if (content.positionId && content.positionId !== "null" && content.positionId !== null) {
                 positionId = content.positionId;
-            } else if (!content.newPosition || content.newPosition === "false") {
-                // If not creating a new position, we need a valid position ID
-                positionId = "1"; // Default to position ID 1 based on the successful transaction
+            } else {
+                // Default to position ID 1 when no position is specified
+                positionId = "1";
             }
             elizaLogger.info(`Using position ID: ${positionId}`);
 
-            // Use newPosition from content or default to true
-            const newPosition = content.newPosition === undefined ? true : toBoolean(content.newPosition);
+            // Default to false (use existing position) unless explicitly set to true
+            const newPosition = content.newPosition === undefined ? false : toBoolean(content.newPosition);
             elizaLogger.info(`Using newPosition: ${newPosition} (${typeof newPosition})`);
 
             // For APT, we should always use standard coin mode, not fungible asset mode

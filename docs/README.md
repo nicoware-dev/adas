@@ -70,12 +70,16 @@ ADAS is currently in alpha development. The core functionality is implemented, i
 - Analytics integrations (CoinGecko, DeFiLlama, GeckoTerminal)
 - Liquidswap token swapping
 - Joule Finance lending operations (deposit, borrow, repay, withdraw)
+- Joule Finance position management and analysis (claim rewards, view positions, view pool details)
+- Amnis Finance staking operations (stake and unstake APT)
+- Thala Labs DEX operations (swapping, liquidity provision, staking)
+- Merkle Trade position management and trading (limit orders, market orders)
+- Aries Protocol lending platform integration (profile creation, lending, borrowing, repayment)
 
 In progress features include:
-- Amnis Finance staking operations
-- Thala Labs DEX operations
-- Merkle Trade limit orders
 - Web client development
+- Advanced analytics integrations
+- Additional protocol support
 
 See the [Implementation Status](./architecture/implementation-status.md) document for detailed information on the current state of development.
 

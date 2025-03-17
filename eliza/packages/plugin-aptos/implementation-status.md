@@ -64,6 +64,27 @@ This document provides an overview of the implementation status for all actions 
 | THALA_SWAP | ✅ | Swaps tokens on Thala DEX |
 | THALA_ADD_LIQUIDITY | ✅ | Adds liquidity to Thala pools |
 | THALA_REMOVE_LIQUIDITY | ✅ | Removes liquidity from Thala pools |
+| THALA_STAKE | ✅ | Stakes tokens on Thala Protocol |
+| THALA_UNSTAKE | ✅ | Unstakes tokens from Thala Protocol |
+
+## Merkle Trade Actions
+
+| Action | Status | Notes |
+|--------|--------|-------|
+| MERKLE_GET_POSITIONS | ✅ | Retrieves user's trading positions |
+| MERKLE_PLACE_LIMIT_ORDER | ✅ | Places a limit order on Merkle Trade |
+| MERKLE_PLACE_MARKET_ORDER | ✅ | Places a market order on Merkle Trade |
+| MERKLE_CLOSE_POSITION | ✅ | Closes an existing trading position |
+
+## Aries Protocol Actions
+
+| Action | Status | Notes |
+|--------|--------|-------|
+| ARIES_CREATE_PROFILE | ✅ | Creates a user profile on Aries Protocol |
+| ARIES_LEND | ✅ | Lends tokens on Aries Protocol |
+| ARIES_BORROW | ✅ | Borrows tokens from Aries Protocol |
+| ARIES_REPAY | ✅ | Repays borrowed tokens on Aries Protocol |
+| ARIES_WITHDRAW | ✅ | Withdraws lent tokens from Aries Protocol |
 
 ## Known Issues and Limitations
 
@@ -87,6 +108,16 @@ This document provides an overview of the implementation status for all actions 
 - Some operations may be limited by protocol constraints
 - Token pair support may vary
 
+### Merkle Trade
+- Position management requires valid position IDs
+- Order execution depends on market conditions
+- Limited error handling for complex trading scenarios
+
+### Aries Protocol
+- Profile creation is required before using other features
+- Health factor monitoring not yet implemented
+- USDC support is in place but requires testing
+
 ## Next Steps
 
 1. Complete thorough testing of all implemented actions
@@ -102,3 +133,4 @@ This document provides an overview of the implementation status for all actions 
 3. Protocol interactions (Joule, Amnis, Liquidswap, Thala)
 4. NFT operations
 5. Account and transaction information 
+6. New protocol implementations (Merkle Trade, Aries Protocol) 

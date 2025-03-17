@@ -56,17 +56,15 @@ Use this checklist to track your testing progress:
 - [X] JOULE_BORROW - Borrow tokens
 - [X] JOULE_REPAY - Repay loan
 - [X] JOULE_WITHDRAW - Withdraw tokens
-- [ ] JOULE_CLAIM_REWARD - Claim rewards
-- [ ] JOULE_USER_POSITION - Check position
-- [ ] JOULE_USER_ALL_POSITIONS - Check all positions
-- [ ] JOULE_POOL_DETAIL - Get pool details
+- [X] JOULE_CLAIM_REWARD - Claim rewards
+- [X] JOULE_USER_POSITION - Check position
+- [X] JOULE_USER_ALL_POSITIONS - Check all positions
+- [X] JOULE_POOL_DETAIL - Get pool details
 - [ ] JOULE_ALL_POOLS - List all pools
 
 #### Amnis Finance
-- [ ] AMNIS_STAKE - Stake tokens
-- [ ] AMNIS_UNSTAKE - Unstake tokens
-- [ ] AMNIS_CHECK_REWARDS - Check rewards
-- [ ] AMNIS_CHECK_APY - Check APY
+- [X] AMNIS_STAKE - Stake tokens
+- [X] AMNIS_UNSTAKE - Unstake tokens
 
 #### Liquidswap
 - [X] LIQUIDSWAP_SWAP - Swap tokens
@@ -78,12 +76,21 @@ Use this checklist to track your testing progress:
 - [ ] THALA_SWAP - Swap tokens
 - [ ] THALA_ADD_LIQUIDITY - Add liquidity
 - [ ] THALA_REMOVE_LIQUIDITY - Remove liquidity
+- [ ] THALA_STAKE - Stake tokens
+- [ ] THALA_UNSTAKE - Unstake tokens
 
+#### Merkle Trade
+- [ ] MERKLE_GET_POSITIONS - Get positions
+- [ ] MERKLE_PLACE_LIMIT_ORDER - Place limit order
+- [ ] MERKLE_PLACE_MARKET_ORDER - Place market order
+- [ ] MERKLE_CLOSE_POSITION - Close position
 
-#### Merlke Trade
-- [ ] MERKLE_LIMIT_ORDER - Execute Limit Order on Merkle Trade
-
-
+#### Aries Protocol
+- [ ] ARIES_CREATE_PROFILE - Create profile
+- [ ] ARIES_LEND - Lend tokens
+- [ ] ARIES_BORROW - Borrow tokens
+- [ ] ARIES_REPAY - Repay loan
+- [ ] ARIES_WITHDRAW - Withdraw tokens
 
 ## Core Aptos Actions
 
@@ -142,8 +149,6 @@ Use this checklist to track your testing progress:
 |--------|-------------|----------------|
 | AMNIS_STAKE | `Stake 0.001 APT on Amnis` | Confirmation of staking with transaction hash |
 | AMNIS_UNSTAKE | `Unstake 0.001 APT from Amnis` | Confirmation of unstaking with transaction hash |
-| AMNIS_CHECK_REWARDS | `Check my staking rewards on Amnis Finance` | Details of staking rewards |
-| AMNIS_CHECK_APY | `What's the current APT staking APY on Amnis?` | Current APY information |
 
 ### Liquidswap
 
@@ -159,8 +164,29 @@ Use this checklist to track your testing progress:
 | Action | Test Prompt | Expected Result |
 |--------|-------------|----------------|
 | THALA_SWAP | `Swap 1 APT for USDC on Thala` | Confirmation of swap with transaction hash |
-| THALA_ADD_LIQUIDITY | `Add liquidity to Thala APT/USDC pool` | Confirmation of adding liquidity with transaction hash |
-| THALA_REMOVE_LIQUIDITY | `Remove liquidity from Thala` | Confirmation of removing liquidity with transaction hash |
+| THALA_ADD_LIQUIDITY | `Add liquidity with 0.1 APT and 1 USDC to Thala pool` | Confirmation of adding liquidity with transaction hash |
+| THALA_REMOVE_LIQUIDITY | `Remove liquidity from Thala APT/USDC pool` | Confirmation of removing liquidity with transaction hash |
+| THALA_STAKE | `Stake 1 APT on Thala` | Confirmation of staking with transaction hash |
+| THALA_UNSTAKE | `Unstake 0.5 APT from Thala` | Confirmation of unstaking with transaction hash |
+
+### Merkle Trade
+
+| Action | Test Prompt | Expected Result |
+|--------|-------------|----------------|
+| MERKLE_GET_POSITIONS | `Show my positions on Merkle Trade` | List of current trading positions |
+| MERKLE_PLACE_LIMIT_ORDER | `Place a limit order to buy 10 APT at $5 on Merkle Trade` | Confirmation of limit order placement with transaction hash |
+| MERKLE_PLACE_MARKET_ORDER | `Place a market order to sell 5 APT on Merkle Trade` | Confirmation of market order placement with transaction hash |
+| MERKLE_CLOSE_POSITION | `Close my APT/USDC position on Merkle Trade` | Confirmation of position closure with transaction hash |
+
+### Aries Protocol
+
+| Action | Test Prompt | Expected Result |
+|--------|-------------|----------------|
+| ARIES_CREATE_PROFILE | `Create a profile on Aries Protocol with name 'Trading Account'` | Confirmation of profile creation with transaction hash |
+| ARIES_LEND | `Lend 10 APT on Aries Protocol` | Confirmation of lending with transaction hash |
+| ARIES_BORROW | `Borrow 5 USDC from Aries Protocol` | Confirmation of borrowing with transaction hash |
+| ARIES_REPAY | `Repay 2 USDC loan on Aries Protocol` | Confirmation of loan repayment with transaction hash |
+| ARIES_WITHDRAW | `Withdraw 5 APT from Aries Protocol` | Confirmation of withdrawal with transaction hash |
 
 ## Testing Results Log
 

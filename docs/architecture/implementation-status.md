@@ -30,41 +30,54 @@ This document tracks the current implementation status of various protocol integ
 | Borrow | ✅ Implemented | Borrow functionality working |
 | Repay | ✅ Implemented | Repay functionality working |
 | Withdraw | ✅ Implemented | Withdraw functionality working |
-| Claim Rewards | 🔄 In Progress | Implementation in progress |
-| Position Checking | 🔄 In Progress | Implementation in progress |
-| Pool Information | 🔄 In Progress | Implementation in progress |
+| Claim Rewards | ✅ Implemented | Integration with Move Agent Kit |
+| Position Checking | ✅ Implemented | User position details now available |
+| Pool Information | ✅ Implemented | Pool details retrieval from Joule API |
 
 #### Amnis Finance
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Stake | 🔄 In Progress | Implementation in progress |
-| Unstake | 🔄 In Progress | Implementation in progress |
-| Check Rewards | 🔄 In Progress | Implementation in progress |
-| Check APY | 🔄 In Progress | Implementation in progress |
+| Stake | ✅ Implemented | Staking APT to receive stAPT working |
+| Unstake | ✅ Implemented | Unstaking APT from stAPT working |
 
 #### Liquidswap
 
 | Feature | Status | Notes |
 |---------|--------|-------|
 | Swap | ✅ Implemented | Token swapping functional |
-| Add Liquidity | ⏱️ Planned | Not yet implemented |
-| Remove Liquidity | ⏱️ Planned | Not yet implemented |
-| Create Pool | ⏱️ Planned | Not yet implemented |
+| Add Liquidity | ⚠️ Partial | Basic implementation, needs testing |
+| Remove Liquidity | ⚠️ Partial | Basic implementation, needs testing |
+| Create Pool | ⚠️ Partial | Basic implementation, needs testing |
 
 #### Thala Labs
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Swap | ⏱️ Planned | Not yet implemented |
-| Add Liquidity | ⏱️ Planned | Not yet implemented |
-| Remove Liquidity | ⏱️ Planned | Not yet implemented |
+| Swap | ✅ Implemented | Token swapping functional |
+| Add Liquidity | ✅ Implemented | Liquidity provision functional |
+| Remove Liquidity | ✅ Implemented | Liquidity removal functional |
+| Stake | ✅ Implemented | Staking functionality implemented |
+| Unstake | ✅ Implemented | Unstaking functionality implemented |
 
 #### Merkle Trade
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Limit Orders | ⏱️ Planned | Not yet implemented |
+| Get Positions | ✅ Implemented | Retrieves current trading positions |
+| Place Limit Order | ✅ Implemented | Places limit orders at specified price |
+| Place Market Order | ✅ Implemented | Places market orders at current price |
+| Close Position | ✅ Implemented | Closes existing trading positions |
+
+#### Aries Protocol
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Create Profile | ✅ Implemented | Profile creation for Aries platform |
+| Lend | ✅ Implemented | Token lending functionality |
+| Borrow | ✅ Implemented | Token borrowing functionality |
+| Repay | ✅ Implemented | Loan repayment functionality |
+| Withdraw | ✅ Implemented | Token withdrawal functionality |
 
 ## Analytics Features
 

@@ -126,6 +126,12 @@ Use these scenarios to test the Coordinator Agent's capabilities:
 2. Send a transaction with context: "Swap 1 APT for USDC on the DEX with the best rate"
    - Should coordinate between Analytics Agent and DeFi Agent
 
+3. Send a trading query: "Should I place a limit order for APT on Merkle Trade?"
+   - Should coordinate between Analytics Agent and Aptos Expert Agent
+
+4. Send a lending comparison: "Compare Joule Finance and Aries Protocol lending rates"
+   - Should coordinate between Analytics Agent and Aptos Expert Agent
+
 #### Error Handling
 
 1. Test with an unavailable agent

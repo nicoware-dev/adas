@@ -61,32 +61,148 @@ async function getJouleUserAllPositions(
     address: string
 ): Promise<TokenPosition[]> {
     try {
+        elizaLogger.info(`Getting all Joule positions for address ${address}`);
+
+        // Convert address string to proper AccountAddress format
         const accountAddress = AccountAddress.fromString(address);
 
-        // In a real implementation, we would query the Joule Finance contract
-        // to get all of the user's positions. For simplicity, we're returning placeholders.
+        // Get all account resources
+        const resources = await aptosClient.getAccountResources({
+            accountAddress,
+        });
 
-        // This would involve getting resources from the account and parsing them
-        // to extract the user's positions for all tokens.
+        // Find Joule position resources
+        const positionResources = resources.filter(r =>
+            r.type.includes("0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6::pool::Position")
+        );
 
-        return [
-            {
-                token: "0x1::aptos_coin::AptosCoin",
-                supplied: "10",
-                borrowed: "0",
-                collateral: true,
-                supplyApy: "2.5",
-                borrowApy: "5.0"
-            },
-            {
-                token: "0x1::usdc::USDC",
-                supplied: "100",
-                borrowed: "50",
-                collateral: false,
-                supplyApy: "3.0",
-                borrowApy: "6.0"
+        elizaLogger.info(`Found ${positionResources.length} Joule positions`);
+
+        // If no positions found, return empty array
+        if (positionResources.length === 0) {
+            return [];
+        }
+
+        // Get pool data for APY information
+        let poolsData: Record<string, any>[] = [];
+        try {
+            // Fetch pool data from Joule API (same as in pool-detail.ts)
+            const poolResponse = await fetch("https://price-api.joule.finance/api/market");
+            const poolInfo = await poolResponse.json();
+
+            if (poolInfo.data && Array.isArray(poolInfo.data)) {
+                poolsData = poolInfo.data;
+                elizaLogger.info(`Fetched data for ${poolsData.length} pools from Joule API`);
             }
-        ];
+        } catch (err) {
+            elizaLogger.warn(`Failed to fetch pool data: ${err}`);
+            // Continue with empty pools data
+        }
+
+        // Process all positions
+        const positions: TokenPosition[] = [];
+
+        for (const resource of positionResources) {
+            const positionData = resource.data as Record<string, any>;
+            elizaLogger.info(`Processing position ${positionData.id}`);
+
+            // Process coin balances (for APT and other coins)
+            if (positionData.coin_balances && Array.isArray(positionData.coin_balances)) {
+                for (const coinBalance of positionData.coin_balances) {
+                    if (!coinBalance.metadata) continue;
+
+                    const tokenSymbol = coinBalance.metadata.symbol || 'Unknown';
+                    const tokenName = coinBalance.metadata.name || 'Unknown';
+                    const tokenType = coinBalance.metadata.token_type || `Unknown::${tokenSymbol}`;
+
+                    elizaLogger.info(`Found ${tokenSymbol} in position ${positionData.id}`);
+
+                    // Get APY rates for this token
+                    const poolInfo = poolsData.find(p =>
+                        (p.asset.symbol && p.asset.symbol.toLowerCase() === tokenSymbol.toLowerCase()) ||
+                        (p.asset.assetName && p.asset.assetName.toLowerCase().includes(tokenSymbol.toLowerCase()))
+                    );
+
+                    const supplyApy = poolInfo?.depositApy ? String(poolInfo.depositApy) : "0";
+                    const borrowApy = poolInfo?.borrowApy ? String(poolInfo.borrowApy) : "0";
+
+                    // Check if there's a borrowed amount
+                    let borrowedAmount = "0";
+                    if (positionData.borrowings) {
+                        const borrowing = positionData.borrowings.find(
+                            (b: any) => b.metadata?.symbol === tokenSymbol
+                        );
+                        if (borrowing) {
+                            borrowedAmount = String(borrowing.amount || 0);
+                        }
+                    }
+
+                    // Apply decimal normalization
+                    const decimals = coinBalance.metadata.decimals || 8;
+                    const normalizedSupplied = (Number(coinBalance.amount || 0) / (10 ** decimals)).toFixed(decimals);
+                    const normalizedBorrowed = (Number(borrowedAmount) / (10 ** decimals)).toFixed(decimals);
+
+                    positions.push({
+                        token: tokenType,
+                        supplied: normalizedSupplied,
+                        borrowed: normalizedBorrowed,
+                        collateral: Boolean(coinBalance.is_collateral),
+                        supplyApy,
+                        borrowApy
+                    });
+                }
+            }
+
+            // Process fungible asset balances (for USDC, etc.)
+            if (positionData.fungible_asset_balances && Array.isArray(positionData.fungible_asset_balances)) {
+                for (const faBalance of positionData.fungible_asset_balances) {
+                    if (!faBalance.metadata) continue;
+
+                    const tokenSymbol = faBalance.metadata.symbol || 'Unknown';
+                    const tokenName = faBalance.metadata.name || 'Unknown';
+                    const tokenType = faBalance.metadata.token_type || `Unknown::${tokenSymbol}`;
+
+                    elizaLogger.info(`Found ${tokenSymbol} (fungible asset) in position ${positionData.id}`);
+
+                    // Get APY rates for this token
+                    const poolInfo = poolsData.find(p =>
+                        (p.asset.symbol && p.asset.symbol.toLowerCase() === tokenSymbol.toLowerCase()) ||
+                        (p.asset.assetName && p.asset.assetName.toLowerCase().includes(tokenSymbol.toLowerCase()))
+                    );
+
+                    const supplyApy = poolInfo?.depositApy ? String(poolInfo.depositApy) : "0";
+                    const borrowApy = poolInfo?.borrowApy ? String(poolInfo.borrowApy) : "0";
+
+                    // Check if there's a borrowed amount
+                    let borrowedAmount = "0";
+                    if (positionData.borrowings) {
+                        const borrowing = positionData.borrowings.find(
+                            (b: any) => b.metadata?.symbol === tokenSymbol
+                        );
+                        if (borrowing) {
+                            borrowedAmount = String(borrowing.amount || 0);
+                        }
+                    }
+
+                    // Apply decimal normalization
+                    const decimals = faBalance.metadata.decimals || 8;
+                    const normalizedSupplied = (Number(faBalance.amount || 0) / (10 ** decimals)).toFixed(decimals);
+                    const normalizedBorrowed = (Number(borrowedAmount) / (10 ** decimals)).toFixed(decimals);
+
+                    positions.push({
+                        token: tokenType,
+                        supplied: normalizedSupplied,
+                        borrowed: normalizedBorrowed,
+                        collateral: Boolean(faBalance.is_collateral),
+                        supplyApy,
+                        borrowApy
+                    });
+                }
+            }
+        }
+
+        elizaLogger.info(`Processed ${positions.length} token positions across ${positionResources.length} Joule positions`);
+        return positions;
     } catch (error) {
         if (error instanceof Error) {
             throw new Error(`Failed to get Joule user positions: ${error.message}`);

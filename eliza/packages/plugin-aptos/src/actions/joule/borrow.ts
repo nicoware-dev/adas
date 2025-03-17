@@ -23,7 +23,12 @@ import {
 } from "@aptos-labs/ts-sdk";
 import axios from "axios";
 import { validateAptosConfig } from "../../enviroment";
-import { normalizeTokenSymbol } from "../../utils/token-utils";
+import {
+    normalizeTokenSymbol,
+    isFungibleAsset as isTokenFungibleAsset,
+    JOULE_TOKEN_ADDRESSES,
+    getFungibleAssetAddress
+} from "../../utils/token-utils";
 import { PYTH_PRICE_FEEDS, getPythPriceUpdateData } from "../../utils/pyth-utils";
 
 // Debug line to verify the module is loaded correctly
@@ -31,6 +36,9 @@ elizaLogger.info("Joule Borrow module loaded with Pyth SDK integration");
 
 // Joule Finance contract address
 const JOULE_CONTRACT_ADDRESS = "0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6";
+
+// USDC Fungible Asset Address from successful transaction
+const USDC_FUNGIBLE_ASSET_ADDRESS = "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b";
 
 // Pyth Hermes endpoint (used in Move Agent Kit)
 const PYTH_HERMES_ENDPOINT = "https://hermes.pyth.network";
@@ -55,6 +63,30 @@ function extractAddressPart(tokenType: string): string {
     }
 
     // Default to APT token address if we can't extract
+    return "0x1";
+}
+
+/**
+ * More thorough extraction of token address from a token type string
+ * Specifically handles fungible assets by ensuring we only get the address part
+ */
+function extractFungibleAssetAddress(tokenType: string): string {
+    // If it's already just an address, return it
+    if (tokenType.match(/^0x[0-9a-fA-F]+$/)) {
+        return tokenType;
+    }
+
+    // If it's a full module path, extract the address part
+    if (tokenType.includes("::")) {
+        const parts = tokenType.split("::");
+        if (parts.length > 0) {
+            // Just return the address part (0x...)
+            return parts[0];
+        }
+    }
+
+    // Default to APT token address if we can't extract
+    elizaLogger.warn(`Could not extract address from token type: ${tokenType}, defaulting to 0x1`);
     return "0x1";
 }
 
@@ -95,7 +127,7 @@ Example response:
 Given the recent messages, extract the following information about the requested Joule Finance borrowing operation:
 - Amount to borrow
 - Token type to borrow (e.g., "APT", "USDC", "USDT", "BTC", "ETH" or a full address like "0x1::aptos_coin::AptosCoin")
-- Position ID (if specified, otherwise null)
+- Position ID (if specified, otherwise "1")
 - Whether the token is a fungible asset (if specified, otherwise false)
 
 Respond with a JSON markdown block containing only the extracted values.`;
@@ -131,6 +163,22 @@ async function fetchPythPriceUpdateData(): Promise<number[][]> {
 }
 
 /**
+ * Updates Token maps with correct fungible asset addresses based on transaction data
+ */
+function getCorrectFungibleAssetAddress(tokenType: string): string {
+    const normalizedType = normalizeTokenSymbol(tokenType);
+
+    // Use transaction data for known tokens
+    if (normalizedType.toLowerCase().includes("usdc")) {
+        elizaLogger.info("Using exact USDC fungible asset address from transaction data");
+        return USDC_FUNGIBLE_ASSET_ADDRESS;
+    }
+
+    // Default extraction logic for other tokens
+    return extractFungibleAssetAddress(normalizedType);
+}
+
+/**
  * Borrows tokens from Joule Finance
  */
 async function borrowToken(
@@ -139,15 +187,34 @@ async function borrowToken(
     amount: number,
     tokenType: string,
     positionId: string,
-    isFungibleAsset: boolean,
+    originalIsFungibleAsset: boolean,
     network: Network
 ): Promise<string> {
     try {
         elizaLogger.info(`Borrowing ${amount} of ${tokenType} from Joule Finance, Position ID: ${positionId}`);
 
-        // Normalize token type
+        // Normalize token type using our utility function
         const normalizedTokenType = normalizeTokenSymbol(tokenType);
         elizaLogger.info(`Normalized token type: ${normalizedTokenType}`);
+
+        // Get the token type from the normalized token (e.g., "USDC" from full address)
+        let tokenSymbol = tokenType.toUpperCase();
+        if (normalizedTokenType.includes("::")) {
+            const parts = normalizedTokenType.split("::");
+            tokenSymbol = parts[parts.length - 1].toUpperCase();
+        }
+        elizaLogger.info(`Token symbol: ${tokenSymbol}`);
+
+        // Determine if token should be treated as fungible asset based on our knowledge
+        // Use our utility function to determine the correct value
+        let isFungibleAsset = originalIsFungibleAsset;
+        const shouldBeFungibleAsset = isTokenFungibleAsset(normalizedTokenType);
+
+        // Only override if we have explicit knowledge
+        if (shouldBeFungibleAsset !== originalIsFungibleAsset) {
+            elizaLogger.info(`Overriding isFungibleAsset from ${originalIsFungibleAsset} to ${shouldBeFungibleAsset} based on token type`);
+            isFungibleAsset = shouldBeFungibleAsset;
+        }
 
         // Convert amount to a number with appropriate decimals
         // Most Aptos tokens use 8 decimals
@@ -173,12 +240,19 @@ async function borrowToken(
         if (isFungibleAsset) {
             // For fungible assets
             elizaLogger.info("Using fungible asset method for borrowing");
+
+            // Use the utility function to get the correct address format
+            const tokenAddress = getFungibleAssetAddress(normalizedTokenType);
+            elizaLogger.info(`Using token address for fungible asset: ${tokenAddress}`);
+
             txData = {
                 function: `${JOULE_CONTRACT_ADDRESS}::pool::borrow_fa`,
-                functionArguments: [effectivePositionId, normalizedTokenType, adjustedAmount, priceFeeds],
+                functionArguments: [effectivePositionId, tokenAddress, adjustedAmount, priceFeeds],
             };
+
+            elizaLogger.info(`Using fungible asset args: ${JSON.stringify(txData.functionArguments)}`);
         } else {
-            // For regular coins
+            // For regular coins like APT
             elizaLogger.info("Using coin standard method for borrowing");
             txData = {
                 function: `${JOULE_CONTRACT_ADDRESS}::pool::borrow`,
@@ -379,18 +453,12 @@ export default {
 
             elizaLogger.info(`Using position ID: ${positionId}`);
 
-            // For APT, we should always use standard coin mode, not fungible asset mode
-            let isFungibleAsset = content.isFungibleAsset === undefined ? false : toBoolean(content.isFungibleAsset);
+            // Determine if we should use fungible asset handling based on token type
+            const isFungibleAsset = content.isFungibleAsset === undefined
+                ? isTokenFungibleAsset(content.tokenType)
+                : toBoolean(content.isFungibleAsset);
 
-            // Override fungible asset flag for APT
-            if (content.tokenType.toLowerCase() === "apt" ||
-                content.tokenType.toLowerCase() === "aptos" ||
-                content.tokenType === "0x1::aptos_coin::AptosCoin") {
-                isFungibleAsset = false;
-                elizaLogger.info("Overriding isFungibleAsset to false for APT token");
-            }
-
-            elizaLogger.info(`Using isFungibleAsset: ${isFungibleAsset} (${typeof isFungibleAsset})`);
+            elizaLogger.info(`Initial isFungibleAsset: ${isFungibleAsset} (${typeof isFungibleAsset})`);
 
             // Convert amount to number
             const amount = Number(content.amount);

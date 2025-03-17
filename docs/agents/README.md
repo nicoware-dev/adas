@@ -10,7 +10,7 @@ ADAS employs a Multi-Agent System (MAS) architecture with specialized agents wor
 |-------|-------------|------------------|
 | [Coordinator Agent](./coordinator-agent.md) | Orchestration | Task delegation, conversation management, error handling |
 | [Analytics Agent](./analytics-agent.md) | Data Analysis | Price tracking, TVL analysis, market trends, portfolio analytics |
-| [DeFi Agent](./defi-agent.md) | Blockchain Operations | Token transfers, swaps, lending, staking, protocol interactions |
+| [DeFi Agent](./defi-agent.md) | Blockchain Operations | Token transfers, swaps, lending, staking, protocol interactions, trading |
 | [Aptos Expert Agent](./aptos-expert-agent.md) | Knowledge & Guidance | Protocol explanations, strategy recommendations, technical support |
 
 ## Agent Architecture
@@ -63,11 +63,21 @@ The Analytics Agent provides data analysis and insights about the Aptos ecosyste
 The DeFi Agent handles all on-chain operations on the Aptos blockchain.
 
 **Key Responsibilities:**
-- Execute token transfers
-- Perform swaps on DEXs
-- Manage lending positions
-- Handle staking operations
+- Execute token transfers and balance checks
+- Perform swaps on DEXs (Liquidswap, Thala)
+- Manage lending positions (Joule Finance, Aries Protocol)
+- Handle staking operations (Amnis Finance, Thala)
+- Execute trading operations (Merkle Trade)
 - Monitor transaction status
+- Create and manage tokens and NFTs
+
+**Protocols Supported:**
+- Joule Finance: Lending and borrowing
+- Amnis Finance: Staking
+- Liquidswap: Token swapping
+- Thala Labs: DEX operations and staking
+- Merkle Trade: Trading operations
+- Aries Protocol: Lending platform
 
 **Plugins:**
 - `@elizaos-plugins/plugin-aptos`

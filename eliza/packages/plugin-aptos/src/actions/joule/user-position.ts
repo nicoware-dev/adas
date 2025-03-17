@@ -62,20 +62,150 @@ async function getJouleUserPosition(
     borrowApy: string;
 }> {
     try {
+        elizaLogger.info(`Getting Joule position for ${token} for address ${address}`);
+
+        // Convert address string to proper AccountAddress format
         const accountAddress = AccountAddress.fromString(address);
 
-        // In a real implementation, we would query the Joule Finance contract
-        // to get the user's position. For simplicity, we're returning placeholders.
+        // First, we need to find all positions for this user
+        const resources = await aptosClient.getAccountResources({
+            accountAddress,
+        });
 
-        // This would involve getting resources from the account and parsing them
-        // to extract the user's position in the specified token.
+        // Find Joule position resources
+        const positionResources = resources.filter(r =>
+            r.type.includes("0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6::pool::Position")
+        );
+
+        elizaLogger.info(`Found ${positionResources.length} Joule positions`);
+
+        // If no positions found, return empty data
+        if (positionResources.length === 0) {
+            return {
+                supplied: "0",
+                borrowed: "0",
+                collateral: false,
+                supplyApy: "0",
+                borrowApy: "0"
+            };
+        }
+
+        // Look for the token in all positions
+        // We'll aggregate data across all positions if the same token is in multiple positions
+        let totalSupplied = 0;
+        let totalBorrowed = 0;
+        let isCollateral = false;
+
+        // Loop through positions to find data for this token
+        for (const resource of positionResources) {
+            const positionData = resource.data as Record<string, any>;
+            elizaLogger.info(`Checking position ${JSON.stringify(positionData.id)}`);
+
+            // Check if this token exists in this position
+            // For coins (APT)
+            if (positionData.coin_balances) {
+                for (const coinBalance of positionData.coin_balances) {
+                    // Check if this is the token we're looking for
+                    if (coinBalance.metadata &&
+                        (coinBalance.metadata.symbol?.toLowerCase() === token.toLowerCase() ||
+                         coinBalance.metadata.name?.toLowerCase().includes(token.toLowerCase()))) {
+
+                        elizaLogger.info(`Found ${token} in coin balances with amount ${coinBalance.amount}`);
+
+                        // Add to totals
+                        if (coinBalance.amount) {
+                            totalSupplied += Number(coinBalance.amount);
+                        }
+
+                        // Check if used as collateral
+                        if (coinBalance.is_collateral) {
+                            isCollateral = true;
+                        }
+                    }
+                }
+            }
+
+            // For fungible assets (USDC, etc.)
+            if (positionData.fungible_asset_balances) {
+                for (const faBalance of positionData.fungible_asset_balances) {
+                    // Check if this is the token we're looking for
+                    if (faBalance.metadata &&
+                        (faBalance.metadata.symbol?.toLowerCase() === token.toLowerCase() ||
+                         faBalance.metadata.name?.toLowerCase().includes(token.toLowerCase()))) {
+
+                        elizaLogger.info(`Found ${token} in fungible asset balances with amount ${faBalance.amount}`);
+
+                        // Add to totals
+                        if (faBalance.amount) {
+                            totalSupplied += Number(faBalance.amount);
+                        }
+
+                        // Check if used as collateral
+                        if (faBalance.is_collateral) {
+                            isCollateral = true;
+                        }
+                    }
+                }
+            }
+
+            // Check borrowings
+            if (positionData.borrowings) {
+                for (const borrowing of positionData.borrowings) {
+                    // Check if this is the token we're looking for
+                    if (borrowing.metadata &&
+                        (borrowing.metadata.symbol?.toLowerCase() === token.toLowerCase() ||
+                         borrowing.metadata.name?.toLowerCase().includes(token.toLowerCase()))) {
+
+                        elizaLogger.info(`Found ${token} in borrowings with amount ${borrowing.amount}`);
+
+                        // Add to totals
+                        if (borrowing.amount) {
+                            totalBorrowed += Number(borrowing.amount);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Get APY rates from pool API
+        // This is how the Move Agent Kit does it
+        let supplyApy = "0";
+        let borrowApy = "0";
+
+        try {
+            // Fetch pool data from Joule API
+            const poolResponse = await fetch("https://price-api.joule.finance/api/market");
+            const poolData = await poolResponse.json();
+
+            // Find the pool for this token
+            const poolInfo = poolData.data.find((pool: Record<string, any>) =>
+                pool.asset.assetName.toLowerCase().includes(token.toLowerCase()) ||
+                pool.asset.symbol?.toLowerCase() === token.toLowerCase()
+            );
+
+            if (poolInfo) {
+                supplyApy = poolInfo.depositApy ? String(poolInfo.depositApy) : "0";
+                borrowApy = poolInfo.borrowApy ? String(poolInfo.borrowApy) : "0";
+                elizaLogger.info(`Found APY rates for ${token}: supply ${supplyApy}%, borrow ${borrowApy}%`);
+            }
+        } catch (err) {
+            elizaLogger.warn(`Error fetching APY rates: ${err}`);
+            // Continue with default rates
+        }
+
+        // Format the results
+        // We need to normalize the amounts based on token decimals
+        // For simplicity, we'll use 8 decimals which is common for Aptos tokens
+        const DECIMALS = 8;
+        const normalizedSupplied = (totalSupplied / Math.pow(10, DECIMALS)).toFixed(DECIMALS);
+        const normalizedBorrowed = (totalBorrowed / Math.pow(10, DECIMALS)).toFixed(DECIMALS);
 
         return {
-            supplied: "0",
-            borrowed: "0",
-            collateral: false,
-            supplyApy: "0",
-            borrowApy: "0"
+            supplied: normalizedSupplied,
+            borrowed: normalizedBorrowed,
+            collateral: isCollateral,
+            supplyApy,
+            borrowApy
         };
     } catch (error) {
         if (error instanceof Error) {
