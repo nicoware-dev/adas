@@ -24,6 +24,9 @@
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
 
+📖 [View Full Documentation](./docs/README.md)
+
+
 ## 🌟 Overview
 
 ADAS is an innovative open-source project revolutionizing the Aptos DeFi landscape through AI-powered agent swarms. By employing a sophisticated multi-agent system, ADAS streamlines and automates DeFi operations on the Aptos blockchain, offering users a seamless and efficient experience. Its modular design ensures scalability and adaptability, empowering users to navigate the complexities of Aptos DeFi with ease and confidence.
@@ -46,9 +49,9 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 
 ### Core Features
 
-- 💬 Natural language processing
+- 💬 Natural language processing with Markdown formatting support
 - 🤖 Multi-Agent System (MAS) architecture
-- 🔅 Integrated website & web app
+- 🔅 Integrated website & web app with persistent chat history
 - 🔗 Support for multiple LLM providers (Anthropic, OpenAI)
 - 📚 RAG Knowledge base with Aptos DeFi expertise
 - 💰 Real-time prices using CoinGecko API
@@ -56,6 +59,7 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 - 📊 DEX analytics
 - 📈 Data visualization and analytics
 - 🚀 Highly extensible plugin architecture
+- 📱 Responsive interface with example prompts
 
 ### Aptos Ecosystem Features
 
@@ -63,7 +67,7 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 - 📊 Real-time price data via CoinGecko
 - 📈 DEX analytics
 - 💹 TVL tracking via DefiLlama
-- 💼 Portfolio analytics and tracking
+- 💼 Portfolio analytics and tracking with improved formatting
 - 📉 Protocol performance metrics
 - 📊 Market trend analysis
 
@@ -73,16 +77,16 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 - 💱 DEX operations (Thala)
 - 💸 Lending operations (Joule)
 - 🌾 Staking operations (Amnis)
-- 💼 Portfolio management
+- 💼 Portfolio management with rich text output
 
 ### 🖥️ Web App Features
 - 🚀 Landing page
 - 📄 Agents directory
-- 🤖 Chat with agent swarm through web interface
+- 🤖 Chat with agent swarm through web interface with Markdown support
 - 👛 Wallet connector
 - 📊 Portfolio & analytics dashboards
-- 📝 Chat history
-- 💬 Example Prompts
+- 📝 Persistent chat history
+- 💬 Example Prompts with toggle functionality
 - ⚙️ Settings and preferences
 
 ## 🧰 Tech Stack
@@ -94,6 +98,7 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 - **Agent Framework**: ElizaOS
 - **Workflow Automation & Orchestration**: n8n
 - **Package Management**: pnpm
+- **Text Formatting**: Markdown with react-markdown
 
 ## 🤖 Agent Categories
 
@@ -177,20 +182,85 @@ All agents:
    pnpm dev
    ```
 
-4. Access the web interface at `http://localhost:3000`
+4. Access the web interface at `http://localhost:5173`
+
+## 📖 Using ADAS
+
+ADAS provides an intuitive natural language interface for interacting with the Aptos blockchain and its DeFi ecosystem. You can manage your portfolio, execute transactions, analyze market data, and interact with various DeFi protocols through simple text prompts.
+
+### 💬 Example Prompts
+
+<details>
+<summary><b>🧮 Portfolio Management</b></summary>
+
+```
+Show my portfolio
+Check the wallet holdings for 0x39a77791f641bd4e16a7f1774e5d5df5d38c03e4843d315c15ac01e01baa0b0c
+What tokens and NFTs do I have in my wallet?
+```
+</details>
+
+<details>
+<summary><b>💸 Token Operations</b></summary>
+
+```
+Check my APT balance
+What's my wallet address?
+Transfer 0.001 APT to 0x39a77791f641bd4e16a7f1774e5d5df5d38c03e4843d315c15ac01e01baa0b0c
+Get token details for 0x1::aptos_coin::AptosCoin
+```
+</details>
+
+<details>
+<summary><b>🏦 DeFi Operations</b></summary>
+
+```
+Lend 0.001 APT on Joule
+Stake 0.1 APT on Amnis
+Swap 0.01 APT for USDC on Thala
+Show my positions on Joule Finance
+Check my staking rewards on Amnis Finance
+```
+</details>
+
+<details>
+<summary><b>📊 Analytics & Market Data</b></summary>
+
+```
+What's the current price of APT?
+What's the TVL of Aptos?
+Show me Joule's TVL
+What are the top protocols on Aptos?
+What are the top 5 pools on Aptos by volume?
+```
+</details>
+
+### 📚 Full Documentation
+
+For comprehensive instructions on all available features, including:
+- Detailed protocol-specific commands
+- Analytics operations
+- Portfolio management
+- NFT operations
+- Transaction and account information
+- Troubleshooting guidance
+
+**[➡️ View the complete User Guide](./docs/getting-started/user-guide.md)**
+
+The user guide contains copy-pastable prompts for every implemented feature, making it easy to explore all of ADAS's capabilities. It also provides best practices, tips, and troubleshooting advice to enhance your experience.
 
 ## 🛠️ Development
 
 ### Project Structure
 
 ```
-adas-v0/
+adas/
 ├── assets/            # Project assets and media files
 ├── docs/              # Documentation
 ├── eliza/             # ElizaOS agent implementation
 │   ├── agent/         # Agent core functionality
 │   ├── characters/    # Agent character definitions
-│   ├── client/        # Client implementations
+│   ├── client/        # Client implementations with Markdown support
 │   └── packages/      # ElizaOS packages
 ├── n8n/               # n8n workflows and configuration
 └── resources/         # Development resources and references

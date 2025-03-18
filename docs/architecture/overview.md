@@ -87,6 +87,7 @@ The DeFi Agent handles all on-chain operations on the Aptos blockchain, leveragi
 - Execute trading operations on Merkle Trade (limit orders, market orders, position management)
 - Manage lending and borrowing on Aries Protocol (profile creation, lending, borrowing, repayment)
 - Monitor transaction status
+- Display formatted portfolio information with proper token recognition
 
 **Implementation:**
 - ElizaOS agent with custom character definition
@@ -147,11 +148,13 @@ n8n provides the workflow automation for agent orchestration:
 ### Web Client
 
 The web client offers a user interface for interacting with the agent swarm:
-- Chat interface for natural language interaction
-- Portfolio dashboard for tracking assets
+- Chat interface for natural language interaction with Markdown support
+- Portfolio dashboard for tracking assets with formatted displays
 - Analytics visualizations
 - Agent directory for discovering capabilities
 - Settings management
+- Persistent chat history
+- Example prompts for user guidance
 
 ## Data Flow
 
@@ -177,6 +180,15 @@ The multi-agent architecture allows for horizontal scaling:
 - Existing agents can be replicated for handling increased load
 - Stateless design enables distributed deployment
 - Modular components can be scaled independently
+
+## User Experience Improvements
+
+The ADAS interface has been enhanced with several user experience improvements:
+- Markdown support for formatted responses
+- Clean presentation of portfolio data with proper token recognition
+- Persistent chat history that survives page reloads
+- Example prompts to guide new users
+- Responsive design for various screen sizes
 
 ## Future Extensions
 

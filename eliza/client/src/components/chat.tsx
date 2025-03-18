@@ -10,7 +10,7 @@ import { useTransition, animated, type AnimatedProps } from "@react-spring/web";
 import { Lightbulb, Paperclip, Send, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { Content, UUID, Media } from "@elizaos/core";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { cn, moment } from "@/lib/utils";
 import { Avatar, AvatarImage } from "./ui/avatar";
@@ -24,6 +24,8 @@ import { AudioRecorder } from "./audio-recorder";
 import { Badge } from "./ui/badge";
 import { useAutoScroll } from "./ui/chat/hooks/useAutoScroll";
 import { ExamplePrompts } from "./example-prompts";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 type ExtraContentFields = {
     user: string;
@@ -37,16 +39,16 @@ type AnimatedDivProps = AnimatedProps<{ style: React.CSSProperties }> & {
     children?: React.ReactNode;
 };
 
-// Safe conversion function to ensure type compatibility
-const convertAttachment = (attachment: IAttachment): Media => ({
-    id: `att-${Date.now()}-${Math.random().toString(36).substring(2)}`,
-    url: attachment.url || "",
-    contentType: attachment.contentType || "text/plain",
-    title: attachment.title || "Attachment",
-    source: "user-upload",
-    description: attachment.title || "User attachment",
-    text: ""
-});
+// Simple Markdown renderer with consistent styling for all messages
+const MarkdownRenderer = ({ children }: { children: string }) => {
+    return (
+        <div className="markdown-body">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {children}
+            </ReactMarkdown>
+        </div>
+    );
+};
 
 export default function Page({ agentId }: { agentId: UUID }) {
     const { toast } = useToast();
@@ -59,7 +61,6 @@ export default function Page({ agentId }: { agentId: UUID }) {
     const [messages, setMessages] = useState<ContentWithUser[]>([]);
     const messageLoadedRef = useRef(false);
 
-    const queryClient = useQueryClient();
 
     // Define the mutation outside to avoid circular dependencies
     const sendMessageMutation = useMutation({
@@ -375,9 +376,15 @@ export default function Page({ agentId }: { agentId: UUID }) {
                                                 isLoading={message?.isLoading}
                                             >
                                                 {message?.user !== "user" ? (
-                                                    <AIWriter>
-                                                        {message?.text}
-                                                    </AIWriter>
+                                                    message?.isLoading ? (
+                                                        <AIWriter>
+                                                            {message?.text}
+                                                        </AIWriter>
+                                                    ) : (
+                                                        <MarkdownRenderer>
+                                                            {message?.text}
+                                                        </MarkdownRenderer>
+                                                    )
                                                 ) : (
                                                     message?.text
                                                 )}

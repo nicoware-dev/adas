@@ -19,6 +19,7 @@ This document tracks the current implementation status of various protocol integ
 | Account Info | ✅ Implemented | Account details retrieval working |
 | Transaction Lookup | ✅ Implemented | Transaction details retrieval working |
 | Module Information | ✅ Implemented | Module listing functional |
+| Portfolio Viewing | ✅ Implemented | Enhanced portfolio display with proper token formatting |
 
 ### Protocol-Specific Integrations
 
@@ -101,15 +102,16 @@ This document tracks the current implementation status of various protocol integ
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Landing Page | 🔄 In Progress | Basic structure implemented |
-| Agent Directory | 🔄 In Progress | Implementation in progress |
-| Chat Interface | 🔄 In Progress | Basic functionality working |
-| Wallet Connector | 🔄 In Progress | Implementation in progress |
-| Portfolio Dashboard | ⏱️ Planned | Not yet implemented |
-| Analytics Dashboard | ⏱️ Planned | Not yet implemented |
-| Chat History | 🔄 In Progress | Implementation in progress |
-| Example Prompts | 🔄 In Progress | Implementation in progress |
-| Settings | ⏱️ Planned | Not yet implemented |
+| Landing Page | ✅ Implemented | Basic structure implemented |
+| Agent Directory | ✅ Implemented | Implementation completed |
+| Chat Interface | ✅ Implemented | Fully functional with Markdown support |
+| Wallet Connector | ✅ Implemented | Implementation completed |
+| Portfolio Dashboard | ✅ Implemented | Improved with formatted portfolio display |
+| Analytics Dashboard | 🔄 In Progress | Implementation in progress |
+| Chat History | ✅ Implemented | Persistent chat history working |
+| Example Prompts | ✅ Implemented | Example prompts with toggle functionality |
+| Settings | ✅ Implemented | Basic settings functionality |
+| Markdown Formatting | ✅ Implemented | Rich text formatting for chat responses |
 
 ## Legend
 
@@ -119,4 +121,4 @@ This document tracks the current implementation status of various protocol integ
 - ⏱️ Planned: Feature is planned but implementation has not started
 - ❌ Blocked: Implementation is blocked by dependencies or issues
 
-*Last updated: [Current Date]* 
+*Last updated: March 17, 2025* 

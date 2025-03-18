@@ -74,3 +74,70 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* Markdown styling - compact and consistent */
+.markdown-body {
+  @apply text-foreground leading-tight;
+  font-size: 0.95rem;
+}
+
+.markdown-body h1 {
+  @apply text-xl font-bold mt-2 mb-1;
+}
+
+.markdown-body h2 {
+  @apply text-lg font-bold mt-2 mb-1;
+}
+
+.markdown-body h3 {
+  @apply text-base font-semibold mt-1.5 mb-0.5;
+}
+
+.markdown-body ul, .markdown-body ol {
+  @apply my-0.5 ml-5 space-y-0.5;
+}
+
+.markdown-body ul {
+  @apply list-disc;
+}
+
+.markdown-body ol {
+  @apply list-decimal;
+}
+
+.markdown-body li {
+  @apply my-0.5 leading-snug;
+}
+
+.markdown-body code {
+  @apply bg-muted px-1 py-0.5 rounded text-sm break-all;
+  word-break: break-word;
+}
+
+.markdown-body pre {
+  @apply block bg-muted p-2 rounded text-sm my-1 overflow-x-auto;
+}
+
+.markdown-body table {
+  @apply border-collapse my-1.5 w-full text-sm;
+}
+
+.markdown-body th {
+  @apply border p-1 bg-muted font-medium;
+}
+
+.markdown-body td {
+  @apply border p-1;
+}
+
+.markdown-body a {
+  @apply text-primary underline;
+}
+
+.markdown-body blockquote {
+  @apply border-l-4 border-muted pl-2 my-1 italic;
+}
+
+.markdown-body p {
+  @apply my-0.5 break-words;
+}

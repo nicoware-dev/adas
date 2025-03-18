@@ -7,9 +7,11 @@ This directory contains the documentation for the ADAS (Aptos DefAI Agent Swarm)
 - **[getting-started/](./getting-started/)**: Quick start guides and installation instructions
   - [Installation Guide](./getting-started/installation.md)
   - [Project Overview](./getting-started/overview.md)
+  - [User Guide](./getting-started/user-guide.md)
   
 - **[architecture/](./architecture/)**: System architecture and design documentation
   - [Architecture Overview](./architecture/overview.md)
+  - [Features & Integrations](./architecture/features-integrations.md)
   - [Implementation Status](./architecture/implementation-status.md)
   - [Development Roadmap](./architecture/roadmap.md)
   
@@ -37,12 +39,19 @@ This directory contains the documentation for the ADAS (Aptos DefAI Agent Swarm)
   - [Contributing Guidelines](./contributing/README.md)
   - [Code Style Guide](./contributing/code-style.md)
   - [Pull Request Process](./contributing/pull-requests.md)
+  
+- **[ui/](./ui/)**: Documentation for the user interface
+  - [UI Components](./ui/components.md)
+  - [Markdown Support](./ui/markdown.md)
+  - [Chat Interface](./ui/chat-interface.md)
 
 ## Quick Links
 
 - [Project Overview](./getting-started/overview.md)
 - [Installation Guide](./getting-started/installation.md)
+- [User Guide](./getting-started/user-guide.md)
 - [Architecture Overview](./architecture/overview.md)
+- [Features & Integrations](./architecture/features-integrations.md)
 - [Implementation Status](./architecture/implementation-status.md)
 - [Development Roadmap](./architecture/roadmap.md)
 - [Agent Documentation](./agents/README.md)
@@ -63,7 +72,7 @@ The system consists of four main agents:
 
 ## Current Status
 
-ADAS is currently in alpha development. The core functionality is implemented, including:
+ADAS is currently in beta development. The core functionality is implemented, including:
 
 - Multi-agent architecture with ElizaOS integration
 - Core Aptos blockchain operations (token transfers, balance checking)
@@ -75,12 +84,16 @@ ADAS is currently in alpha development. The core functionality is implemented, i
 - Thala Labs DEX operations (swapping, liquidity provision, staking)
 - Merkle Trade position management and trading (limit orders, market orders)
 - Aries Protocol lending platform integration (profile creation, lending, borrowing, repayment)
-- Portfolio management (view token balances with values and NFT holdings)
+- Portfolio management with enhanced formatting and token recognition
+- Web client with persistent chat history and Markdown support
+- Example prompts for user guidance
 
-In progress features include:
-- Advanced analytics integrations
-- Additional protocol support
-- Web client development
+Recently completed features include:
+- Markdown formatting for chat responses
+- Improved portfolio display with better token representation
+- Persistent chat history implementation
+- Example prompts with toggle functionality
+- Comprehensive user guide with example prompts
 
 See the [Implementation Status](./architecture/implementation-status.md) document for detailed information on the current state of development.
 
