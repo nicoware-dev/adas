@@ -1,55 +1,48 @@
 import { Button } from "@/components/ui/button";
-import { NavLink } from "react-router";
 
 interface HeroProps {
-  onGetStarted?: () => void;
+  onGetStarted: () => void;
 }
 
 export function Hero({ onGetStarted }: HeroProps) {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-background to-muted dark:from-background dark:to-background/90">
       <div className="container px-4 md:px-6">
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
-          <div className="flex flex-col justify-center space-y-4">
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                Intelligent AI Assistants at Your Service
-              </h1>
-              <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                Interact with specialized AI agents designed to help you with various tasks.
-                Our platform provides seamless AI integration for your everyday needs.
-              </p>
+        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center">
+          <div className="space-y-6">
+            <div className="inline-block px-3 py-1 rounded-lg bg-primary/10 text-primary text-sm font-medium mb-2">
+              Aptos DeFi Made Simple
             </div>
-            <div className="flex flex-col gap-2 min-[400px]:flex-row">
-              {onGetStarted ? (
-                <Button
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90"
-                  onClick={onGetStarted}
-                >
-                  Get Started
-                </Button>
-              ) : (
-                <NavLink to="/agents">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90">Get Started</Button>
-                </NavLink>
-              )}
-              <NavLink to="https://elizaos.github.io/eliza/docs/intro/" target="_blank">
-                <Button variant="outline" size="lg">
-                  Learn More
-                </Button>
-              </NavLink>
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
+              ADAS: Aptos DefAI<br />Agent Swarm
+            </h1>
+            <p className="max-w-[600px] text-muted-foreground md:text-xl">
+              Simplify your DeFi experience on the Aptos blockchain with the power of Multi-Agent Systems.
+              Interact with DeFi protocols through natural language — no complex interfaces needed.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button size="lg" onClick={onGetStarted}>
+                Get Started
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <a href="https://github.com/nicoware-dev/adas" target="_blank" rel="noopener noreferrer">
+                  View on GitHub
+                </a>
+              </Button>
             </div>
           </div>
-          <div className="mx-auto lg:ml-auto">
-            <div className="relative w-full aspect-video overflow-hidden rounded-xl">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-xl"></div>
+          <div className="flex justify-center">
+            <div className="relative w-full max-w-md">
+              <div className="absolute -top-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl opacity-70"></div>
+              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl opacity-70"></div>
               <img
-                alt="AI Assistant Platform"
-                className="w-full h-full object-cover rounded-xl"
-                src="/elizaos-icon.png"
-                width="550"
-                height="310"
+                src="/assets/images/aptos-agent-hero.png"
+                alt="ADAS Agent Interface"
+                className="w-full h-auto rounded-lg shadow-xl relative z-10"
+                onError={(e) => {
+                  // Fallback to a placeholder if image fails to load
+                  e.currentTarget.src = "https://placehold.co/600x400/2d3748/white?text=ADAS:+Aptos+DefAI+Agent+Swarm";
+                }}
               />
             </div>
           </div>

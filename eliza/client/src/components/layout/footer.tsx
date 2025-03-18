@@ -2,30 +2,32 @@ import { NavLink } from "react-router";
 
 export function Footer() {
   return (
-    <footer className="border-t bg-background">
-      <div className="container flex flex-col gap-6 py-8 md:flex-row md:items-center md:justify-between md:py-12">
-        <div className="flex flex-col gap-2">
-          <NavLink to="/" className="flex items-center gap-2">
-            <img src="/elizaos-icon.png" alt="ElizaOS Logo" className="h-6 w-auto" />
-            <span className="font-bold">ElizaOS</span>
-          </NavLink>
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} ElizaOS. All rights reserved.
-          </p>
+    <footer className="border-t">
+      <div className="container flex flex-col sm:flex-row items-center justify-between py-6 gap-4">
+        <div className="flex items-center gap-2">
+          <img
+            alt="ElizaOS Logo"
+            className="h-8 w-8"
+            src="/elizaos-icon.png"
+          />
+          <span className="text-lg font-semibold">ADAS</span>
         </div>
-        <div className="flex flex-col gap-4 md:flex-row md:gap-6">
-          <NavLink to="/agents" className="text-sm font-medium hover:text-primary">
+        <div className="flex gap-4">
+          <a
+            href="/agents"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
             Agents
-          </NavLink>
-          <NavLink to="https://elizaos.github.io/eliza/docs/intro/" target="_blank" className="text-sm font-medium hover:text-primary">
+          </a>
+          <a
+            href="/docs"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
             Documentation
-          </NavLink>
-          <NavLink to="#" className="text-sm font-medium hover:text-primary">
-            Privacy Policy
-          </NavLink>
-          <NavLink to="#" className="text-sm font-medium hover:text-primary">
-            Terms of Service
-          </NavLink>
+          </a>
+        </div>
+        <div className="text-sm text-muted-foreground">
+          © {new Date().getFullYear()} ADAS. All rights reserved.
         </div>
       </div>
     </footer>
