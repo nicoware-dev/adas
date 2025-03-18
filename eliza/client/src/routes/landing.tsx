@@ -3,6 +3,9 @@ import { Header } from "@/components/layout/header";
 import { Hero } from "@/components/layout/hero";
 import { Footer } from "@/components/layout/footer";
 import { useNavigate } from "react-router";
+import { useInView } from "react-intersection-observer";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import {
   Bot,
   Shield,
@@ -25,17 +28,67 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
-  CarouselNext
+  CarouselNext,
+  type CarouselApi
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
 export default function Landing() {
   const navigate = useNavigate();
+
+  // Create carousel API state for auto-scrolling
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+
+  // Create intersection observer references for each section
+  const [featuresRef, featuresInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [architectureRef, architectureInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [integrationsRef, integrationsInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [defiRef, defiInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [analyticsRef, analyticsInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [markdownRef, markdownInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [techRef, techInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [ctaRef, ctaInView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
   const agentsQuery = useQuery({
     queryKey: ["agents"],
     queryFn: () => apiClient.getAgents(),
   });
+
+  // Auto-scroll the carousel
+  useEffect(() => {
+    if (!carouselApi) return;
+
+    // Start auto-scroll interval when the carousel is in view
+    let interval: NodeJS.Timeout;
+
+    if (integrationsInView) {
+      interval = setInterval(() => {
+        carouselApi.scrollNext();
+      }, 3000); // Scroll every 3 seconds
+    }
+
+    // Clean up interval on unmount or when not in view
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [integrationsInView, carouselApi]);
 
   const handleGetStarted = () => {
     if (agentsQuery.data?.agents?.length > 0) {
@@ -62,400 +115,443 @@ export default function Landing() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-hidden w-full">
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 overflow-hidden w-full">
         <Hero onGetStarted={handleGetStarted} />
 
         {/* Main Features Section */}
-        <section className="container py-12 md:py-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Core Features</h2>
-            <p className="mt-4 text-muted-foreground md:text-xl">
-              Revolutionizing Aptos DeFi with AI-Powered Agent Swarms
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card>
-              <CardHeader>
-                <Bot className="h-10 w-10 mb-2 text-primary" />
-                <CardTitle>Multi-Agent System</CardTitle>
-                <CardDescription>
-                  Specialized agents working together for optimal performance
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  Our platform leverages a sophisticated Multi-Agent System where specialized agents handle different tasks—from analytics to executing transactions—enabling modular, scalable, and fault-tolerant operations.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <MessageCircle className="h-10 w-10 mb-2 text-primary" />
-                <CardTitle>Natural Language Interface</CardTitle>
-                <CardDescription>
-                  Interact with DeFi using simple conversational prompts
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  Communicate with the Aptos blockchain and DeFi protocols through natural language. No need to learn complex interfaces or command syntaxes—just tell ADAS what you want to do.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <Shield className="h-10 w-10 mb-2 text-primary" />
-                <CardTitle>Secure & Transparent</CardTitle>
-                <CardDescription>
-                  Your assets and data are protected
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  Control your own private keys and approve all transactions. Our open-source codebase ensures complete transparency, giving you full authority over your assets and interactions.
-                </p>
-              </CardContent>
-            </Card>
+        <section className="py-12 md:py-24 bg-background" ref={featuresRef}>
+          <div className="container px-4 md:px-6 mx-auto">
+            <motion.div
+              className="text-center mb-12"
+              initial="hidden"
+              animate={featuresInView ? "visible" : "hidden"}
+              variants={fadeInUp}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Core Features</h2>
+              <p className="mt-4 text-muted-foreground md:text-xl">
+                Revolutionizing Aptos DeFi with AI-Powered Agent Swarms
+              </p>
+            </motion.div>
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
+              initial="hidden"
+              animate={featuresInView ? "visible" : "hidden"}
+              variants={staggerContainer}
+            >
+              <motion.div variants={fadeInUp} transition={{ duration: 0.5 }}>
+                <Card className="h-full transition-all duration-300 hover:shadow-lg">
+                  <CardHeader>
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.5 }}
+                    >
+                      <Bot className="h-10 w-10 mb-2 text-primary" />
+                    </motion.div>
+                    <CardTitle>Multi-Agent System</CardTitle>
+                    <CardDescription>
+                      Specialized agents working together for optimal performance
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p>
+                      Our platform leverages a sophisticated Multi-Agent System where specialized agents handle different tasks—from analytics to executing transactions—enabling modular, scalable, and fault-tolerant operations.
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+              <motion.div variants={fadeInUp} transition={{ duration: 0.5, delay: 0.1 }}>
+                <Card className="h-full transition-all duration-300 hover:shadow-lg">
+                  <CardHeader>
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.3, duration: 0.5 }}
+                    >
+                      <MessageCircle className="h-10 w-10 mb-2 text-primary" />
+                    </motion.div>
+                    <CardTitle>Natural Language Interface</CardTitle>
+                    <CardDescription>
+                      Interact with DeFi using simple conversational prompts
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p>
+                      Communicate with the Aptos blockchain and DeFi protocols through natural language. No need to learn complex interfaces or command syntaxes—just tell ADAS what you want to do.
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+              <motion.div variants={fadeInUp} transition={{ duration: 0.5, delay: 0.2 }}>
+                <Card className="h-full transition-all duration-300 hover:shadow-lg">
+                  <CardHeader>
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.4, duration: 0.5 }}
+                    >
+                      <Shield className="h-10 w-10 mb-2 text-primary" />
+                    </motion.div>
+                    <CardTitle>Secure & Transparent</CardTitle>
+                    <CardDescription>
+                      Your assets and data are protected
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p>
+                      Control your own private keys and approve all transactions. Our open-source codebase ensures complete transparency, giving you full authority over your assets and interactions.
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
 
         {/* Architecture Section */}
-        <section className="bg-muted py-16">
-          <div className="container">
-            <div className="text-center mb-12">
+        <section className="bg-muted py-16 relative" ref={architectureRef}>
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-br from-primary/5 to-background/0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: architectureInView ? 1 : 0 }}
+            transition={{ duration: 1 }}
+          />
+          <div className="container px-4 md:px-6 mx-auto relative z-10">
+            <motion.div
+              className="text-center mb-12"
+              initial="hidden"
+              animate={architectureInView ? "visible" : "hidden"}
+              variants={fadeInUp}
+              transition={{ duration: 0.5 }}
+            >
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Multi-Agent Architecture</h2>
               <p className="mt-4 text-muted-foreground md:text-xl">
                 Specialized agents working together for optimal DeFi operations
               </p>
-            </div>
-            <div className="flex flex-col md:flex-row items-center gap-12">
-              <div className="md:w-1/2">
+            </motion.div>
+            <div className="flex flex-col md:flex-row items-center gap-12 max-w-6xl mx-auto">
+              <motion.div
+                className="md:w-1/2"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: architectureInView ? 1 : 0, x: architectureInView ? 0 : -50 }}
+                transition={{ duration: 0.7, delay: 0.2 }}
+              >
                 <div className="rounded-lg overflow-hidden shadow-lg">
-                  <img
+                  <motion.img
                     src="/assets/images/architecture-diagram.png"
                     alt="ADAS Multi-Agent Architecture"
                     className="w-full h-auto"
-                    onError={(e) => {
+                    whileInView={{ scale: [0.95, 1] }}
+                    transition={{ duration: 0.5 }}
+                    onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                       // Fallback to a placeholder if image fails to load
                       e.currentTarget.src = "https://placehold.co/600x400/2d3748/white?text=Multi-Agent+Architecture";
                     }}
                   />
                 </div>
-              </div>
-              <div className="md:w-1/2">
-                <h3 className="text-2xl font-bold mb-4">Agent Structure</h3>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white">
+              </motion.div>
+              <motion.div
+                className="md:w-1/2"
+                initial="hidden"
+                animate={architectureInView ? "visible" : "hidden"}
+                variants={staggerContainer}
+              >
+                <motion.h3
+                  className="text-2xl font-bold mb-4"
+                  variants={fadeInUp}
+                >
+                  Agent Structure
+                </motion.h3>
+                <motion.ul className="space-y-4">
+                  <motion.li
+                    className="flex items-start gap-3"
+                    variants={fadeInUp}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <motion.div
+                      className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    >
                       <Bot className="h-5 w-5" />
-                    </div>
+                    </motion.div>
                     <div>
                       <h4 className="font-semibold">Coordinator Agent</h4>
                       <p className="text-sm text-muted-foreground">Orchestrates interactions between specialized agents, ensuring optimal task execution</p>
                     </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white">
+                  </motion.li>
+                  <motion.li
+                    className="flex items-start gap-3"
+                    variants={fadeInUp}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <motion.div
+                      className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    >
                       <BarChart3 className="h-5 w-5" />
-                    </div>
+                    </motion.div>
                     <div>
                       <h4 className="font-semibold">Analytics Agent</h4>
                       <p className="text-sm text-muted-foreground">Provides real-time market data, token prices, and protocol analytics</p>
                     </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white">
+                  </motion.li>
+                  <motion.li
+                    className="flex items-start gap-3"
+                    variants={fadeInUp}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <motion.div
+                      className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    >
                       <Wallet className="h-5 w-5" />
-                    </div>
+                    </motion.div>
                     <div>
                       <h4 className="font-semibold">DeFi Agent</h4>
                       <p className="text-sm text-muted-foreground">Executes blockchain transactions, wallet operations, and protocol interactions</p>
                     </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white">
+                  </motion.li>
+                  <motion.li
+                    className="flex items-start gap-3"
+                    variants={fadeInUp}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <motion.div
+                      className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    >
                       <BookOpen className="h-5 w-5" />
-                    </div>
+                    </motion.div>
                     <div>
                       <h4 className="font-semibold">Aptos Expert Agent</h4>
                       <p className="text-sm text-muted-foreground">Provides technical guidance and access to the Aptos knowledge base</p>
                     </div>
-                  </li>
-                </ul>
-              </div>
+                  </motion.li>
+                </motion.ul>
+              </motion.div>
             </div>
           </div>
         </section>
 
         {/* Tools & Integrations Carousel */}
-        <section className="container py-16">
-          <div className="container">
-            <div className="text-center mb-12">
+        <section className="py-16 relative" ref={integrationsRef}>
+          <div className="absolute inset-0 mx-auto w-full max-w-7xl aspect-video overflow-hidden">
+            <motion.div
+              className="absolute bg-primary/5 rounded-full blur-3xl opacity-30"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: integrationsInView ? 1 : 0.8, opacity: integrationsInView ? 0.3 : 0 }}
+              transition={{ duration: 1.5 }}
+              style={{
+                top: '50%',
+                left: '50%',
+                width: '80%',
+                height: '80%',
+                transform: 'translate(-50%, -50%)'
+              }}
+            />
+          </div>
+          <div className="container px-4 md:px-6 mx-auto relative z-10">
+            <motion.div
+              className="text-center mb-12"
+              initial="hidden"
+              animate={integrationsInView ? "visible" : "hidden"}
+              variants={fadeInUp}
+              transition={{ duration: 0.5 }}
+            >
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Tools & Integrations</h2>
               <p className="mt-4 text-muted-foreground md:text-xl">
                 Powered by leading Aptos protocols and cutting-edge technologies
               </p>
-            </div>
+            </motion.div>
 
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: integrationsInView ? 1 : 0, y: integrationsInView ? 0 : 20 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="max-w-6xl mx-auto"
             >
-              <CarouselContent>
-                {integrations.map((integration, index) => (
-                  <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/5">
-                    <div className="p-1">
-                      <Card className="h-full">
-                        <CardContent className="flex flex-col items-center justify-center p-6">
-                          <div className="rounded-full bg-background p-4 w-20 h-20 flex items-center justify-center mb-4">
-                            {/* Fallback to an icon if the logo is missing */}
-                            <div className="flex items-center justify-center w-full h-full">
-                              {integration.logo ? (
-                                <img
-                                  src={integration.logo}
-                                  alt={`${integration.name} logo`}
-                                  className="max-w-full max-h-full"
-                                  onError={(e) => {
-                                    e.currentTarget.style.display = 'none';
-                                    e.currentTarget.parentElement?.classList.add('bg-primary/10');
-                                  }}
-                                />
-                              ) : (
-                                <Network className="h-8 w-8 text-primary" />
-                              )}
-                            </div>
-                          </div>
-                          <h3 className="font-semibold text-center">{integration.name}</h3>
-                          <p className="text-xs text-muted-foreground text-center">{integration.type}</p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-2" />
-              <CarouselNext className="right-2" />
-            </Carousel>
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+                setApi={setCarouselApi}
+              >
+                <CarouselContent>
+                  {integrations.map((integration, i) => (
+                    <CarouselItem key={`${integration.name}-${i}`} className="md:basis-1/3 lg:basis-1/5">
+                      <div className="p-1">
+                        <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400, damping: 10 }}>
+                          <Card className="h-full border border-border/50 bg-card hover:border-primary/20 hover:shadow-md transition-all duration-300">
+                            <CardContent className="flex flex-col items-center justify-center p-6">
+                              <motion.div
+                                className="rounded-full bg-background p-4 w-20 h-20 flex items-center justify-center mb-4"
+                                whileHover={{ scale: 1.05, boxShadow: "0 0 15px rgba(0,0,0,0.1)" }}
+                                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                              >
+                                {/* Fallback to an icon if the logo is missing */}
+                                <div className="flex items-center justify-center w-full h-full">
+                                  {integration.logo ? (
+                                    <img
+                                      src={integration.logo}
+                                      alt={`${integration.name} logo`}
+                                      className="max-w-full max-h-full"
+                                      onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                        e.currentTarget.style.display = 'none';
+                                        e.currentTarget.parentElement?.classList.add('bg-primary/10');
+                                      }}
+                                    />
+                                  ) : (
+                                    <Network className="h-8 w-8 text-primary" />
+                                  )}
+                                </div>
+                              </motion.div>
+                              <h3 className="font-semibold text-center">{integration.name}</h3>
+                              <p className="text-xs text-muted-foreground text-center">{integration.type}</p>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-2 lg:left-4" />
+                <CarouselNext className="right-2 lg:right-4" />
+              </Carousel>
+            </motion.div>
           </div>
         </section>
 
         {/* DeFi Capabilities Section */}
-        <section className="bg-muted py-16">
-          <div className="container">
-            <div className="text-center mb-12">
+        <section className="bg-muted py-16" ref={defiRef}>
+          <div className="container px-4 md:px-6 mx-auto">
+            <motion.div
+              className="text-center mb-12"
+              initial="hidden"
+              animate={defiInView ? "visible" : "hidden"}
+              variants={fadeInUp}
+              transition={{ duration: 0.5 }}
+            >
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Aptos DeFi Simplified</h2>
               <p className="mt-4 text-muted-foreground md:text-xl">
                 Seamlessly interact with the entire Aptos ecosystem
               </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-card">
-                <CardHeader className="pb-2">
-                  <Wallet className="h-8 w-8 mb-2 text-primary" />
-                  <CardTitle className="text-lg">Wallet Management</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm">View balances, transfer tokens, and manage your portfolio with real-time USD values</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card">
-                <CardHeader className="pb-2">
-                  <Coins className="h-8 w-8 mb-2 text-primary" />
-                  <CardTitle className="text-lg">Lending & Borrowing</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm">Deposit, borrow, repay, and withdraw from Joule Finance and Aries Protocol with natural language commands</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card">
-                <CardHeader className="pb-2">
-                  <Zap className="h-8 w-8 mb-2 text-primary" />
-                  <CardTitle className="text-lg">Swapping & Liquidity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm">Execute swaps and manage liquidity positions on Thala Labs and Liquidswap DEXes</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card">
-                <CardHeader className="pb-2">
-                  <LineChart className="h-8 w-8 mb-2 text-primary" />
-                  <CardTitle className="text-lg">Trading & Staking</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm">Place orders on Merkle Trade and stake tokens on Amnis Finance for yield generation</p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Analytics Section */}
-        <section className="container py-16">
-          <div className="flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-6">Real-Time Analytics & Insights</h2>
-              <p className="text-muted-foreground mb-6">
-                Make informed decisions with comprehensive data from multiple sources, all accessible through natural language queries.
-              </p>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <BarChart3 className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-semibold">Token Prices & Market Data</h3>
-                    <p className="text-sm text-muted-foreground">Real-time price data via CoinGecko for APT and other cryptocurrencies</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <LineChart className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-semibold">TVL Tracking</h3>
-                    <p className="text-sm text-muted-foreground">Monitor Total Value Locked across chains and protocols via DeFiLlama</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <LayoutDashboard className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-semibold">DEX Analytics</h3>
-                    <p className="text-sm text-muted-foreground">Track trading volumes, liquidity, and pool performance with GeckoTerminal data</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div className="md:w-1/2 bg-muted p-6 rounded-lg">
-              <h3 className="font-semibold mb-3">Example Analytics Queries:</h3>
-              <div className="space-y-2 text-sm">
-                <div className="bg-background p-3 rounded-md">"What's the current price of APT?"</div>
-                <div className="bg-background p-3 rounded-md">"What's the TVL of Thala on Aptos?"</div>
-                <div className="bg-background p-3 rounded-md">"Show me the top 5 pools on Aptos by volume"</div>
-                <div className="bg-background p-3 rounded-md">"Compare the TVL of Joule and Amnis"</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Markdown Formatting Section */}
-        <section className="bg-muted py-16">
-          <div className="container">
-            <div className="flex flex-col-reverse md:flex-row items-center gap-12">
-              <div className="md:w-1/2 bg-background p-6 rounded-lg font-mono text-sm">
-                <div className="mb-2 text-primary font-bold"># Portfolio</div>
-                <div className="mb-2">**Wallet Address**: 0x39a77791f641bd4e16a7f1774e5d5df5d38c03e4843d315c15ac01e01baa0b0c</div>
-                <div className="mb-2">## Tokens</div>
-                <div className="mb-2">- **APT** (Aptos Coin): 1.361169 APT - $7.27</div>
-                <div className="mb-2">- **stAPT** (Staked APT): 0.243765 stAPT - $1.47</div>
-                <div className="mb-2">- **amAPT** (Amnis APT): 0.225344 amAPT - $1.20</div>
-                <div className="mb-2">- **USDC**: 0.037232 USDC - $0.04</div>
-                <div className="mb-2">**Total Value**: $9.97</div>
-              </div>
-              <div className="md:w-1/2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-6">Beautiful, Readable Responses</h2>
-                <p className="text-muted-foreground mb-6">
-                  All responses are formatted with Markdown support for better readability and organization. Complex data like portfolio information, protocol details, and analytics results are presented in a clear, structured format.
-                </p>
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">1</div>
-                    <div>
-                      <h3 className="font-semibold">Rich Text Formatting</h3>
-                      <p className="text-sm text-muted-foreground">Headings, lists, and emphasis for structured information</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">2</div>
-                    <div>
-                      <h3 className="font-semibold">Code Snippets</h3>
-                      <p className="text-sm text-muted-foreground">Properly formatted wallet addresses and transaction details</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">3</div>
-                    <div>
-                      <h3 className="font-semibold">Persistent Chat History</h3>
-                      <p className="text-sm text-muted-foreground">Your conversations are saved across sessions</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Technical Section */}
-        <section className="container py-16">
-          <div className="container">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Powered by Advanced Technology</h2>
-              <p className="mt-4 text-muted-foreground md:text-xl">
-                Built with cutting-edge tools and frameworks
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <Card>
-                <CardHeader>
-                  <Code className="h-10 w-10 mb-2 text-primary" />
-                  <CardTitle>Move Agent Kit Integration</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    Leverages production-ready implementations for interacting with Aptos protocols, ensuring reliable and secure blockchain operations.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <BookOpen className="h-10 w-10 mb-2 text-primary" />
-                  <CardTitle>RAG Knowledge Base</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    Comprehensive Aptos DeFi knowledge integrated with AI to provide accurate information and guidance for all your blockchain questions.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <Bot className="h-10 w-10 mb-2 text-primary" />
-                  <CardTitle>ElizaOS Framework</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    Built on the powerful ElizaOS agent framework, enabling modular architecture, plugin support, and multi-LLM provider compatibility.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+            </motion.div>
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto"
+              initial="hidden"
+              animate={defiInView ? "visible" : "hidden"}
+              variants={staggerContainer}
+            >
+              {[
+                {
+                  icon: <Wallet className="h-8 w-8 mb-2 text-primary" />,
+                  title: "Wallet Management",
+                  description: "View balances, transfer tokens, and manage your portfolio with real-time USD values"
+                },
+                {
+                  icon: <Coins className="h-8 w-8 mb-2 text-primary" />,
+                  title: "Lending & Borrowing",
+                  description: "Deposit, borrow, repay, and withdraw from Joule Finance and Aries Protocol with natural language commands"
+                },
+                {
+                  icon: <Zap className="h-8 w-8 mb-2 text-primary" />,
+                  title: "Swapping & Liquidity",
+                  description: "Execute swaps and manage liquidity positions on Thala Labs and Liquidswap DEXes"
+                },
+                {
+                  icon: <LineChart className="h-8 w-8 mb-2 text-primary" />,
+                  title: "Trading & Staking",
+                  description: "Place orders on Merkle Trade and stake tokens on Amnis Finance for yield generation"
+                }
+              ].map((item, i) => (
+                <motion.div
+                  key={item.title}
+                  variants={fadeInUp}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                >
+                  <motion.div
+                    whileHover={{ y: -5 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  >
+                    <Card className="bg-card h-full hover:shadow-md transition-all duration-300">
+                      <CardHeader className="pb-2">
+                        <motion.div
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: defiInView ? 1 : 0.8, opacity: defiInView ? 1 : 0 }}
+                          transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
+                        >
+                          {item.icon}
+                        </motion.div>
+                        <CardTitle className="text-lg">{item.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm">{item.description}</p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </section>
 
         {/* CTA Section - Changed from blue to darker */}
-        <section className="bg-card border-t py-16">
-          <div className="container text-center">
-            <h2 className="text-3xl font-bold mb-6">Ready to Simplify Your Aptos DeFi Experience?</h2>
-            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Get started with ADAS today and explore the future of blockchain interaction through natural language. No complex interfaces, just simple conversations.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                onClick={handleGetStarted}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
+        <section className="bg-card border-t py-16" ref={ctaRef}>
+          <div className="container px-4 md:px-6 mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: ctaInView ? 1 : 0, y: ctaInView ? 0 : 20 }}
+              transition={{ duration: 0.7 }}
+              className="max-w-2xl mx-auto"
+            >
+              <h2 className="text-3xl font-bold mb-6">Ready to Simplify Your Aptos DeFi Experience?</h2>
+              <p className="text-muted-foreground mb-8">
+                Get started with ADAS today and explore the future of blockchain interaction through natural language. No complex interfaces, just simple conversations.
+              </p>
+              <motion.div
+                className="flex flex-col sm:flex-row gap-4 justify-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: ctaInView ? 1 : 0, y: ctaInView ? 0 : 20 }}
+                transition={{ duration: 0.7, delay: 0.2 }}
               >
-                Try ADAS Now
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-primary text-primary hover:bg-primary/10"
-                onClick={() => navigate('/docs')}
-              >
-                Read Documentation
-              </Button>
-            </div>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    size="lg"
+                    onClick={handleGetStarted}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 relative overflow-hidden group"
+                  >
+                    <span className="relative z-10">Try ADAS Now</span>
+                    <span className="absolute inset-0 bg-primary-foreground/10 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  </Button>
+                </motion.div>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-primary text-primary hover:bg-primary/10 relative overflow-hidden group"
+                    onClick={() => navigate('/docs')}
+                  >
+                    <span className="relative z-10 group-hover:translate-x-1 transition-transform duration-300">Read Documentation</span>
+                    <span className="absolute inset-0 bg-primary/5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  </Button>
+                </motion.div>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
       </main>
