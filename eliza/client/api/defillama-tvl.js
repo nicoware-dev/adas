@@ -3,6 +3,7 @@ import axios from 'axios';
 // DefiLlama API base URL
 const DEFILLAMA_BASE_URL = 'https://api.llama.fi';
 
+// Vercel serverless function handler
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -25,12 +26,24 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await axios.get(`${DEFILLAMA_BASE_URL}/charts/tvl`);
-    return res.status(200).json(response.data);
+    // Fetch Aptos chain TVL data
+    const [tvlResponse, chartResponse] = await Promise.all([
+      axios.get(`${DEFILLAMA_BASE_URL}/v2/chains`),
+      axios.get(`${DEFILLAMA_BASE_URL}/charts/chains/Aptos`)
+    ]);
+
+    const aptosData = tvlResponse.data.find(chain => chain.name.toLowerCase() === 'aptos');
+
+    return res.status(200).json({
+      currentTVL: aptosData?.tvl || 0,
+      change_1d: aptosData?.change_1d || 0,
+      change_7d: aptosData?.change_7d || 0,
+      historicalData: chartResponse.data
+    });
   } catch (error) {
-    console.error('Error fetching TVL data from DefiLlama:', error);
-    return res.status(500).json({ 
-      error: error.response?.data?.message || 'Failed to fetch TVL data from DefiLlama' 
+    console.error('Error fetching Aptos TVL data from DefiLlama:', error);
+    return res.status(500).json({
+      error: error.response?.data?.message || 'Failed to fetch Aptos TVL data from DefiLlama'
     });
   }
-} 
+}
