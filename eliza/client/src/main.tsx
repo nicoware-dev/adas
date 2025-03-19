@@ -3,13 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
-import { WalletProvider } from "./components/providers/wallet-provider";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-// Keep imports but don't use Crossmint for now
-import { CrossmintProviders } from "./components/providers/crossmint-provider";
-import { CrossmintWalletProvider } from "./components/providers/crossmint-wallet-provider";
-import { PrivyProvider } from "./components/providers/privy-provider";
-import { PrivyWalletProvider } from "./components/providers/privy-wallet-provider";
 
 // Simple Error Boundary Component
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: Error | null }> {
@@ -30,13 +24,14 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
     render() {
         if (this.state.hasError) {
             return (
-                <div className="flex flex-col items-center justify-center min-h-screen p-4">
-                    <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
-                    <pre className="bg-gray-100 p-4 rounded overflow-auto max-w-full">
+                <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-[#172625] text-white">
+                    <h1 className="text-2xl font-bold mb-4 font-heading">Something went wrong</h1>
+                    <pre className="bg-[#1B3B3B] p-4 rounded overflow-auto max-w-full">
                         {this.state.error?.toString()}
                     </pre>
-                    <button 
-                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                    <button
+                        type="button"
+                        className="mt-4 px-4 py-2 bg-[#01C0C9] text-white rounded font-heading"
                         onClick={() => window.location.reload()}
                     >
                         Refresh the page
@@ -69,22 +64,11 @@ const queryClient = new QueryClient({
     },
 });
 
-// Only use Privy for now, keep Crossmint code for future use
-const USE_PRIVY = true;
-const USE_CROSSMINT = false;
-
-console.log("Using Privy:", USE_PRIVY);
-console.log("Privy App ID:", import.meta.env.VITE_PRIVY_APP_ID ? "Present" : "Missing");
-
 root.render(
     <StrictMode>
         <ErrorBoundary>
             <QueryClientProvider client={queryClient}>
-                <PrivyProvider>
-                    <PrivyWalletProvider>
-                        <RouterProvider router={router} />
-                    </PrivyWalletProvider>
-                </PrivyProvider>
+                <RouterProvider router={router} />
             </QueryClientProvider>
         </ErrorBoundary>
     </StrictMode>

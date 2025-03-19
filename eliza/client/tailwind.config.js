@@ -30,14 +30,14 @@ export default {
             colors: {
                 // Brand Colors
                 brand: {
-                    dark: '#172625',    // Dark background color
+                    dark: '#09181B',    // Dark background color
                     primary: '#01C0C9', // Main teal
-                    secondary: '#00FCB0', // Light teal/green
+                    secondary: '#015FCD', // Light teal/green
                     accent: '#1B3B3B',  // Dark teal accent
                 },
                 // Theme Colors
                 background: {
-                    DEFAULT: '#172625', // Main background
+                    DEFAULT: '#09181B', // Main background
                     secondary: '#09181B', // Secondary background
                 },
                 foreground: {
@@ -50,8 +50,8 @@ export default {
                     foreground: '#FFFFFF',
                 },
                 secondary: {
-                    DEFAULT: '#00FCB0',
-                    foreground: '#121B1B',
+                    DEFAULT: '#015FCD',
+                    foreground: '#09181B',
                 },
                 muted: {
                     DEFAULT: '#27353A',
@@ -75,9 +75,9 @@ export default {
                 // Chart colors
                 chart: {
                     1: '#01C0C9', // Teal
-                    2: '#00FCB0', // Light teal/green
+                    2: '#015FCD', // Light teal/green
                     3: '#39D8E1', // Light teal
-                    4: '#172625', // Dark teal background
+                    4: '#09181B', // Dark teal background
                     5: '#78C001', // Accent green
                 },
             },
