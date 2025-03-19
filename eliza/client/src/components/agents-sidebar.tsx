@@ -81,7 +81,7 @@ export function AgentsSidebar({ onClose }: AgentsSidebarProps) {
     return (
         <div className="h-full flex flex-col bg-gradient-to-b from-[#09181B] to-[#1B3B3B]">
             <div className="h-14 flex items-center justify-between px-6 border-b border-[#1B3B3B]">
-                <span className="text-base font-heading font-semibold tracking-tight">ADAS Agent Network</span>
+                <span className="text-base font-heading font-semibold tracking-tight">ADAS Agent Swarm</span>
                 {onClose && (
                     <Button
                         variant="ghost"

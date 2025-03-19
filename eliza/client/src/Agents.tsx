@@ -120,7 +120,7 @@ export default function Agents() {
             <HomeHeader />
             <div className="py-16 container space-y-20">
                 <div className="text-center space-y-6">
-                    <h1 className="text-5xl font-black title-gradient font-heading">ADAS Agent Network</h1>
+                    <h1 className="text-5xl font-black title-gradient font-heading">ADAS Agent Swarm</h1>
                     <p className="text-xl text-muted-foreground/90 max-w-3xl mx-auto leading-relaxed">
                         Explore our suite of AI agents designed to revolutionize Aptos DeFi operations through specialized expertise and intelligent coordination.
                     </p>
