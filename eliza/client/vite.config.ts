@@ -53,7 +53,7 @@ export default defineConfig(({ mode }) => {
         base: "./",
         resolve: {
             alias: {
-                "@": "/src",
+                "@": path.resolve(__dirname, "src"),
             },
             preserveSymlinks: true,
             dedupe: ["react", "react-dom"]

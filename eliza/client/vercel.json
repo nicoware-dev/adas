@@ -1,7 +1,7 @@
 {
   "framework": "vite",
   "buildCommand": "pnpm run build",
-  "installCommand": "cd .. && pnpm install --no-frozen-lockfile && cd client",
+  "installCommand": "cd .. && pnpm install --no-frozen-lockfile",
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
