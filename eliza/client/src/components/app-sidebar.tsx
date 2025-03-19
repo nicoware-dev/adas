@@ -1,144 +1,25 @@
-import { useQuery } from "@tanstack/react-query";
-import info from "@/lib/info.json";
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarMenuSkeleton,
-} from "@/components/ui/sidebar";
-import { apiClient } from "@/lib/api";
-import { NavLink, useLocation } from "react-router-dom";
-import type { UUID } from "@elizaos/core";
-import { Book, Cog, Home, User } from "lucide-react";
-import ConnectionStatus from "./connection-status";
+import { MessageSquare } from "lucide-react";
+import { useParams, Link } from "react-router-dom";
 
 export function AppSidebar() {
-    const location = useLocation();
-    const query = useQuery({
-        queryKey: ["agents"],
-        queryFn: () => apiClient.getAgents(),
-        refetchInterval: 5_000,
-    });
-
-    const agents = query?.data?.agents;
+    const { agentId } = useParams();
 
     return (
-        <Sidebar>
-            <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <NavLink to="/">
-                                <img
-                                    alt="elizaos-icon"
-                                    src="/elizaos-icon.png"
-                                    width="100%"
-                                    height="100%"
-                                    className="size-7"
-                                />
-
-                                <div className="flex flex-col gap-0.5 leading-none">
-                                    <span className="font-semibold">
-                                        ADAS
-                                    </span>
-                                    <span className="">v{info?.version}</span>
-                                </div>
-                            </NavLink>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarHeader>
-            <SidebarContent>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <NavLink to="/">
-                                    <SidebarMenuButton isActive={location.pathname === "/"}>
-                                        <Home />
-                                        <span>Home</span>
-                                    </SidebarMenuButton>
-                                </NavLink>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Agents</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {query?.isPending ? (
-                                <div>
-                                    {Array.from({ length: 5 }).map(
-                                        (_, _index) => (
-                                            <SidebarMenuItem key={`skeleton-item-${_index}`}>
-                                                <SidebarMenuSkeleton />
-                                            </SidebarMenuItem>
-                                        )
-                                    )}
-                                </div>
-                            ) : agents?.length > 0 ? (
-                                <div>
-                                    {agents.map(
-                                        (agent: { id: UUID; name: string }) => (
-                                            <SidebarMenuItem key={agent.id}>
-                                                <NavLink
-                                                    to={`/chat/${agent.id}`}
-                                                >
-                                                    <SidebarMenuButton
-                                                        isActive={location.pathname.includes(
-                                                            agent.id
-                                                        )}
-                                                    >
-                                                        <User />
-                                                        <span>
-                                                            {agent.name}
-                                                        </span>
-                                                    </SidebarMenuButton>
-                                                </NavLink>
-                                            </SidebarMenuItem>
-                                        )
-                                    )}
-                                </div>
-                            ) : (
-                                <SidebarMenuItem>
-                                    <SidebarMenuButton disabled>
-                                        <span>No agents available</span>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            )}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-            </SidebarContent>
-            <SidebarFooter>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <NavLink
-                            to="https://elizaos.github.io/eliza/docs/intro/"
-                            target="_blank"
-                        >
-                            <SidebarMenuButton>
-                                <Book /> Documentation
-                            </SidebarMenuButton>
-                        </NavLink>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton disabled>
-                            <Cog /> Settings
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <ConnectionStatus />
-                </SidebarMenu>
-            </SidebarFooter>
-        </Sidebar>
+        <div className="h-full flex flex-col bg-background">
+            <div className="h-12 flex items-center px-3 border-b border-white/[0.08]">
+                <Link to="/" className="text-sm font-semibold gradient-text">
+                    SuperSonic
+                </Link>
+            </div>
+            <nav className="flex-1 p-1.5">
+                <Link
+                    to={`/${agentId}/chat`}
+                    className="flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-white/[0.04]"
+                >
+                    <MessageSquare className="h-4 w-4" />
+                    <span>Chat</span>
+                </Link>
+            </nav>
+        </div>
     );
 }

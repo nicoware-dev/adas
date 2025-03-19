@@ -1,28 +1,15 @@
 {
-  "framework": "vite",
-  "buildCommand": "pnpm run build",
-  "installCommand": "cd .. && pnpm install --no-frozen-lockfile",
-  "outputDirectory": "dist",
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    }
-  ]
-}
+    "version": 2,
+    "buildCommand": "chmod +x vercel-build.sh && ./vercel-build.sh",
+    "installCommand": "echo 'Skipping global install, using build script instead'",
+    "outputDirectory": "dist",
+    "framework": null,
+    "rewrites": [
+        { "source": "/api/zerion/portfolio/:address", "destination": "/api/zerion-portfolio.js?address=:address" },
+        { "source": "/api/zerion/positions/:address", "destination": "/api/zerion-positions.js?address=:address" },
+        { "source": "/api/defillama/tvl", "destination": "/api/defillama-tvl.js" },
+        { "source": "/api/defillama/protocols", "destination": "/api/defillama-protocols.js" },
+        { "source": "/api/privy/analytics", "destination": "/api/privy-analytics.js" },
+        { "source": "/api/privy-oauth", "destination": "/api/privy-oauth.js" }
+    ]
+} 

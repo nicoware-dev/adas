@@ -1,201 +1,102 @@
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import MessageLoading from "./message-loading";
-import { Button, type ButtonProps } from "../button";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 
-// ChatBubble
-const chatBubbleVariant = cva(
-    "flex gap-2 max-w-[60%] items-end relative group",
+const chatBubbleVariants = cva(
+    "relative flex flex-col gap-2 text-lg sm:text-sm leading-[1.6] sm:leading-relaxed tracking-normal transition-all duration-200 w-fit",
     {
         variants: {
             variant: {
-                received: "self-start",
-                sent: "self-end flex-row-reverse",
-            },
-            layout: {
-                default: "",
-                ai: "max-w-full w-full items-center",
+                sent: "ml-auto bg-gradient-to-br from-[#7000ff] via-[#6000c7] to-[#4a0099] shadow-lg text-white rounded-2xl rounded-tr-sm hover:shadow-purple-900/20",
+                received: "bg-gradient-to-br from-[#27272A] via-[#1f1f1f] to-[#171717] shadow-md border border-white/[0.08] rounded-2xl rounded-tl-sm hover:shadow-white/[0.02]",
             },
         },
         defaultVariants: {
             variant: "received",
-            layout: "default",
         },
     }
 );
 
 interface ChatBubbleProps
     extends React.HTMLAttributes<HTMLDivElement>,
-        VariantProps<typeof chatBubbleVariant> {}
-
-const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
-    ({ className, variant, layout, children, ...props }, ref) => (
-        <div
-            className={cn(
-                chatBubbleVariant({ variant, layout, className }),
-                "relative group"
-            )}
-            ref={ref}
-            {...props}
-        >
-            {React.Children.map(children, (child) =>
-                React.isValidElement(child) && typeof child.type !== "string"
-                    ? React.cloneElement(child, {
-                          variant,
-                          layout,
-                      } as React.ComponentProps<typeof child.type>)
-                    : child
-            )}
-        </div>
-    )
-);
-ChatBubble.displayName = "ChatBubble";
-
-// ChatBubbleAvatar
-interface ChatBubbleAvatarProps {
-    src?: string;
-    fallback?: string;
-    className?: string;
+        VariantProps<typeof chatBubbleVariants> {
+    children: React.ReactNode;
 }
 
-const ChatBubbleAvatar: React.FC<ChatBubbleAvatarProps> = ({
-    src,
-    fallback,
+export function ChatBubble({
     className,
-}) => (
-    <Avatar className={className}>
-        <AvatarImage src={src} alt="Avatar" />
-        <AvatarFallback>{fallback}</AvatarFallback>
-    </Avatar>
-);
+    variant,
+    children,
+    ...props
+}: ChatBubbleProps) {
+    return (
+        <div className="flex w-full">
+            <div
+                className={cn(
+                    chatBubbleVariants({ variant }),
+                    "hover:translate-y-[-1px] active:translate-y-[1px] transition-all duration-200 ease-out px-4 sm:px-5 py-3 max-w-[90%] sm:max-w-[75%]",
+                    className
+                )}
+                {...props}
+            >
+                {children}
+            </div>
+        </div>
+    );
+}
 
-// ChatBubbleMessage
-const chatBubbleMessageVariants = cva("p-4", {
-    variants: {
-        variant: {
-            received:
-                "bg-secondary text-secondary-foreground rounded-r-lg rounded-tl-lg",
-            sent: "bg-primary text-primary-foreground rounded-l-lg rounded-tr-lg",
-        },
-        layout: {
-            default: "",
-            ai: "border-t w-full rounded-none bg-transparent",
-        },
-    },
-    defaultVariants: {
-        variant: "received",
-        layout: "default",
-    },
-});
-
-interface ChatBubbleMessageProps
-    extends React.HTMLAttributes<HTMLDivElement>,
-        VariantProps<typeof chatBubbleMessageVariants> {
+interface ChatBubbleMessageProps extends React.HTMLAttributes<HTMLDivElement> {
     isLoading?: boolean;
 }
 
-const ChatBubbleMessage = React.forwardRef<
-    HTMLDivElement,
-    ChatBubbleMessageProps
->(
-    (
-        { className, variant, layout, isLoading = false, children, ...props },
-        ref
-    ) => (
+export function ChatBubbleMessage({
+    className,
+    children,
+    isLoading,
+    ...props
+}: ChatBubbleMessageProps) {
+    if (isLoading) {
+        return (
+            <div
+                className={cn(
+                    "flex items-center gap-3 text-muted-foreground animate-pulse font-medium tracking-tight",
+                    className
+                )}
+                {...props}
+            >
+                <Loader2 className="h-6 w-6 sm:h-4 sm:w-4" />
+                <span className="text-lg sm:text-sm">Thinking...</span>
+            </div>
+        );
+    }
+
+    return (
         <div
             className={cn(
-                chatBubbleMessageVariants({ variant, layout, className }),
-                "break-words max-w-full whitespace-pre-wrap"
+                "break-words break-all whitespace-pre-wrap",
+                "animate-in fade-in-0 slide-in-from-bottom-1 duration-200",
+                "leading-[1.6] sm:leading-relaxed tracking-normal text-lg sm:text-sm font-[450]",
+                className
             )}
-            ref={ref}
             {...props}
         >
-            {isLoading ? (
-                <div className="flex items-center space-x-2">
-                    <MessageLoading />
-                </div>
-            ) : (
-                children
-            )}
+            {children}
         </div>
-    )
-);
-ChatBubbleMessage.displayName = "ChatBubbleMessage";
-
-// ChatBubbleTimestamp
-interface ChatBubbleTimestampProps extends React.HTMLAttributes<HTMLDivElement> {
-    timestamp: string;
+    );
 }
 
-const ChatBubbleTimestamp: React.FC<ChatBubbleTimestampProps> = ({
-    timestamp,
+export function ChatBubbleTimestamp({
     className,
     ...props
-}) => (
-    <div className={cn("text-xs text-right select-none", className)} {...props}>
-        {timestamp}
-    </div>
-);
-
-// ChatBubbleAction
-type ChatBubbleActionProps = ButtonProps & {
-    icon: React.ReactNode;
-};
-
-const ChatBubbleAction: React.FC<ChatBubbleActionProps> = ({
-    icon,
-    onClick,
-    className,
-    variant = "ghost",
-    size = "icon",
-    ...props
-}) => (
-    <Button
-        variant={variant}
-        size={size}
-        className={className}
-        onClick={onClick}
-        {...props}
-    >
-        {icon}
-    </Button>
-);
-
-interface ChatBubbleActionWrapperProps
-    extends React.HTMLAttributes<HTMLDivElement> {
-    variant?: "sent" | "received";
-    className?: string;
+}: React.HTMLAttributes<HTMLDivElement> & { variant?: "sent" | "received" }) {
+    return (
+        <div
+            className={cn(
+                "select-none text-xs sm:text-[10px] font-light tracking-wide mt-1",
+                props.variant === "sent" ? "text-white/70" : "text-muted-foreground",
+                className
+            )}
+            {...props}
+        />
+    );
 }
-
-const ChatBubbleActionWrapper = React.forwardRef<
-    HTMLDivElement,
-    ChatBubbleActionWrapperProps
->(({ variant, className, children, ...props }, ref) => (
-    <div
-        ref={ref}
-        className={cn(
-            "absolute top-1/2 -translate-y-1/2 flex opacity-0 group-hover:opacity-100 transition-opacity duration-200",
-            variant === "sent"
-                ? "-left-1 -translate-x-full flex-row-reverse"
-                : "-right-1 translate-x-full",
-            className
-        )}
-        {...props}
-    >
-        {children}
-    </div>
-));
-ChatBubbleActionWrapper.displayName = "ChatBubbleActionWrapper";
-
-export {
-    ChatBubble,
-    ChatBubbleAvatar,
-    ChatBubbleMessage,
-    ChatBubbleTimestamp,
-    chatBubbleVariant,
-    chatBubbleMessageVariants,
-    ChatBubbleAction,
-    ChatBubbleActionWrapper,
-};

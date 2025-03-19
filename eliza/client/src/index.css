@@ -1,67 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Titillium+Web:wght@300;400;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 222 47% 11%;
-        --card: 0 0% 98%;
-        --card-foreground: 222 47% 11%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 222 47% 11%;
-        --primary: 221 83% 53%;
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222 47% 11%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222 47% 11%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 221 83% 53%;
-        --radius: 0.75rem;
-        --sidebar-background: 0 0% 98%;
-        --sidebar-foreground: 222 47% 11%;
-        --sidebar-primary: 221 83% 53%;
-        --sidebar-primary-foreground: 210 40% 98%;
-        --sidebar-accent: 210 40% 96.1%;
-        --sidebar-accent-foreground: 222 47% 11%;
-        --sidebar-border: 214.3 31.8% 91.4%;
-        --sidebar-ring: 221 83% 53%;
-    }
+        /* Dark backgrounds */
+        --background: 185 35% 8%; /* #172625 */
+        --foreground: 0 0% 98%;
+        --card: 185 35% 8%; /* #172625 */
+        --card-foreground: 0 0% 98%;
+        --popover: 185 25% 9%; /* #09181B */
+        --popover-foreground: 0 0% 98%;
 
-    .dark {
-        --background: 222 47% 11%;
-        --foreground: 210 40% 98%;
-        --card: 222 47% 14%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222 47% 14%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 217 91% 60%;
-        --primary-foreground: 222 47% 11%;
-        --secondary: 217 32% 17%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 217 32% 17%;
+        /* Primary teal color */
+        --primary: 181 99% 40%; /* #01C0C9 */
+        --primary-foreground: 0 0% 100%;
+
+        /* Secondary/accent colors */
+        --secondary: 162 100% 49%; /* #00FCB0 */
+        --secondary-foreground: 185 35% 8%;
+
+        /* Additional colors */
+        --accent: 182 100% 27%; /* #1B3B3B */
+        --accent-foreground: 0 0% 100%;
+
+        /* Utility colors */
+        --muted: 192 16% 19%; /* #27353A */
         --muted-foreground: 215 20.2% 65.1%;
-        --accent: 217 32% 17%;
-        --accent-foreground: 210 40% 98%;
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 210 40% 98%;
-        --border: 217 32% 17%;
-        --input: 217 32% 17%;
-        --ring: 224 76% 48%;
-        --sidebar-background: 222 47% 11%;
-        --sidebar-foreground: 210 40% 98%;
-        --sidebar-primary: 217 91% 60%;
-        --sidebar-primary-foreground: 222 47% 11%;
-        --sidebar-accent: 217 32% 17%;
-        --sidebar-accent-foreground: 210 40% 98%;
-        --sidebar-border: 217 32% 17%;
-        --sidebar-ring: 224 76% 48%;
+
+        /* UI elements */
+        --border: 192 16% 19%; /* #27353A */
+        --input: 192 16% 19%; /* #27353A */
+        --ring: 181 99% 40%; /* #01C0C9 */
+        --radius: 0.75rem;
     }
 }
 
@@ -69,75 +44,64 @@
     * {
         @apply border-border;
     }
-
     body {
         @apply bg-background text-foreground;
+        font-feature-settings: "rlig" 1, "calt" 1;
+        font-family: 'Titillium Web', sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Rajdhani', sans-serif;
     }
 }
 
-/* Markdown styling - compact and consistent */
-.markdown-body {
-  @apply text-foreground leading-tight;
-  font-size: 0.95rem;
+/* Gradient text */
+.gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(to right, #172625, #01C0C9, #00FCB0);
 }
 
-.markdown-body h1 {
-  @apply text-xl font-bold mt-2 mb-1;
+.title-gradient {
+    @apply bg-clip-text text-transparent font-black;
+    background-image: linear-gradient(to right, #172625, #01C0C9, #39D8E1, #00FCB0, #78C001);
+    animation: shine 8s linear infinite;
+    background-size: 200% auto;
+    line-height: 1.2;
+    padding: 0.1em 0;
 }
 
-.markdown-body h2 {
-  @apply text-lg font-bold mt-2 mb-1;
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
 }
 
-.markdown-body h3 {
-  @apply text-base font-semibold mt-1.5 mb-0.5;
+/* Custom animations */
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
 }
 
-.markdown-body ul, .markdown-body ol {
-  @apply my-0.5 ml-5 space-y-0.5;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.markdown-body ul {
-  @apply list-disc;
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.markdown-body ol {
-  @apply list-decimal;
-}
-
-.markdown-body li {
-  @apply my-0.5 leading-snug;
-}
-
-.markdown-body code {
-  @apply bg-muted px-1 py-0.5 rounded text-sm break-all;
-  word-break: break-word;
-}
-
-.markdown-body pre {
-  @apply block bg-muted p-2 rounded text-sm my-1 overflow-x-auto;
-}
-
-.markdown-body table {
-  @apply border-collapse my-1.5 w-full text-sm;
-}
-
-.markdown-body th {
-  @apply border p-1 bg-muted font-medium;
-}
-
-.markdown-body td {
-  @apply border p-1;
-}
-
-.markdown-body a {
-  @apply text-primary underline;
-}
-
-.markdown-body blockquote {
-  @apply border-l-4 border-muted pl-2 my-1 italic;
-}
-
-.markdown-body p {
-  @apply my-0.5 break-words;
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.2;
+        transform: scale(1.1);
+    }
 }

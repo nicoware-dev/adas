@@ -1,39 +1,45 @@
-import { Check, Copy } from "lucide-react";
 import { useState } from "react";
+import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-const CopyButton = ({ text }: { text: string }) => {
+interface CopyButtonProps {
+    text: string;
+}
+
+export default function CopyButton({ text }: CopyButtonProps) {
     const [copied, setCopied] = useState(false);
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(text).then(() => {
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(text);
             setCopied(true);
-            setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
-        });
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error("Failed to copy text:", err);
+        }
     };
 
     return (
         <Tooltip>
             <TooltipTrigger asChild>
                 <Button
-                    onClick={handleCopy}
                     variant="ghost"
                     size="icon"
-                    className="flex items-center space-x-2 text-muted-foreground"
+                    className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                    onClick={handleCopy}
                 >
                     {copied ? (
-                        <Check className="size-4" />
+                        <Check className="h-3 w-3" />
                     ) : (
-                        <Copy className="size-4" />
+                        <Copy className="h-3 w-3" />
                     )}
+                    <span className="sr-only">Copy message</span>
                 </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">
-                <p>Copy</p>
+            <TooltipContent side="left">
+                <p>{copied ? "Copied!" : "Copy message"}</p>
             </TooltipContent>
         </Tooltip>
     );
-};
-
-export default CopyButton;
+}
