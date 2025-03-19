@@ -78,7 +78,7 @@ function Home() {
                             </style>
                             <div className="space-y-8">
                                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-black title-gradient" style={{ lineHeight: '1.2' }}>
-                                    Revolutionizing Aptos DeFi with AI-Powered Agent Networks
+                                    Revolutionizing Aptos DeFi with AI-Powered Agent Swarms
                                 </h1>
                                 <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
                                     Simplify your Aptos DeFi experience with the power of Multi-Agent Systems (MAS)
@@ -221,7 +221,7 @@ function Home() {
                                 <CardHeader>
                                     <CardTitle className="text-xl font-bold">
                                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#01C0C9] to-[#319CA0]">
-                                            Agent Network
+                                            Agent Swarm
                                         </span>
                                     </CardTitle>
                                     <CardDescription className="text-base leading-relaxed">

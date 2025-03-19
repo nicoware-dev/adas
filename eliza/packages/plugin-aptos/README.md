@@ -63,7 +63,7 @@ What's the current price of APT?
 ```
 Create a new token named "MyToken2" with symbol "MTK2" and 1000 tokens supply and 8 decimals
 
-Mint 1000 MTK2 tokens (address: 0x4717b796ed683a11c5946ec13aa982fd4304a73906d12a5bb5558d5238a3a15c) to 0x39a77791f641bd4e16a7f1774e5d5df5d38c03e4843d315c15ac01e01baa0b0c
+Mint 1000 MTK2 tokens (Address: 0x4717b796ed683a11c5946ec13aa982fd4304a73906d12a5bb5558d5238a3a15c) to 0x39a77791f641bd4e16a7f1774e5d5df5d38c03e4843d315c15ac01e01baa0b0c
 
 Burn 1 of my TTK tokens (address: 0x4717b796ed683a11c5946ec13aa982fd4304a73906d12a5bb5558d5238a3a15c)
 
