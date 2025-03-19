@@ -23,7 +23,11 @@ export default defineConfig(({ mode }) => {
         ],
         optimizeDeps: {
             include: [
-                "@elizaos/core"
+                "@elizaos/core",
+                "@tanstack/query-core",
+                "@tanstack/react-query",
+                "react-router",
+                "react-router-dom"
             ]
         },
         clearScreen: false,
@@ -50,10 +54,21 @@ export default defineConfig(({ mode }) => {
             chunkSizeWarningLimit: 1000,
             assetsDir: "assets",
             rollupOptions: {
-                external: ['@tanstack/query-core'],
+                external: ["turbo-stream"],
                 output: {
-                    manualChunks: {
-                        vendor: ['react', 'react-dom', 'react-router-dom']
+                    manualChunks(id) {
+                        if (id.includes('node_modules')) {
+                            if (id.includes('react-router')) {
+                                return 'vendor-router';
+                            }
+                            if (id.includes('react')) {
+                                return 'vendor-react';
+                            }
+                            if (id.includes('@tanstack')) {
+                                return 'vendor-tanstack';
+                            }
+                            return 'vendor';
+                        }
                     }
                 }
             }
