@@ -2,7 +2,7 @@
   "name": "Analytics Agent",
   "plugins": ["@elizaos-plugins/plugin-aptos-analytics"],
   "clients": [],
-  "modelProvider": "anthropic",
+  "modelProvider": "openai",
   "settings": {
     "ragKnowledge": true,
     "secrets": {},

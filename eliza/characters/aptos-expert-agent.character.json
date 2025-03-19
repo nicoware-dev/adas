@@ -1,8 +1,8 @@
 {
   "name": "Aptos Expert Agent",
-  "plugins": ["@elizaos-plugins/plugin-aptos"],
+  "plugins": [],
   "clients": [],
-  "modelProvider": "anthropic",
+  "modelProvider": "openai",
   "settings": {
     "ragKnowledge": true,
     "secrets": {},

@@ -23,9 +23,9 @@ import { merkleTradeActions } from "./merkle-trade";
 // Export all actions
 export const actions = [
     // Core Aptos actions
-    transferNftAction,  // Prioritize NFT transfers
     tokenTransfer,
     transferAptos,
+    transferNftAction,  // Prioritize NFT transfers
     balanceAction,
     getTokenDetailsAction,
     getTokenPriceAction,
