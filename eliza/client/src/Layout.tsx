@@ -26,17 +26,17 @@ export default function Layout() {
         queryClient.invalidateQueries({
             predicate: (query) => query.queryKey[0] === "messages",
         });
-    }, [location, queryClient]);
+    }, [queryClient]);
 
     return (
-        <div className="w-full h-screen flex flex-col">
+        <div className="w-full h-screen flex flex-col bg-[#09181B]">
             <AppHeader />
             <div className="flex-1 flex">
                 {/* Sidebar */}
                 <div
                     className={`
                         fixed top-[56px] left-0 h-[calc(100vh-56px)] w-[240px]
-                        bg-background border-r border-white/[0.08]
+                        bg-[#09181B] border-r border-[#1B3B3B]
                         transition-transform duration-300
                         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-[240px]'}
                         z-40
@@ -52,7 +52,7 @@ export default function Layout() {
                     ${isSidebarOpen ? 'ml-[240px]' : 'ml-0'}
                 `}>
                     {/* Header */}
-                    <div className="h-14 flex items-center justify-between px-6 border-b border-white/[0.08]">
+                    <div className="h-14 flex items-center justify-between px-6 border-b border-[#1B3B3B]">
                         <div className="flex items-center gap-6">
                             <Button
                                 variant="ghost"
@@ -64,6 +64,7 @@ export default function Layout() {
                                         predicate: (query) => query.queryKey[0] === "messages",
                                     });
                                 }}
+                                className="hover:bg-[#01C0C9]/10 hover:text-[#01C0C9]"
                             >
                                 <Menu className="h-5 w-5" />
                             </Button>

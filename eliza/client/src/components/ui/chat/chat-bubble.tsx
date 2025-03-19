@@ -7,8 +7,8 @@ const chatBubbleVariants = cva(
     {
         variants: {
             variant: {
-                sent: "ml-auto bg-gradient-to-br from-[#7000ff] via-[#6000c7] to-[#4a0099] shadow-lg text-white rounded-2xl rounded-tr-sm hover:shadow-purple-900/20",
-                received: "bg-gradient-to-br from-[#27272A] via-[#1f1f1f] to-[#171717] shadow-md border border-white/[0.08] rounded-2xl rounded-tl-sm hover:shadow-white/[0.02]",
+                sent: "ml-auto bg-gradient-to-br from-[#172625] via-[#1B3B3B] to-[#1D6B72] shadow-lg text-white rounded-2xl rounded-tr-sm hover:shadow-[#01C0C9]/20 border border-[#319CA0]/20",
+                received: "bg-gradient-to-br from-[#1B3B3B] via-[#172625] to-[#09181B] shadow-md border border-[#1B3B3B] rounded-2xl rounded-tl-sm hover:shadow-[#01C0C9]/5",
             },
         },
         defaultVariants: {
@@ -64,7 +64,7 @@ export function ChatBubbleMessage({
                 )}
                 {...props}
             >
-                <Loader2 className="h-6 w-6 sm:h-4 sm:w-4" />
+                <Loader2 className="h-6 w-6 sm:h-4 sm:w-4 animate-spin" />
                 <span className="text-lg sm:text-sm">Thinking...</span>
             </div>
         );

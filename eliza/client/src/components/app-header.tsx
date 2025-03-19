@@ -1,14 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { ConnectWallet } from "./connect-wallet";
-import { CrossmintConnectWallet } from "./crossmint-connect-wallet";
-import { PrivyConnectWallet } from "./privy-connect-wallet";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import logo from "../assets/icon.svg";
-
-// Only use Privy for now, keep other imports for future use
-const USE_PRIVY = true;
 
 export function AppHeader() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,17 +13,18 @@ export function AppHeader() {
     const navItems = [
         { name: "Chat", path: `/app/chat/${DEFAULT_AGENT_ID}` },
         { name: "Analytics", path: "/app/analytics" },
-        { name: "Portfolio", path: "/app/portfolio" },
-        { name: "Settings", path: "/app/settings" },
+        // Portfolio and Settings pages are hidden for now as they require wallet connection
+        // { name: "Portfolio", path: "/app/portfolio" },
+        // { name: "Settings", path: "/app/settings" },
     ];
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-white/[0.08] bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-50 w-full border-b border-[#1B3B3B] bg-[#09181B]/80 backdrop-blur supports-[backdrop-filter]:bg-[#09181B]/80">
             <div className="flex h-14 items-center justify-between px-4 relative">
                 {/* Logo */}
                 <Link to="/" className="flex items-center gap-2">
                     <img src={logo} alt="ADAS Logo" className="h-6 w-6" />
-                    <span className="text-white font-semibold">ADAS</span>
+                    <span className="text-white font-heading font-semibold">ADAS</span>
                 </Link>
 
                 {/* Mobile Menu Button - Centered */}
@@ -54,10 +49,10 @@ export function AppHeader() {
                         <Link
                             key={item.path}
                             to={item.path}
-                            className={`text-sm transition-colors px-6 ${
+                            className={`text-sm font-heading font-medium transition-colors px-6 ${
                                 location.pathname.includes(item.path.split('/')[2])
-                                    ? 'text-foreground'
-                                    : 'text-muted-foreground hover:text-foreground'
+                                    ? 'text-[#01C0C9]'
+                                    : 'text-muted-foreground hover:text-[#01C0C9]'
                             }`}
                         >
                             {item.name}
@@ -65,21 +60,16 @@ export function AppHeader() {
                     ))}
                 </nav>
 
-                {/* Connect Wallet / Sign In Button - Always Visible */}
-                <div>
-                    <PrivyConnectWallet />
-                </div>
-
                 {/* Mobile Menu Overlay */}
                 {isMenuOpen && (
-                    <div className="fixed inset-0 top-14 z-40 bg-[#121B1B] lg:hidden min-h-[calc(100vh-3.5rem)]">
-                        <nav className="flex flex-col items-center py-8 gap-8 bg-[#121B1B] h-full">
+                    <div className="fixed inset-0 top-14 z-40 bg-[#09181B] lg:hidden min-h-[calc(100vh-3.5rem)]">
+                        <nav className="flex flex-col items-center py-8 gap-8 bg-[#09181B] h-full">
                             {navItems.map((item) => (
                                 <Link
                                     key={item.path}
                                     to={item.path}
                                     onClick={() => setIsMenuOpen(false)}
-                                    className={`text-lg font-medium transition-colors ${
+                                    className={`text-lg font-heading font-medium transition-colors ${
                                         location.pathname.includes(item.path.split('/')[2])
                                             ? 'text-[#01C0C9]'
                                             : 'text-muted-foreground hover:text-[#01C0C9]'

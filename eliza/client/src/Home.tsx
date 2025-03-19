@@ -63,7 +63,7 @@ function Home() {
                                     alt="ADAS Hero"
                                     className="w-[1024px] h-auto max-w-full"
                                     style={{
-                                        filter: 'drop-shadow(0 0 20px rgba(1, 192, 201, 0.3))',
+                                        filter: 'drop-shadow(0 0 20px rgba(1, 95, 205, 0.3))',
                                         animation: 'float 6s ease-in-out infinite'
                                     }}
                                 />
@@ -87,8 +87,7 @@ function Home() {
                                     <Button
                                         size="lg"
                                         onClick={() => handleExternalLink('https://t.me/ADAS_Demo_bot')}
-                                        style={{ backgroundColor: '#01C0C9', color: 'white' }}
-                                        className="hover:bg-[#01C0C9]/90 flex items-center gap-2 w-full sm:w-auto"
+                                        className="bg-[#01C0C9] hover:bg-[#319CA0] text-white flex items-center gap-2 w-full sm:w-auto"
                                     >
                                         <span>Try for Free</span>
                                         <ArrowRight className="h-4 w-4" />
@@ -97,7 +96,7 @@ function Home() {
                                         size="lg"
                                         variant="outline"
                                         onClick={() => handleExternalLink('https://adas-1.gitbook.io/adas/')}
-                                        className="border-[#27353A] hover:bg-[#01C0C9]/10 hover:border-[#01C0C9]/50 text-white w-full sm:w-auto"
+                                        className="border-[#27353A] hover:bg-[#015FCD]/10 hover:border-[#015FCD]/50 text-white w-full sm:w-auto"
                                     >
                                         Learn More
                                     </Button>
@@ -171,7 +170,7 @@ function Home() {
                                                     />
                                                 </div>
                                                 <div className="space-y-3">
-                                                    <h3 className="text-xl font-semibold text-[#01C0C9]">{feature.title}</h3>
+                                                    <h3 className="text-[#01C0C9] text-xl font-semibold">{feature.title}</h3>
                                                     <p className="text-sm text-muted-foreground">{feature.description}</p>
                                                 </div>
                                             </div>
@@ -209,7 +208,7 @@ function Home() {
                             <Card className="bg-[#182424] border-[#27353A] hover:bg-[#1E2E2E] transition-all duration-300 h-full group">
                                 <CardHeader>
                                     <CardTitle className="text-xl font-bold">
-                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#01C0C9] to-[#00FCB0]">
+                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#01C0C9] to-[#319CA0]">
                                             Aptos Expertise
                                         </span>
                                     </CardTitle>
@@ -221,7 +220,7 @@ function Home() {
                             <Card className="bg-[#182424] border-[#27353A] hover:bg-[#1E2E2E] transition-all duration-300 h-full group">
                                 <CardHeader>
                                     <CardTitle className="text-xl font-bold">
-                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#01C0C9] to-[#00FCB0]">
+                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#01C0C9] to-[#319CA0]">
                                             Agent Network
                                         </span>
                                     </CardTitle>
@@ -233,7 +232,7 @@ function Home() {
                             <Card className="bg-[#182424] border-[#27353A] hover:bg-[#1E2E2E] transition-all duration-300 h-full group">
                                 <CardHeader>
                                     <CardTitle className="text-xl font-bold">
-                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#01C0C9] to-[#00FCB0]">
+                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#01C0C9] to-[#319CA0]">
                                             Move Integration
                                         </span>
                                     </CardTitle>
@@ -320,7 +319,7 @@ function Home() {
                                 </CardHeader>
                                 <CardContent className="space-y-6">
                                     <Button
-                                        className={`w-full ${plan.featured ? 'bg-[#01C0C9] text-white hover:bg-[#01C0C9]/90' : plan.comingSoon ? 'bg-gray-700 text-gray-300 cursor-not-allowed' : 'border-[#27353A] hover:bg-[#1E2E2E] text-[#01C0C9]'}`}
+                                        className={`w-full ${plan.featured ? 'bg-[#01C0C9] text-white hover:bg-[#319CA0]' : plan.comingSoon ? 'bg-gray-700 text-gray-300 cursor-not-allowed' : 'border-[#27353A] hover:bg-[#1E2E2E] text-[#01C0C9]'}`}
                                         variant={plan.featured ? 'default' : 'outline'}
                                         onClick={() => plan.comingSoon ? null : handleExternalLink(plan.href)}
                                         disabled={plan.comingSoon}
@@ -385,25 +384,25 @@ function Home() {
                 {/* Social Media Section */}
                 <section className="container py-24 space-y-12">
                     <div className="text-center space-y-4">
-                        <h2 className="text-3xl font-bold title-gradient">Stay Updated with Our Aptos Expert</h2>
+                        <h2 className="text-3xl font-bold title-gradient font-heading">Stay Updated with Our Meme Agent</h2>
                         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                            Follow our AI Expert Agent for the latest Aptos DeFi trends, market insights, and community updates.
+                            Follow our AI Meme Agent for the latest Aptos DeFi trends, market insights, and community updates.
                         </p>
                     </div>
                     <div className="flex justify-center gap-8">
                         <a href="https://x.com/aptos_labs" target="_blank" rel="noopener noreferrer" className="group">
-                            <Card className="bg-[#182424] border-[#27353A] hover:bg-[#1E2E2E] transition-colors p-6">
+                            <Card className="bg-[#172625] border-[#1B3B3B] hover:bg-[#1B3B3B] transition-colors p-6">
                                 <div className="flex flex-col items-center space-y-4">
-                                    <div className="w-24 h-24 rounded-full overflow-hidden ring-2 ring-[#01C0C9] ring-offset-2 ring-offset-[#182424] group-hover:ring-4 transition-all duration-300">
+                                    <div className="w-24 h-24 rounded-full overflow-hidden ring-2 ring-[#015FCD] ring-offset-2 ring-offset-[#172625] group-hover:ring-4 transition-all duration-300">
                                         <img
-                                            src="/agents/aptos-expert.png"
-                                            alt="ADAS Aptos Expert"
+                                            src="/agents/meme.png"
+                                            alt="ADAS Meme Agent"
                                             className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
                                         />
                                     </div>
                                     <div className="text-center">
-                                        <h3 className="font-semibold">Follow on X</h3>
-                                        <p className="text-sm text-muted-foreground">Daily Aptos insights</p>
+                                        <h3 className="font-semibold font-heading">Follow on X</h3>
+                                        <p className="text-sm text-muted-foreground">Daily memes & Aptos insights</p>
                                     </div>
                                 </div>
                             </Card>
@@ -428,26 +427,26 @@ function Home() {
 
                     <div className="container relative space-y-12">
                         <div className="text-center space-y-4">
-                            <h2 className="text-3xl font-bold title-gradient">Talk to Our AI Support Agent</h2>
+                            <h2 className="text-3xl font-bold title-gradient font-heading">Talk to Our Coordinator Agent</h2>
                             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                                Have questions? Our dedicated Support AI Agent is available 24/7 on Telegram to assist you with any inquiries about our platform and services.
+                                Have questions? Our dedicated Coordinator Agent is available 24/7 on Telegram to assist you with any inquiries about our platform and services.
                             </p>
                         </div>
                         <div className="flex flex-col items-center gap-8">
                             <div className="w-24 h-24 rounded-full overflow-hidden ring-2 ring-[#01C0C9] ring-offset-2 ring-offset-[#182424] hover:ring-4 transition-all duration-300">
                                 <img
                                     src="/agents/coordinator.png"
-                                    alt="AI Support Agent"
+                                    alt="Coordinator Agent"
                                     className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
                                 />
                             </div>
                             <Button
                                 size="lg"
-                                className="bg-[#01C0C9] text-white hover:bg-[#01C0C9]/90"
-                                onClick={() => handleExternalLink('https://t.me/ADAS_Support_bot')}
+                                className="bg-[#01C0C9] hover:bg-[#319CA0] text-white font-heading"
+                                onClick={() => handleExternalLink('https://t.me/ADAS_Coordinator_bot')}
                             >
                                 <img src={telegramIcon} alt="Telegram" className="mr-2 h-5 w-5" />
-                                Chat with Support Agent
+                                Chat with Coordinator Agent
                             </Button>
                         </div>
                     </div>

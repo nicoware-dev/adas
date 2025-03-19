@@ -7,11 +7,11 @@
 @layer base {
     :root {
         /* Dark backgrounds */
-        --background: 185 35% 8%; /* #172625 */
+        --background: 196 40% 6%; /* #09181B */
         --foreground: 0 0% 98%;
-        --card: 185 35% 8%; /* #172625 */
+        --card: 196 40% 6%; /* #09181B */
         --card-foreground: 0 0% 98%;
-        --popover: 185 25% 9%; /* #09181B */
+        --popover: 196 40% 6%; /* #09181B */
         --popover-foreground: 0 0% 98%;
 
         /* Primary teal color */
@@ -19,22 +19,22 @@
         --primary-foreground: 0 0% 100%;
 
         /* Secondary/accent colors */
-        --secondary: 162 100% 49%; /* #00FCB0 */
-        --secondary-foreground: 185 35% 8%;
+        --secondary: 181 52% 41%; /* #319CA0 */
+        --secondary-foreground: 196 40% 6%;
 
         /* Additional colors */
-        --accent: 182 100% 27%; /* #1B3B3B */
+        --accent: 182 38% 28%; /* #1D6B72 */
         --accent-foreground: 0 0% 100%;
 
         /* Utility colors */
-        --muted: 192 16% 19%; /* #27353A */
+        --muted: 180 37% 17%; /* #172625 */
         --muted-foreground: 215 20.2% 65.1%;
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 210 40% 98%;
 
         /* UI elements */
-        --border: 192 16% 19%; /* #27353A */
-        --input: 192 16% 19%; /* #27353A */
+        --border: 182 38% 17%; /* #1B3B3B */
+        --input: 182 38% 17%; /* #1B3B3B */
         --ring: 181 99% 40%; /* #01C0C9 */
         --radius: 0.75rem;
     }
@@ -57,12 +57,12 @@
 /* Gradient text */
 .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(to right, #172625, #01C0C9, #00FCB0);
+    background-image: linear-gradient(to right, #09181B, #01C0C9, #319CA0);
 }
 
 .title-gradient {
     @apply bg-clip-text text-transparent font-black;
-    background-image: linear-gradient(to right, #172625, #01C0C9, #39D8E1, #00FCB0, #78C001);
+    background-image: linear-gradient(to right, #09181B, #01C0C9, #319CA0, #1D6B72, #A1DFF7);
     animation: shine 8s linear infinite;
     background-size: 200% auto;
     line-height: 1.2;

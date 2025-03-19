@@ -14,11 +14,11 @@ export const getExamplePrompts = (agentName?: string): ExamplePrompt[] => {
       icon: <TrendingUp className="h-4 w-4" />,
     },
     {
-      text: "What are the trending pools on Arbitrum?",
+      text: "What are the trending pools on Aptos?",
       icon: <Coins className="h-4 w-4" />,
     },
     {
-      text: "What are the prices of BTC, ETH, MNT, and S?",
+      text: "What are the prices of BTC, ETH, MNT, and APT?",
       icon: <Search className="h-4 w-4" />,
     },
   ];
@@ -27,11 +27,11 @@ export const getExamplePrompts = (agentName?: string): ExamplePrompt[] => {
   if (agentName?.toLowerCase().includes('demo')) {
     return [
       {
-        text: "Transfer 0.001 USDC on Arbitrum to 0xF12d64817029755853bc74a585EcD162f63c5f84",
+        text: "Transfer 0.001 USDC on Aptos to 0xF12d64817029755853bc74a585EcD162f63c5f84",
         icon: <ArrowRightLeft className="h-4 w-4" />,
       },
       {
-        text: "Transfer 0.001 USDC from Arbitrum to Polygon via Circle Bridge",
+        text: "Transfer 0.001 USDC from Aptos to Polygon via Circle Bridge",
         icon: <Wallet className="h-4 w-4" />,
       },
       {

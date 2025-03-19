@@ -38,7 +38,7 @@ const AgentCard: FC<AgentCardProps> = ({ agent }) => {
                     </div>
                     <div className="space-y-2">
                         <CardTitle className="text-xl font-bold font-heading">
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#01C0C9] to-[#00FCB0]">
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#01C0C9] to-[#015FCD]">
                                 {agent.name}
                             </span>
                         </CardTitle>

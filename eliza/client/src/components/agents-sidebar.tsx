@@ -79,14 +79,14 @@ export function AgentsSidebar({ onClose }: AgentsSidebarProps) {
     };
 
     return (
-        <div className="h-full flex flex-col bg-gradient-to-b from-background to-[#182424]">
-            <div className="h-14 flex items-center justify-between px-6 border-b border-white/[0.08]">
-                <span className="text-base font-semibold tracking-tight">ADAS Agent Network</span>
+        <div className="h-full flex flex-col bg-gradient-to-b from-[#09181B] to-[#1B3B3B]">
+            <div className="h-14 flex items-center justify-between px-6 border-b border-[#1B3B3B]">
+                <span className="text-base font-heading font-semibold tracking-tight">ADAS Agent Network</span>
                 {onClose && (
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="lg:hidden"
+                        className="lg:hidden hover:bg-[#01C0C9]/10 hover:text-[#01C0C9]"
                         onClick={onClose}
                     >
                         <X className="h-4 w-4" />
@@ -96,14 +96,14 @@ export function AgentsSidebar({ onClose }: AgentsSidebarProps) {
             <div className="flex-1 p-4 space-y-2 overflow-auto">
                 {isLoading ? (
                     <div className="flex items-center justify-center h-32">
-                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                        <Loader2 className="h-5 w-5 animate-spin text-[#01C0C9]" />
                     </div>
                 ) : error ? (
-                    <div className="p-4 text-sm font-medium tracking-tight text-red-500 text-center">
+                    <div className="p-4 text-sm font-medium font-heading tracking-tight text-red-500 text-center">
                         Failed to load agents
                     </div>
                 ) : agents?.length === 0 ? (
-                    <div className="p-4 text-sm font-medium tracking-tight text-muted-foreground text-center">
+                    <div className="p-4 text-sm font-medium font-heading tracking-tight text-muted-foreground text-center">
                         No agents available
                     </div>
                 ) : (
@@ -122,10 +122,10 @@ export function AgentsSidebar({ onClose }: AgentsSidebarProps) {
                         >
                             <div className="flex-1 min-w-0">
                                 <p className={cn(
-                                    "font-medium tracking-tight truncate transition-colors duration-200",
+                                    "font-heading font-medium tracking-tight truncate transition-colors duration-200",
                                     currentAgentId === agent.id ?
-                                        "text-foreground" :
-                                        "text-muted-foreground hover:text-foreground"
+                                        "text-[#01C0C9]" :
+                                        "text-muted-foreground hover:text-[#01C0C9]"
                                 )}>
                                     {agent.name}
                                 </p>

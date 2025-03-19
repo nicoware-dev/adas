@@ -24,6 +24,9 @@ import { messageStorage, StoredMessage } from "@/lib/storage";
 import { ExamplePrompts } from "@/components/ui/chat/example-prompts";
 import { FloatingPrompts } from "@/components/ui/chat/floating-prompts";
 import { getExamplePrompts } from "@/lib/example-prompts";
+import { cn } from "@/lib/utils";
+import { forwardRef, ChangeEvent } from "react";
+import { X, Paperclip, ChevronDown, Lightbulb } from "lucide-react";
 
 type TextResponse = {
     text: string;
@@ -61,6 +64,8 @@ export default function Chat() {
     const [messageCount, setMessageCount] = useState(0);
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const { headerSlot } = useOutletContext<OutletContextType>();
+    const [showPrompts, setShowPrompts] = useState(false);
+    const [showAll, setShowAll] = useState(false);
 
     const { scrollRef, scrollToBottom } = useAutoScroll({
         smooth: true,
@@ -524,7 +529,7 @@ export default function Chat() {
                     <div className="max-w-3xl mx-auto p-4">
                         <form onSubmit={handleSubmit} className="flex flex-col gap-2">
                             <div className="flex items-end gap-2">
-                                <div className="flex-1 relative rounded-md border bg-card">
+                                <div className="flex-1 relative rounded-md border border-[#1B3B3B] bg-[#172625]">
                                     {selectedFile && (
                                         <div className="absolute bottom-full mb-2">
                                             <ChatFileInput
@@ -539,7 +544,7 @@ export default function Chat() {
                                         onChange={(e) => setInput(e.target.value)}
                                         onKeyDown={handleKeyDown}
                                         placeholder={isLoading ? "Loading..." : agent ? `Message ${agent.name}...` : "Select an agent..."}
-                                        className="min-h-12 resize-none rounded-md bg-[#182424] border-[#27353A] focus:border-[#01C0C9] focus:ring-[#01C0C9] p-3 shadow-none focus-visible:ring-0"
+                                        className="min-h-12 resize-none rounded-md bg-[#172625] border-[#1B3B3B] focus:border-[#01C0C9] focus:ring-[#01C0C9] p-3 shadow-none focus-visible:ring-0"
                                         disabled={isLoading || mutation.isPending || !agent}
                                     />
                                 </div>

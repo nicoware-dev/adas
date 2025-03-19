@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { cn } from "@/lib/utils";
 
 export interface ExamplePrompt {
   text: string;
@@ -7,26 +8,47 @@ export interface ExamplePrompt {
 }
 
 interface ExamplePromptsProps {
-  prompts: ExamplePrompt[];
+  prompts: string[] | ExamplePrompt[];
   onPromptClick: (prompt: string) => void;
+  className?: string;
 }
 
-export function ExamplePrompts({ prompts, onPromptClick }: ExamplePromptsProps) {
+export function ExamplePrompts({ prompts, onPromptClick, className }: ExamplePromptsProps) {
+  if (!prompts || prompts.length === 0) return null;
+
+  const getPromptText = (prompt: string | ExamplePrompt): string => {
+    return typeof prompt === 'string' ? prompt : prompt.text;
+  };
+
+  const getPromptKey = (prompt: string | ExamplePrompt, index: number): string => {
+    const promptText = getPromptText(prompt);
+    const shortText = promptText.substring(0, 10).replace(/[^a-zA-Z0-9]/g, '');
+    return `prompt-${index}-${shortText || index}`;
+  };
+
+  const handleClick = (prompt: string | ExamplePrompt) => {
+    const promptText = getPromptText(prompt);
+    onPromptClick(promptText);
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mx-auto">
-      {prompts.map((prompt, index) => (
-        <Button
-          key={index}
-          variant="outline"
-          className="flex items-center justify-start gap-2 p-4 h-auto text-left border-[#27272A] bg-[#121212] hover:bg-[#7f00ff]/10 hover:border-[#7f00ff]/50 text-white transition-all duration-200 shadow-sm hover:shadow-md"
-          onClick={() => onPromptClick(prompt.text)}
-        >
-          {prompt.icon && (
-            <span className="flex-shrink-0 text-[#7f00ff]">{prompt.icon}</span>
-          )}
-          <span className="truncate">{prompt.text}</span>
-        </Button>
-      ))}
+    <div className={cn("grid grid-cols-1 gap-2", className)}>
+      {prompts.map((prompt, index) => {
+        const promptText = getPromptText(prompt);
+        return (
+          <Button
+            key={getPromptKey(prompt, index)}
+            variant="outline"
+            className="flex items-center justify-start gap-2 p-3 h-auto text-left border-[#1B3B3B] bg-[#09181B] hover:bg-[#01C0C9]/10 hover:border-[#01C0C9]/50 text-white transition-all duration-200"
+            onClick={() => handleClick(prompt)}
+          >
+            {typeof prompt !== 'string' && prompt.icon && (
+              <span className="flex-shrink-0 text-[#01C0C9]">{prompt.icon}</span>
+            )}
+            <span className="truncate">{promptText}</span>
+          </Button>
+        );
+      })}
     </div>
   );
 }
