@@ -22,10 +22,10 @@ import AIWriter from "react-aiwriter";
 import type { IAttachment } from "@/types";
 import { AudioRecorder } from "./audio-recorder";
 import { Badge } from "./ui/badge";
-import { useAutoScroll } from "./ui/chat/hooks/useAutoScroll";
-import { ExamplePrompts } from "./example-prompts";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useChatScroll } from "@/hooks/use-chat-scroll";
+import { HeaderExamplePrompts, EmptyStateExamplePrompts } from "./example-prompts";
 
 type ExtraContentFields = {
     user: string;
@@ -60,7 +60,108 @@ export default function Page({ agentId }: { agentId: UUID }) {
     const formRef = useRef<HTMLFormElement>(null);
     const [messages, setMessages] = useState<ContentWithUser[]>([]);
     const messageLoadedRef = useRef(false);
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [isAtBottom, setIsAtBottom] = useState(true);
+    const [disableAutoScroll, setDisableAutoScroll] = useState(false);
+    const initialScrollRef = useRef(false);
 
+    // Load messages for the new agent
+    const loadAgentMessages = useCallback(() => {
+        const storedMessagesString = localStorage.getItem(`chat-history-${agentId}`);
+        if (storedMessagesString) {
+            try {
+                const storedMessages = JSON.parse(storedMessagesString);
+                if (Array.isArray(storedMessages) && storedMessages.length > 0) {
+                    setMessages(storedMessages);
+                }
+            } catch (error) {
+                console.error("Error loading messages from localStorage:", error);
+            }
+        }
+    }, [agentId]);
+
+    // Reset state when agent changes
+    useEffect(() => {
+        setMessages([]);
+        setInput("");
+        setSelectedFile(null);
+        setShowPrompts(false);
+        messageLoadedRef.current = false;
+        initialScrollRef.current = false;
+        setIsAtBottom(true);
+        setDisableAutoScroll(false);
+
+        loadAgentMessages();
+
+        // Focus input after agent change
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [loadAgentMessages]);
+
+    // Save messages to localStorage when they change
+    const saveMessages = useCallback(() => {
+        try {
+            if (messages.length > 0) {
+                // Limit to 50 messages to prevent localStorage from getting too large
+                const limitedMessages = [...messages].slice(-50);
+                localStorage.setItem(`chat-history-${agentId}`, JSON.stringify(limitedMessages));
+            } else if (messages.length === 0) {
+                localStorage.removeItem(`chat-history-${agentId}`);
+            }
+        } catch (error) {
+            console.error("Error saving messages to localStorage:", error);
+        }
+    }, [messages, agentId]);
+
+    // Apply the debounced saving effect
+    useEffect(() => {
+        const timeoutId = setTimeout(saveMessages, 300);
+        return () => clearTimeout(timeoutId);
+    }, [saveMessages]);
+
+    // Clear chat history for current agent only
+    const clearHistory = useCallback(() => {
+        try {
+            localStorage.removeItem(`chat-history-${agentId}`);
+            setMessages([]);
+            messageLoadedRef.current = false;
+            initialScrollRef.current = false;
+        } catch (error) {
+            console.error("Error clearing chat history:", error);
+        }
+    }, [agentId]);
+
+    // Handle scroll events
+    useEffect(() => {
+        const handleScroll = (event: Event) => {
+            const target = event.target as HTMLDivElement;
+            const isBottom = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) < 10;
+            setIsAtBottom(isBottom);
+            setDisableAutoScroll(!isBottom);
+        };
+
+        const cleanup = () => {
+            const scrollElement = scrollRef.current;
+            if (scrollElement) {
+                scrollElement.removeEventListener('scroll', handleScroll);
+            }
+        };
+
+        const scrollElement = scrollRef.current;
+        if (scrollElement) {
+            scrollElement.addEventListener('scroll', handleScroll);
+        }
+
+        return cleanup;
+    }, []);
+
+    // Auto-scroll on new messages
+    const { scrollToBottom } = useChatScroll({
+        messages,
+        isAtBottom: !disableAutoScroll,
+        initialScrollRef,
+    });
 
     // Define the mutation outside to avoid circular dependencies
     const sendMessageMutation = useMutation({
@@ -95,97 +196,9 @@ export default function Page({ agentId }: { agentId: UUID }) {
         },
     });
 
-    // Memoize storage key to prevent unnecessary renders
-    const storageKey = `chat-history-${agentId}`;
-
-    // Load messages from localStorage on component mount (ONCE only)
-    useEffect(() => {
-        if (messageLoadedRef.current) return;
-
-        try {
-            const storedMessagesString = localStorage.getItem(storageKey);
-            if (storedMessagesString) {
-                const storedMessages = JSON.parse(storedMessagesString);
-                if (Array.isArray(storedMessages) && storedMessages.length > 0) {
-                    setMessages(storedMessages);
-                }
-            }
-            messageLoadedRef.current = true;
-        } catch (error) {
-            console.error("Error loading messages from localStorage:", error);
-        }
-    }, [storageKey]);
-
-    // Save messages to localStorage when they change
-    // Use a debounced approach to prevent excessive writes
-    const saveMessages = useCallback(() => {
-        try {
-            if (messages.length > 0) {
-                // Limit to 50 messages to prevent localStorage from getting too large
-                const limitedMessages = [...messages].slice(-50);
-                localStorage.setItem(storageKey, JSON.stringify(limitedMessages));
-            } else if (messages.length === 0) {
-                localStorage.removeItem(storageKey);
-            }
-        } catch (error) {
-            console.error("Error saving messages to localStorage:", error);
-        }
-    }, [messages, storageKey]);
-
-    // Apply the debounced saving effect
-    useEffect(() => {
-        const timeoutId = setTimeout(saveMessages, 300);
-        return () => clearTimeout(timeoutId);
-    }, [saveMessages]);
-
-    // Clear chat history
-    const clearHistory = useCallback(() => {
-        try {
-            localStorage.removeItem(storageKey);
-            setMessages([]);
-        } catch (error) {
-            console.error("Error clearing chat history:", error);
-        }
-    }, [storageKey]);
-
     const getMessageVariant = useCallback((role: string) =>
         role !== "user" ? "received" : "sent",
     []);
-
-    const { scrollRef, isAtBottom, scrollToBottom, disableAutoScroll } = useAutoScroll({
-        smooth: true,
-    });
-
-    // Scroll to bottom when messages change - using a layout effect to prevent flash
-    useEffect(() => {
-        // Only auto-scroll if we're already at the bottom or this is a new message from the user/system
-        const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
-        const isNewSystemMessage = lastMessage?.user === "system" && lastMessage?.isLoading;
-        const shouldAutoScroll = isAtBottom || messages.length === 0 || isNewSystemMessage;
-
-        if (scrollToBottom && shouldAutoScroll) {
-            // Use setTimeout to ensure DOM is updated before scrolling
-            const timeoutId = setTimeout(() => {
-                scrollToBottom();
-            }, 10);
-            return () => clearTimeout(timeoutId);
-        }
-    }, [messages, scrollToBottom, isAtBottom]);
-
-    // Track initial scroll
-    const initialScrollRef = useRef(false);
-
-    // Always scroll to bottom on first load
-    useEffect(() => {
-        // This effect runs only once after messages are loaded
-        if (!initialScrollRef.current && scrollToBottom && messages.length > 0) {
-            const timeoutId = setTimeout(() => {
-                scrollToBottom();
-                initialScrollRef.current = true;
-            }, 100);
-            return () => clearTimeout(timeoutId);
-        }
-    }, [messages, scrollToBottom]);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
@@ -249,13 +262,6 @@ export default function Page({ agentId }: { agentId: UUID }) {
         }
     }, [input, selectedFile, sendMessageMutation]);
 
-    // Auto-focus input only once on mount
-    useEffect(() => {
-        if (inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, []);
-
     const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file?.type.startsWith("image/")) {
@@ -304,9 +310,9 @@ export default function Page({ agentId }: { agentId: UUID }) {
 
             {showPrompts && (
                 <div className="p-4 border rounded-md mb-4">
-                    <ExamplePrompts
+                    <HeaderExamplePrompts
                         agentId={agentId}
-                        onSelectPrompt={(prompt) => {
+                        onSelectPrompt={(prompt: string) => {
                             setInput(prompt);
                             setShowPrompts(false);
                         }}
@@ -320,6 +326,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
                     isAtBottom={isAtBottom}
                     scrollToBottom={scrollToBottom}
                     disableAutoScroll={disableAutoScroll}
+                    className="h-full"
                 >
                     {messages.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full p-6">
@@ -327,26 +334,13 @@ export default function Page({ agentId }: { agentId: UUID }) {
                                 <p className="text-center text-muted-foreground text-sm mb-2">
                                     Welcome! How can I assist you today?
                                 </p>
-                                {!showPrompts && (
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setShowPrompts(true)}
-                                        className="mx-auto"
-                                    >
-                                        <Lightbulb className="h-4 w-4 mr-2" />
-                                        Show Example Prompts
-                                    </Button>
-                                )}
-                                {showPrompts && (
-                                    <ExamplePrompts
-                                        agentId={agentId}
-                                        onSelectPrompt={(prompt) => {
-                                            setInput(prompt);
-                                            setShowPrompts(false);
-                                        }}
-                                        className="w-full"
-                                    />
-                                )}
+                                <EmptyStateExamplePrompts
+                                    agentId={agentId}
+                                    onSelectPrompt={(prompt: string) => {
+                                        setInput(prompt);
+                                    }}
+                                    className="w-full"
+                                />
                             </div>
                         </div>
                     ) : (

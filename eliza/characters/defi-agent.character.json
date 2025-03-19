@@ -2,7 +2,7 @@
   "name": "DeFi Agent",
   "plugins": ["@elizaos-plugins/plugin-aptos"],
   "clients": [],
-  "modelProvider": "anthropic",
+  "modelProvider": "openai",
   "settings": {
     "ragKnowledge": true,
     "secrets": {},

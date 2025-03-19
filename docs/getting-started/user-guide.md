@@ -55,11 +55,11 @@ What's my USDC balance?
 Transfer tokens to another address:
 
 ```
-Transfer 0.001 APT to 0x39a77791f641bd4e16a7f1774e5d5df5d38c03e4843d315c15ac01e01baa0b0c
+Transfer 0.001 APT to 0x17a8c3f994621216ad8bac210eb7de3346268696bc14e89e254fd4c7a0c0ed82
 ```
 
 ```
-Send 5 USDC to 0x17a8c3f994621216ad8bac210eb7de3346268696bc14e89e254fd4c7a0c0ed82
+Send 0.005 USDC to 0x17a8c3f994621216ad8bac210eb7de3346268696bc14e89e254fd4c7a0c0ed82
 ```
 
 ### Token Operations
@@ -77,7 +77,7 @@ What's the current price of APT?
 Create and manage tokens:
 
 ```
-Create a new token named "MyToken" with symbol "MTK" and supply of 1000
+Create a new token named "MyToken3" with symbol "MTK3" and supply of 10003
 ```
 
 ```

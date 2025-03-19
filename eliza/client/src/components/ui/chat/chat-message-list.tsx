@@ -6,19 +6,25 @@ interface ChatMessageListProps extends React.HTMLAttributes<HTMLDivElement> {
     scrollRef: React.RefObject<HTMLDivElement | null>;
     isAtBottom: boolean;
     scrollToBottom: () => void;
-    disableAutoScroll: () => void;
+    disableAutoScroll: boolean;
     smooth?: boolean;
 }
 
 const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
     ({ className, children, scrollRef, isAtBottom, scrollToBottom, disableAutoScroll, ...props }) => {
+        const handleScroll = React.useCallback(() => {
+            if (!disableAutoScroll) {
+                return;
+            }
+        }, [disableAutoScroll]);
+
         return (
             <div className="relative w-full h-full">
                 <div
                     className={`flex flex-col w-full h-full p-4 overflow-y-auto ${className}`}
                     ref={scrollRef}
-                    onWheel={disableAutoScroll}
-                    onTouchMove={disableAutoScroll}
+                    onWheel={handleScroll}
+                    onTouchMove={handleScroll}
                     {...props}
                 >
                     <div className="flex flex-col gap-6">{children}</div>
