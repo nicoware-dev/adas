@@ -9,6 +9,12 @@ import path from "node:path";
 export default defineConfig(({ mode }) => {
     const envDir = path.resolve(__dirname, "..");
     const env = loadEnv(mode, envDir, "");
+
+    // Determine the server URL based on environment
+    const serverUrl = env.VITE_SERVER_URL || (mode === 'production' ? 'https://your-production-server.com' : 'http://localhost');
+    const serverPort = env.VITE_SERVER_PORT || '3000';
+    const serverBaseUrl = env.VITE_SERVER_BASE_URL || (mode === 'production' ? serverUrl : `${serverUrl}:${serverPort}`);
+
     return {
         plugins: [
             react(),
@@ -42,15 +48,9 @@ export default defineConfig(({ mode }) => {
         clearScreen: false,
         envDir,
         define: {
-            "import.meta.env.VITE_SERVER_PORT": JSON.stringify(
-                env.SERVER_PORT || "3000"
-            ),
-            "import.meta.env.VITE_SERVER_URL": JSON.stringify(
-                env.SERVER_URL || "http://localhost"
-            ),
-            "import.meta.env.VITE_SERVER_BASE_URL": JSON.stringify(
-                env.SERVER_BASE_URL
-            )
+            "import.meta.env.VITE_SERVER_PORT": JSON.stringify(serverPort),
+            "import.meta.env.VITE_SERVER_URL": JSON.stringify(serverUrl),
+            "import.meta.env.VITE_SERVER_BASE_URL": JSON.stringify(serverBaseUrl)
         },
         build: {
             outDir: "dist",
