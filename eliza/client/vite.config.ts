@@ -48,7 +48,15 @@ export default defineConfig(({ mode }) => {
             cssCodeSplit: true,
             manifest: false,
             chunkSizeWarningLimit: 1000,
-            assetsDir: "assets"
+            assetsDir: "assets",
+            rollupOptions: {
+                external: ['@tanstack/query-core'],
+                output: {
+                    manualChunks: {
+                        vendor: ['react', 'react-dom', 'react-router-dom']
+                    }
+                }
+            }
         },
         base: "./",
         resolve: {
