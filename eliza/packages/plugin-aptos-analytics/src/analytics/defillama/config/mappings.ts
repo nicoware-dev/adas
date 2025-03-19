@@ -182,7 +182,7 @@ export const PROTOCOL_TO_DEFILLAMA_SLUG: Record<string, string> = {
   'izumi finance': 'izumi-finance',
   'merchant moe': 'merchant-moe',
 
-  // Sonic Protocols
+  // Aptos Protocols
   'beets': 'beets',
   'silo': 'silo-finance',
   'silo finance': 'silo-finance',
@@ -190,6 +190,6 @@ export const PROTOCOL_TO_DEFILLAMA_SLUG: Record<string, string> = {
   'shadow exchange': 'shadow-exchange',
   'swapx': 'swapx',
   'swapx algebra': 'swapx',
-  'origin-sonic': 'origin-sonic',
-  'origin sonic': 'origin-sonic'
+  'origin-aptos': 'origin-aptos',
+  'origin aptos': 'origin-aptos'
 } as const;

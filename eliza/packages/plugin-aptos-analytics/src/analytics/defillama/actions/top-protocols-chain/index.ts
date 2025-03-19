@@ -193,7 +193,7 @@ export const topProtocolsByChainAction: Action = {
     'TOP_PROTOCOLS_ON_ARBITRUM',
     'TOP_PROTOCOLS_ON_OPTIMISM',
     'TOP_PROTOCOLS_ON_ETHEREUM',
-    'TOP_PROTOCOLS_ON_SONIC'
+    'TOP_PROTOCOLS_ON_APTOS'
   ],
   handler,
   suppressInitialMessage: true,

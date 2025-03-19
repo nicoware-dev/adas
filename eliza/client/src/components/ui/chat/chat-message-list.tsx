@@ -1,52 +1,44 @@
-import * as React from "react";
-import { ArrowDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
 
 interface ChatMessageListProps extends React.HTMLAttributes<HTMLDivElement> {
-    scrollRef: React.RefObject<HTMLDivElement | null>;
-    isAtBottom: boolean;
-    scrollToBottom: () => void;
-    disableAutoScroll: boolean;
-    smooth?: boolean;
+    scrollRef?: React.RefObject<HTMLDivElement>;
+    isAtBottom?: boolean;
+    scrollToBottom?: () => void;
+    disableAutoScroll?: () => void;
 }
 
-const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
-    ({ className, children, scrollRef, isAtBottom, scrollToBottom, disableAutoScroll, ...props }) => {
-        const handleScroll = React.useCallback(() => {
-            if (!disableAutoScroll) {
-                return;
-            }
-        }, [disableAutoScroll]);
-
-        return (
-            <div className="relative w-full h-full">
-                <div
-                    className={`flex flex-col w-full h-full p-4 overflow-y-auto ${className}`}
-                    ref={scrollRef}
-                    onWheel={handleScroll}
-                    onTouchMove={handleScroll}
-                    {...props}
-                >
-                    <div className="flex flex-col gap-6">{children}</div>
-                </div>
-
-                {!isAtBottom && (
-                    <Button
-                        onClick={() => {
-                            scrollToBottom();
-                        }}
-                        size="icon"
-                        variant="outline"
-                        className="absolute bottom-2 left-1/2 transform -translate-x-1/2 inline-flex rounded-full shadow-md"
-                    >
-                        <ArrowDown className="h-4 w-4" />
-                    </Button>
-                )}
+export function ChatMessageList({
+    children,
+    className,
+    scrollRef,
+    isAtBottom,
+    scrollToBottom,
+    disableAutoScroll,
+    ...props
+}: ChatMessageListProps) {
+    return (
+        <div className="relative h-full">
+            <div
+                ref={scrollRef}
+                className={cn("h-full space-y-4 overflow-y-auto p-4", className)}
+                onWheel={disableAutoScroll}
+                onTouchMove={disableAutoScroll}
+                {...props}
+            >
+                {children}
             </div>
-        );
-    }
-);
-
-ChatMessageList.displayName = "ChatMessageList";
-
-export { ChatMessageList };
+            {!isAtBottom && scrollToBottom && (
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute bottom-4 right-4 h-8 w-8 rounded-full bg-background shadow-md"
+                    onClick={scrollToBottom}
+                >
+                    <ChevronDown className="h-4 w-4" />
+                </Button>
+            )}
+        </div>
+    );
+}
