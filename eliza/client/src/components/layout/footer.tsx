@@ -1,5 +1,3 @@
-import { NavLink } from "react-router";
-
 export function Footer() {
   return (
     <footer className="border-t">

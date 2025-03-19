@@ -13,11 +13,9 @@ import {
   BarChart3,
   Wallet,
   LineChart,
-  LayoutDashboard,
   MessageCircle,
-  Code,
-  Coins,
   BookOpen,
+  Coins,
   Network
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,7 +29,6 @@ import {
   CarouselNext,
   type CarouselApi
 } from "@/components/ui/carousel";
-import { cn } from "@/lib/utils";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -59,9 +56,9 @@ export default function Landing() {
   const [architectureRef, architectureInView] = useInView({ triggerOnce: true, threshold: 0.1 });
   const [integrationsRef, integrationsInView] = useInView({ triggerOnce: true, threshold: 0.1 });
   const [defiRef, defiInView] = useInView({ triggerOnce: true, threshold: 0.1 });
-  const [analyticsRef, analyticsInView] = useInView({ triggerOnce: true, threshold: 0.1 });
-  const [markdownRef, markdownInView] = useInView({ triggerOnce: true, threshold: 0.1 });
-  const [techRef, techInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [_analyticsRef, _analyticsInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [_markdownRef, _markdownInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [_techRef, _techInView] = useInView({ triggerOnce: true, threshold: 0.1 });
   const [ctaRef, ctaInView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
   const agentsQuery = useQuery({
