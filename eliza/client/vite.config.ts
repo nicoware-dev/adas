@@ -1,5 +1,7 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import tsconfigPaths from "vite-tsconfig-paths";
+import { visualizer } from "rollup-plugin-visualizer";
 import viteCompression from "vite-plugin-compression";
 import path from "node:path";
 
@@ -10,12 +12,20 @@ export default defineConfig(({ mode }) => {
     return {
         plugins: [
             react(),
+            tsconfigPaths(),
+            visualizer(),
             viteCompression({
                 algorithm: "brotliCompress",
                 ext: ".br",
                 threshold: 1024,
+                verbose: true,
             }),
         ],
+        optimizeDeps: {
+            include: [
+                "@elizaos/core"
+            ]
+        },
         clearScreen: false,
         envDir,
         define: {
@@ -31,15 +41,22 @@ export default defineConfig(({ mode }) => {
         },
         build: {
             outDir: "dist",
+            emptyOutDir: true,
             minify: true,
             cssMinify: true,
             sourcemap: false,
             cssCodeSplit: true,
+            manifest: false,
+            chunkSizeWarningLimit: 1000,
+            assetsDir: "assets"
         },
+        base: "./",
         resolve: {
             alias: {
                 "@": "/src",
             },
+            preserveSymlinks: true,
+            dedupe: ["react", "react-dom"]
         },
     };
 });
