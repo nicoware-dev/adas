@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/header";
 import { Hero } from "@/components/layout/hero";
 import { Footer } from "@/components/layout/footer";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import Overview from "@/components/overview";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import type { UUID } from "@elizaos/core";
 
 export default function AgentRoute() {

@@ -10,7 +10,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { apiClient } from "@/lib/api";
-import { NavLink } from "react-router";
+import { NavLink } from "react-router-dom";
 import type { UUID } from "@elizaos/core";
 import { formatAgentName } from "@/lib/utils";
 

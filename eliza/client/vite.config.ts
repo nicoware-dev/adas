@@ -12,7 +12,9 @@ export default defineConfig(({ mode }) => {
     return {
         plugins: [
             react(),
-            tsconfigPaths(),
+            tsconfigPaths({
+                ignoreConfigErrors: true
+            }),
             visualizer(),
             viteCompression({
                 algorithm: "brotliCompress",
@@ -26,9 +28,16 @@ export default defineConfig(({ mode }) => {
                 "@elizaos/core",
                 "@tanstack/query-core",
                 "@tanstack/react-query",
-                "react-router",
-                "react-router-dom"
-            ]
+                "react-router-dom",
+                "@remix-run/router",
+                "scheduler",
+                'react',
+                'react-dom',
+            ],
+            exclude: [
+                'onnxruntime-node',
+                '@anush008/tokenizers',
+            ],
         },
         clearScreen: false,
         envDir,
@@ -54,21 +63,16 @@ export default defineConfig(({ mode }) => {
             chunkSizeWarningLimit: 1000,
             assetsDir: "assets",
             rollupOptions: {
-                external: ["turbo-stream"],
+                external: [],
                 output: {
-                    manualChunks(id) {
-                        if (id.includes('node_modules')) {
-                            if (id.includes('react-router')) {
-                                return 'vendor-router';
-                            }
-                            if (id.includes('react')) {
-                                return 'vendor-react';
-                            }
-                            if (id.includes('@tanstack')) {
-                                return 'vendor-tanstack';
-                            }
-                            return 'vendor';
-                        }
+                    manualChunks: {
+                        vendor: [
+                            'react',
+                            'react-dom',
+                            'react-router-dom',
+                            '@remix-run/router',
+                            'scheduler',
+                        ]
                     }
                 }
             }
@@ -77,9 +81,9 @@ export default defineConfig(({ mode }) => {
         resolve: {
             alias: {
                 "@": path.resolve(__dirname, "src"),
-            },
-            preserveSymlinks: true,
-            dedupe: ["react", "react-dom"]
-        },
+                'onnxruntime-node': path.resolve(__dirname, 'src/lib/native-modules.ts'),
+                '@anush008/tokenizers': path.resolve(__dirname, 'src/lib/native-modules.ts'),
+            }
+        }
     };
 });

@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import Chat from "@/components/chat";
 import type { UUID } from "@elizaos/core";
 

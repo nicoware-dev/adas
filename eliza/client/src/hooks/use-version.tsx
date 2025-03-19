@@ -3,7 +3,7 @@ import { useToast } from "./use-toast";
 import info from "@/lib/info.json";
 import semver from "semver";
 import { ToastAction } from "@/components/ui/toast";
-import { NavLink } from "react-router";
+import { NavLink } from "react-router-dom";
 
 export default function useVersion() {
     const { toast } = useToast();

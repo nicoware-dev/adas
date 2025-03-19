@@ -14,7 +14,7 @@ import {
     SidebarMenuSkeleton,
 } from "@/components/ui/sidebar";
 import { apiClient } from "@/lib/api";
-import { NavLink, useLocation } from "react-router";
+import { NavLink, useLocation } from "react-router-dom";
 import type { UUID } from "@elizaos/core";
 import { Book, Cog, Home, User } from "lucide-react";
 import ConnectionStatus from "./connection-status";
