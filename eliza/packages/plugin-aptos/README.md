@@ -148,154 +148,200 @@ Withdraw 5 APT from Aries Protocol
 
 ## Implemented Actions
 
-### Core Aptos Actions
+Total Actions: 47
 
-#### SEND_TOKEN / TRANSFER_TOKEN
-Transfers APT tokens or other tokens from the agent's wallet to another address.
+### Core Aptos Actions (16)
 
-#### CHECK_BALANCE
-Checks the APT balance of the agent's wallet or a specified address.
+#### Token Actions
+1. **BALANCE**
+   - Checks token balance on the Aptos blockchain
+   - Example: `Check my APT balance`
 
-#### GET_TOKEN_DETAILS
-Retrieves detailed information about a token on the Aptos blockchain.
+2. **TRANSFER**
+   - Transfers APT from the agent's wallet to another address
+   - Example: `Send 10 APT to 0x123...`
 
-#### GET_TOKEN_PRICE
-Fetches the current price of a token from the Pyth network.
+3. **TOKEN_TRANSFER**
+   - Transfers tokens on the Aptos blockchain
+   - Example: `Transfer 100 USDC to 0x456...`
 
-#### GET_TRANSACTION
-Looks up transaction details on the Aptos blockchain.
+4. **CREATE_TOKEN**
+   - Creates a new token on the Aptos blockchain
+   - Example: `Create a new token called MyToken with symbol MTK`
 
-#### CREATE_TOKEN
-Creates a new fungible asset token on the Aptos blockchain.
+5. **MINT_TOKEN**
+   - Mints tokens on the Aptos blockchain
+   - Example: `Mint 1000 MTK tokens`
 
-#### MINT_TOKEN
-Mints additional tokens to a specified address.
+6. **BURN_TOKEN**
+   - Burns tokens on the Aptos blockchain
+   - Example: `Burn 500 MTK tokens`
 
-#### BURN_TOKEN
-Burns tokens, removing them from circulation.
+#### NFT Actions
+7. **CREATE_NFT**
+   - Creates a new NFT on the Aptos blockchain
+   - Example: `Create an NFT called CoolNFT`
 
-#### TRANSFER_NFT
-Transfers an NFT from the agent's wallet to another address.
+8. **TRANSFER_NFT**
+   - Transfers an NFT to a recipient
+   - Example: `Transfer NFT 0x123... to 0x456...`
 
-#### BURN_NFT
-Burns an NFT, permanently removing it from circulation.
+9. **BURN_NFT**
+   - Burns an NFT on the Aptos blockchain
+   - Example: `Burn NFT 0x123...`
 
-#### GET_ACCOUNT
-Retrieves account information including balances and resources.
+#### Information Actions
+10. **GET_ACCOUNT**
+    - Gets account information from the Aptos blockchain
+    - Example: `Get account info for 0x123...`
 
-#### GET_MODULES
-Retrieves information about modules (smart contracts) published by an account.
+11. **GET_MODULES**
+    - Gets module information from the Aptos blockchain
+    - Example: `Show modules for account 0x123...`
 
-#### CREATE_NFT
-Creates a collection and mints a new NFT on the Aptos blockchain, with optional transfer to a recipient.
+12. **GET_TRANSACTION**
+    - Gets transaction information from the Aptos blockchain
+    - Example: `Get transaction details for 0x123...`
 
-#### PORTFOLIO
-Displays a comprehensive view of a wallet's holdings, including token balances with USD values and owned NFTs. Supports both the agent's wallet and specified wallet addresses.
+13. **GET_TOKEN_DETAILS**
+    - Gets detailed information about a token
+    - Example: `Show details for APT token`
 
-### Joule Finance Actions
+14. **GET_TOKEN_PRICE**
+    - Gets current price information for a token
+    - Example: `What's the price of APT?`
 
-#### JOULE_DEPOSIT
-Deposits APT or other supported tokens into Joule Finance.
+15. **PORTFOLIO**
+    - Gets portfolio information for an address
+    - Example: `Show my portfolio`
 
-#### JOULE_BORROW
-Borrows tokens from Joule Finance.
+### Joule Finance Actions (9)
 
-#### JOULE_REPAY
-Repays borrowed tokens on Joule Finance.
+1. **JOULE_ALL_POOLS**
+   - Gets all pools on Joule Finance
+   - Example: `Show all Joule pools`
 
-#### JOULE_WITHDRAW
-Withdraws tokens from Joule Finance.
+2. **JOULE_POOL_DETAIL**
+   - Gets detailed information about a specific pool
+   - Example: `Show APT pool details on Joule`
 
-#### JOULE_CLAIM_REWARD
-Claims rewards from Joule Finance using the Move Agent Kit approach.
+3. **JOULE_LEND**
+   - Lends assets to Joule Finance
+   - Example: `Lend 100 APT on Joule`
 
-#### JOULE_USER_POSITION
-Retrieves a user's position for a specific token on Joule Finance, including supply and borrow data.
+4. **JOULE_BORROW**
+   - Borrows assets from Joule Finance
+   - Example: `Borrow 50 USDC from Joule`
 
-#### JOULE_USER_ALL_POSITIONS
-Retrieves all of a user's positions on Joule Finance across multiple tokens.
+5. **JOULE_REPAY**
+   - Repays borrowed assets on Joule Finance
+   - Example: `Repay 50 USDC to Joule`
 
-#### JOULE_POOL_DETAIL
-Gets detailed information about a specific pool on Joule Finance, including APY rates and utilization.
+6. **JOULE_WITHDRAW**
+   - Withdraws lent assets from Joule Finance
+   - Example: `Withdraw 100 APT from Joule`
 
-#### JOULE_ALL_POOLS
-Lists all available pools on Joule Finance.
+7. **JOULE_CLAIM_REWARD**
+   - Claims rewards from Joule Finance
+   - Example: `Claim my Joule rewards`
 
-### Amnis Finance Actions
+8. **JOULE_USER_POSITION**
+   - Gets user position for a specific token
+   - Example: `Show my APT position on Joule`
 
-#### AMNIS_STAKE
-Stakes APT tokens on Amnis Finance.
+9. **JOULE_USER_ALL_POSITIONS**
+   - Gets all user positions
+   - Example: `Show all my Joule positions`
 
-#### AMNIS_UNSTAKE
-Unstakes APT tokens from Amnis Finance.
+### Liquidswap Actions (4)
 
-#### AMNIS_CHECK_REWARDS
-Checks staking rewards on Amnis Finance.
+1. **LIQUIDSWAP_SWAP**
+   - Swaps tokens on Liquidswap
+   - Example: `Swap 10 APT for USDC on Liquidswap`
 
-#### AMNIS_CHECK_APY
-Checks current staking APY on Amnis Finance.
+2. **LIQUIDSWAP_ADD_LIQUIDITY**
+   - Adds liquidity to Liquidswap pools
+   - Example: `Add liquidity with 10 APT and 100 USDC to Liquidswap`
 
-### Liquidswap Actions
+3. **LIQUIDSWAP_REMOVE_LIQUIDITY**
+   - Removes liquidity from Liquidswap pools
+   - Example: `Remove liquidity from APT/USDC pool on Liquidswap`
 
-#### LIQUIDSWAP_SWAP
-Swaps tokens on the Liquidswap DEX.
+4. **LIQUIDSWAP_CREATE_POOL**
+   - Creates a new Liquidswap pool
+   - Example: `Create a new Liquidswap pool with APT and USDC`
 
-#### LIQUIDSWAP_ADD_LIQUIDITY
-Adds liquidity to a Liquidswap pool.
+### Merkle Trade Actions (6)
 
-#### LIQUIDSWAP_REMOVE_LIQUIDITY
-Removes liquidity from a Liquidswap pool.
+1. **MERKLE_GET_POSITIONS**
+   - Gets all positions on Merkle Trade
+   - Example: `Show my Merkle Trade positions`
 
-#### LIQUIDSWAP_CREATE_POOL
-Creates a new Liquidswap pool.
+2. **MERKLE_PLACE_LIMIT_ORDER**
+   - Places a limit order on Merkle Trade
+   - Example: `Place limit order for 10 APT at $8`
 
-### Thala Labs Actions
+3. **MERKLE_PLACE_MARKET_ORDER**
+   - Places a market order on Merkle Trade
+   - Example: `Place market order for 5 APT`
 
-#### THALA_SWAP
-Swaps tokens on Thala DEX.
+4. **MERKLE_CLOSE_POSITION**
+   - Closes a position on Merkle Trade
+   - Example: `Close my APT position on Merkle`
 
-#### THALA_ADD_LIQUIDITY
-Adds liquidity to Thala pools.
+### Thala Protocol Actions (5)
 
-#### THALA_REMOVE_LIQUIDITY
-Removes liquidity from Thala pools.
+1. **THALA_SWAP**
+   - Swaps tokens on Thala Protocol
+   - Example: `Swap 10 APT for USDC on Thala`
 
-#### THALA_STAKE
-Stakes tokens on Thala Protocol.
+2. **THALA_ADD_LIQUIDITY**
+   - Adds liquidity to Thala pools
+   - Example: `Add liquidity to Thala APT/USDC pool`
 
-#### THALA_UNSTAKE
-Unstakes tokens from Thala Protocol.
+3. **THALA_REMOVE_LIQUIDITY**
+   - Removes liquidity from Thala pools
+   - Example: `Remove liquidity from Thala APT/USDC pool`
 
-### Merkle Trade Actions
+4. **THALA_STAKE**
+   - Stakes APT on Thala Protocol
+   - Example: `Stake 100 APT on Thala`
 
-#### MERKLE_GET_POSITIONS
-Retrieves a user's current trading positions on Merkle Trade.
+5. **THALA_UNSTAKE**
+   - Unstakes APT from Thala Protocol
+   - Example: `Unstake 50 APT from Thala`
 
-#### MERKLE_PLACE_LIMIT_ORDER
-Places a limit order on Merkle Trade at a specified price.
+### Amnis Finance Actions (2)
 
-#### MERKLE_PLACE_MARKET_ORDER
-Places a market order on Merkle Trade at the current market price.
+1. **AMNIS_STAKE**
+   - Stakes tokens on Amnis Finance
+   - Example: `Stake 100 APT on Amnis`
 
-#### MERKLE_CLOSE_POSITION
-Closes an existing trading position on Merkle Trade.
+2. **AMNIS_UNSTAKE**
+   - Unstakes tokens from Amnis Finance
+   - Example: `Unstake 50 APT from Amnis`
 
-### Aries Protocol Actions
+### Aries Protocol Actions (5)
 
-#### ARIES_CREATE_PROFILE
-Creates a user profile on Aries Protocol, required for using other Aries features.
+1. **ARIES_CREATE_PROFILE**
+   - Creates a profile on Aries Protocol
+   - Example: `Create profile on Aries`
 
-#### ARIES_LEND
-Lends tokens to the Aries Protocol lending pool to earn interest.
+2. **ARIES_LEND**
+   - Lends assets to Aries Protocol
+   - Example: `Lend 100 APT on Aries`
 
-#### ARIES_BORROW
-Borrows tokens from Aries Protocol against collateral.
+3. **ARIES_BORROW**
+   - Borrows assets from Aries Protocol
+   - Example: `Borrow 50 USDC from Aries`
 
-#### ARIES_REPAY
-Repays borrowed tokens to Aries Protocol.
+4. **ARIES_REPAY**
+   - Repays borrowed assets on Aries Protocol
+   - Example: `Repay 50 USDC to Aries`
 
-#### ARIES_WITHDRAW
-Withdraws lent tokens from Aries Protocol.
+5. **ARIES_WITHDRAW**
+   - Withdraws lent assets from Aries Protocol
+   - Example: `Withdraw 100 APT from Aries`
 
 ## Development
 

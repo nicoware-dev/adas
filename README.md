@@ -80,20 +80,17 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 - 💼 Portfolio management with rich text output
 
 ### 🖥️ Web App Features
-- 🚀 Landing page
-- 📄 Agents directory
-- 🤖 Chat with agent swarm through web interface with Markdown support
-- 👛 Wallet connector
-- 📊 Portfolio & analytics dashboards
-- 📝 Persistent chat history
-- 💬 Example Prompts with toggle functionality
+- 🚀 Modern landing page with gradient design
+- 📄 Agents directory showcasing specialized AI agents
+- 🤖 Chat interface with Markdown support and persistent history
+- 📊 Analytics dashboard with protocol distribution
+- 💬 Context-aware example prompts based on selected agent
 - ⚙️ Settings and preferences
 
 ## 🧰 Tech Stack
 
 - **Frontend**: React, TypeScript, TailwindCSS, ShadcnUI
-- **State Management**: React Context API / Zustand
-- **Blockchain Integration**: Aptos SDK, Move Agent Kit
+- **State Management**: React Context API
 - **Build & Deployment**: Vite, Vercel
 - **Agent Framework**: ElizaOS
 - **Workflow Automation & Orchestration**: n8n
@@ -107,6 +104,14 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 2. **Analytics Agent**: Aptos data analysis and visualization
 3. **DeFi Agent**: Aptos-specific DeFi operations
 4. **Aptos Expert Agent**: Technical guidance and knowledge base
+
+### Internal Agents
+5. **Twitter Agent**: Social media management and content creation
+   - Manages ADAS Twitter presence
+   - Creates engaging content and memes
+   - Builds community engagement
+   - Tracks social metrics and sentiment
+   - *Note: Internal use only, not available in public interfaces*
 
 ## 🏠 Self-Hosting
 
@@ -156,33 +161,37 @@ OPENAI_API_KEY=                    # OpenAI API key (backup)
 
 # Client Configuration (optional)
 TELEGRAM_BOT_TOKEN=                # Telegram bot token
+
+# Twitter Configuration (internal use only)
+TWITTER_API_KEY=                   # Twitter API key
+TWITTER_API_SECRET=                # Twitter API secret
+TWITTER_ACCESS_TOKEN=              # Twitter access token
+TWITTER_ACCESS_SECRET=             # Twitter access token secret
 ```
 
 ## 🧪 How to Use
 
 1. Start the ElizaOS agents:
 
-Test Agent:
-
- ```bash
-   cd eliza
-    pnpm start --characters="characters/test-agent.character.json"
-```
-
-All agents:
-
+Core Agents:
 ```bash
-    pnpm start --characters="characters/defi-agent.character.json,characters/analytics-agent.character.json,characters/aptos-expert-agent.character.json"
+cd eliza
+pnpm start --characters="characters/defi-agent.character.json,characters/analytics-agent.character.json,characters/aptos-expert-agent.character.json"
 ```
 
+For Meme Agent
+```bash
+cd eliza
+pnpm start --characters="characters/meme-agent.character.json"
+```
 
 2. Start the web client:
-   ```bash
-   cd client
-   pnpm dev
-   ```
+```bash
+cd client
+pnpm dev
+```
 
-4. Access the web interface at `http://localhost:5173`
+3. Access the web interface at `http://localhost:5173`
 
 ## 📖 Using ADAS
 

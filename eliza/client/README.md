@@ -1,13 +1,26 @@
 # ADAS Client
 
-A multichain DeFi dashboard built with React, Vite, and Privy for wallet authentication.
+ADAS (Aptos DefAI Agent Swarm) is an advanced multi-agent system for the Aptos blockchain ecosystem, providing AI-powered DeFi operations, analytics, and expert guidance through a modern web interface.
 
 ## Features
 
-- Wallet authentication with Privy
-- Portfolio tracking across multiple chains
-- Integration with Zerion API for real-time portfolio data
-- Responsive design for desktop and mobile
+- Multi-agent system with specialized AI agents:
+  - Analytics Agent: Real-time DeFi analytics and market data
+  - DeFi Agent: Protocol interactions and transaction management
+  - Aptos Expert Agent: Technical guidance and strategy analysis
+  - Coordinator Agent: Orchestrates agent interactions
+
+- Protocol Integrations:
+  - Joule Finance: Lending and borrowing operations
+  - Amnis Finance: Liquid staking
+  - Thala Labs: DEX and MOD stablecoin
+  - Other major Aptos protocols
+
+- Real-time Analytics:
+  - Protocol TVL tracking via DefiLlama
+  - Market analytics and visualization
+  - Protocol performance metrics
+  - Portfolio analytics
 
 ## Development
 
@@ -25,78 +38,115 @@ pnpm install
 
 ### Environment Variables
 
-Create a `.env` file in the root directory with the following variables:
+Create a `.env` file in the root directory with:
 
 ```
-# Privy Configuration
-VITE_PRIVY_APP_ID=your_privy_app_id
-
-# Chain Configuration
-VITE_CHAIN_ID=146
-VITE_CHAIN_NAME=Sonic
-VITE_CHAIN_RPC_URL=https://rpc.soniclabs.com
-VITE_CHAIN_EXPLORER_URL=https://sonicscan.org/
-
-# Zerion API Configuration
-VITE_ZERION_API_KEY=your_zerion_api_key
-
-# Development Options
-# Set to 'true' to use mock data instead of making API calls
-VITE_USE_MOCK_DATA=true
+VITE_BACKEND_URL=http://localhost:3000  # URL to your ElizaOS agents API
 ```
 
 ### Running the Development Server
 
 ```bash
-# Start the frontend development server with mock data
+# Start the development server
 pnpm dev
 ```
 
 ## Deployment to Vercel
 
-This project is configured for easy deployment to Vercel.
+The project is optimized for deployment on Vercel with serverless functions for API integrations.
 
 ### Setup
 
-1. Create a Vercel account if you don't have one
-2. Install the Vercel CLI: `npm i -g vercel`
-3. Login to Vercel: `vercel login`
-
-### Environment Variables
-
-Add the following environment variables in the Vercel dashboard:
-
-- `ZERION_API_KEY`: Your Zerion API key
+1. Fork/clone the repository
+2. Create a Vercel account if needed
+3. Install Vercel CLI: `npm i -g vercel`
+4. Login to Vercel: `vercel login`
 
 ### Deploy
 
 ```bash
-# Deploy to Vercel
+# Deploy to Vercel preview
 vercel
 
-# Or deploy to production
+# Deploy to production
 vercel --prod
 ```
 
 ### Important Notes
 
-- The project uses Vercel Serverless Functions to proxy requests to the Zerion API
-- In development, it uses mock data by default (controlled by `VITE_USE_MOCK_DATA`)
-- In production, it uses the Vercel API routes to fetch real data
+- The project uses Vercel Edge Functions for API integrations
+- Serverless functions handle protocol data aggregation and analytics
 
-## How It Works
+## Architecture
 
-### Development Mode
+### Client Architecture
 
-In development mode, the application can work in two ways:
+- React + Vite for the frontend
+- TypeScript for type safety
+- Tailwind CSS + Shadcn UI for styling
+- React Query for data fetching and caching
+- React Router for navigation
 
-1. **Mock Data Mode** (default): Set `VITE_USE_MOCK_DATA=true` in your `.env` file to use mock data without making any API calls.
+### Agent System
 
-2. **Real Data Mode**: Set `VITE_USE_MOCK_DATA=false` in your `.env` file to use the Vercel API routes to fetch real data.
+The client interfaces with multiple specialized AI agents:
 
-### Production Mode
+1. **Analytics Agent**
+   - Real-time protocol analytics
+   - Market data visualization
+   - Performance metrics
 
-In production mode, the application always uses the Vercel API routes to fetch real data from the Zerion API. The API key is stored securely as an environment variable in Vercel.
+2. **DeFi Agent**
+   - Protocol interaction management
+   - Transaction handling
+   - Position management
+
+3. **Aptos Expert Agent**
+   - Technical guidance
+   - Strategy analysis
+   - Risk assessment
+
+4. **Coordinator Agent**
+   - Request routing
+   - Agent orchestration
+   - Response aggregation
+
+### API Integration
+
+- Serverless functions for external API integration
+- Real-time data streaming for analytics
+- Protocol-specific API handlers
+
+## Development Workflow
+
+### Local Development
+
+1. Start with mock data for rapid development:
+   ```bash
+   VITE_ENABLE_MOCK_DATA=true pnpm dev
+   ```
+
+2. Test with real data:
+   ```bash
+   VITE_ENABLE_MOCK_DATA=false pnpm dev
+   ```
+
+### Testing
+
+```bash
+# Run unit tests
+pnpm test
+
+# Run e2e tests
+pnpm test:e2e
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ## License
 

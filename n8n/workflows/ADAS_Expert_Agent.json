@@ -1,0 +1,147 @@
+{
+  "name": "ADAS Expert Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://essay-incorporated-behalf-globe.trycloudflare.com/542b5c82-60bb-0e9b-979a-7cd7c1160640/message",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.query }}"
+            },
+            {
+              "name": "userId",
+              "value": "n8n-user"
+            },
+            {
+              "name": "userName",
+              "value": "N8N Assistant"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1385dd4-9001-4b99-9004-6f26be68c62c",
+      "name": "Send to Eliza Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        340,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "42335239-2425-4274-8223-20ae2ca6111e",
+              "name": "output",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "89378280-bee7-44d3-a613-0a1b74e5cc94",
+      "name": "Success",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        740,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        -140
+      ],
+      "id": "30874614-ca03-45e2-8491-bad17cb66e7b",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        540,
+        -140
+      ],
+      "id": "e0fb8362-056e-462c-8b86-bd5c5c0457b1",
+      "name": "Aggregate"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Send to Eliza Agent": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Send to Eliza Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1a5f24a8-cba3-4aa8-a659-9b51e19de1a8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "abf8971dfdbf55555155acdb4227d6ad43878667d46fbdff58c0161258f8c79b"
+  },
+  "id": "jHx7EuCEHs4ODUFI",
+  "tags": [
+    {
+      "createdAt": "2025-02-21T21:50:50.195Z",
+      "updatedAt": "2025-02-21T21:50:50.195Z",
+      "id": "AR3QfpztJyQecQCI",
+      "name": "eliza"
+    },
+    {
+      "createdAt": "2025-03-19T13:48:38.231Z",
+      "updatedAt": "2025-03-19T13:48:38.231Z",
+      "id": "kWdkClsybCryvtMd",
+      "name": "ADAS"
+    }
+  ]
+}
