@@ -128,4 +128,10 @@ Each agent should be tested with a variety of prompts to ensure it can handle it
 - [DeFi Agent](./defi-agent.md)
 - [Aptos Expert Agent](./aptos-expert-agent.md)
 
+## Community Tools
+
+### Meme Agent
+
+ADAS also includes a [Meme Agent](./meme-agent.md) that manages our Twitter presence. While built using the same ElizaOS framework, this agent operates independently from the main product and focuses on community engagement and content creation.
+
 *Last updated: [Current Date]* 

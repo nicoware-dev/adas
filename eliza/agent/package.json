@@ -23,6 +23,7 @@
         "@elizaos/plugin-bootstrap": "workspace:*",
         "@elizaos-plugins/plugin-aptos": "workspace:*",
         "@elizaos-plugins/plugin-aptos-analytics": "workspace:*",
+        "@elizaos-plugins/client-twitter": "workspace:*",
         "@types/node": "^22.13.5",
         "json5": "2.2.3",
         "ts-node": "^10.9.2",
