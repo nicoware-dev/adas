@@ -13,23 +13,23 @@ const DEFILLAMA_BASE_URL = 'https://api.llama.fi';
 export const API_CONFIG = {
   // Zerion endpoints
   zerion: {
-    portfolio: (address: string): string => isProduction 
+    portfolio: (address: string): string => isProduction
       ? `/api/zerion/portfolio/${address}`
       : `${ZERION_BASE_URL}/wallets/${address}/portfolio`,
     positions: (address: string): string => isProduction
       ? `/api/zerion/positions/${address}`
       : `${ZERION_BASE_URL}/wallets/${address}/positions?filter[positions]=only_simple&currency=usd&filter[trash]=only_non_trash&sort=value`
   },
-  
+
   // DefiLlama endpoints
   defillama: {
-    tvl: isProduction 
-      ? '/api/defillama/tvl'
-      : `${DEFILLAMA_BASE_URL}/charts/tvl`,
+    tvl: isProduction
+      ? '/api/defillama-tvl'
+      : `${DEFILLAMA_BASE_URL}/charts/chains/Aptos`,
     protocols: isProduction
-      ? '/api/defillama/protocols'
+      ? '/api/defillama-protocols'
       : `${DEFILLAMA_BASE_URL}/protocols`
   }
 };
 
-export default API_CONFIG; 
+export default API_CONFIG;
