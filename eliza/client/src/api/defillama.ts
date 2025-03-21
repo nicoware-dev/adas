@@ -26,6 +26,18 @@ export interface AptosChainData {
   historicalData: HistoricalDataPoint[];
 }
 
+interface RawProtocolData {
+  name: string;
+  tvl: number;
+  chainTvls?: { Aptos?: number };
+  change_1d?: number;
+  change_7d?: number;
+  category?: string;
+  url?: string;
+  chains: string[];
+  formattedTVL?: string;
+}
+
 // List of important Aptos protocols to ensure they're included
 const IMPORTANT_PROTOCOLS = [
   "Pancake Swap",
@@ -56,6 +68,9 @@ function formatTVL(tvl: number): string {
   return `$${tvl.toFixed(2)}`;
 }
 
+// Base URLs for fallback
+const DEFILLAMA_BASE_URL = 'https://api.llama.fi';
+
 /**
  * DefiLlama API client for Aptos data
  */
@@ -65,7 +80,8 @@ export const defiLlamaApi = {
    */
   getAptosData: async (): Promise<AptosChainData> => {
     try {
-      const endpoint = import.meta.env.PROD ? API_CONFIG.defillama.tvl : 'https://api.llama.fi/v2/historicalChainTvl/Aptos';
+      // Use API_CONFIG for endpoint
+      const endpoint = API_CONFIG.defillama.tvl;
       const response = await fetch(endpoint);
 
       if (!response.ok) {
@@ -73,6 +89,19 @@ export const defiLlamaApi = {
       }
 
       const data = await response.json();
+
+      // Handle different response formats between local and production
+      if (import.meta.env.PROD) {
+        // This is the format returned by our API route
+        return {
+          tvl: data.currentTVL || 0,
+          change_1d: data.change_1d || 0,
+          change_7d: data.change_7d || 0,
+          historicalData: data.historicalData || []
+        };
+      }
+
+      // This is DefiLlama's direct format for development
       return {
         tvl: data[data.length - 1]?.tvl || 0,
         change_1d: ((data[data.length - 1]?.tvl || 0) / (data[data.length - 2]?.tvl || 1) - 1) * 100,
@@ -81,6 +110,23 @@ export const defiLlamaApi = {
       };
     } catch (error) {
       console.error("Error fetching Aptos data:", error);
+
+      // Fallback to direct API as last resort
+      try {
+        const fallbackResponse = await fetch(`${DEFILLAMA_BASE_URL}/v2/historicalChainTvl/Aptos`);
+        if (fallbackResponse.ok) {
+          const fallbackData = await fallbackResponse.json();
+          return {
+            tvl: fallbackData[fallbackData.length - 1]?.tvl || 0,
+            change_1d: ((fallbackData[fallbackData.length - 1]?.tvl || 0) / (fallbackData[fallbackData.length - 2]?.tvl || 1) - 1) * 100,
+            change_7d: ((fallbackData[fallbackData.length - 1]?.tvl || 0) / (fallbackData[fallbackData.length - 8]?.tvl || 1) - 1) * 100,
+            historicalData: fallbackData
+          };
+        }
+      } catch (fallbackError) {
+        console.error("Fallback API call also failed:", fallbackError);
+      }
+
       return {
         tvl: 0,
         change_1d: 0,
@@ -95,8 +141,8 @@ export const defiLlamaApi = {
    */
   getAptosProtocols: async (): Promise<AptosProtocolData[]> => {
     try {
-      // Fetch all protocols first
-      const endpoint = import.meta.env.PROD ? API_CONFIG.defillama.protocols : 'https://api.llama.fi/protocols';
+      // Use API_CONFIG for endpoint
+      const endpoint = API_CONFIG.defillama.protocols;
       const response = await fetch(endpoint);
 
       if (!response.ok) {
@@ -105,17 +151,18 @@ export const defiLlamaApi = {
 
       const data = await response.json();
 
+      if (import.meta.env.PROD) {
+        // Direct response from our API route, just ensure formattedTVL
+        return data.map((protocol: RawProtocolData) => ({
+          ...protocol,
+          formattedTVL: protocol.formattedTVL || formatTVL(protocol.tvl)
+        }));
+      }
+
       // Filter and map Aptos protocols, using Aptos-specific TVL
       const aptosProtocols = data
-        .filter((protocol: { chains: string[] }) => protocol.chains.includes('Aptos'))
-        .map((protocol: {
-          name: string;
-          chainTvls?: { Aptos?: number };
-          change_1d?: number;
-          change_7d?: number;
-          category?: string;
-          url?: string;
-        }) => {
+        .filter((protocol: RawProtocolData) => protocol.chains.includes('Aptos'))
+        .map((protocol: RawProtocolData) => {
           // Use Aptos-specific TVL if available, otherwise use a portion of total TVL
           const aptosTvl = protocol.chainTvls?.Aptos || 0;
 
@@ -145,26 +192,34 @@ export const defiLlamaApi = {
       }
 
       // Sort by TVL
-      const sortedProtocols = aptosProtocols.sort((a: AptosProtocolData, b: AptosProtocolData) => b.tvl - a.tvl);
-
-      // Ensure important protocols are included
-      const finalProtocols = [...sortedProtocols];
-      for (const name of IMPORTANT_PROTOCOLS) {
-        if (!finalProtocols.find(p => p.name === name)) {
-          finalProtocols.push({
-            name,
-            tvl: 100000, // Default TVL for missing protocols
-            change_1d: 0,
-            change_7d: 0,
-            category: "DeFi",
-            formattedTVL: formatTVL(100000)
-          });
-        }
-      }
-
-      return finalProtocols;
+      return aptosProtocols.sort((a: AptosProtocolData, b: AptosProtocolData) => b.tvl - a.tvl);
     } catch (error) {
       console.error("Error fetching Aptos protocols:", error);
+
+      // Fallback to direct API as last resort
+      try {
+        const fallbackResponse = await fetch(`${DEFILLAMA_BASE_URL}/protocols`);
+        if (fallbackResponse.ok) {
+          const fallbackData = await fallbackResponse.json();
+          const aptosProtocols = fallbackData
+            .filter((protocol: RawProtocolData) => protocol.chains.includes('Aptos'))
+            .map((protocol: RawProtocolData) => ({
+              name: protocol.name,
+              tvl: protocol.chainTvls?.Aptos || 0,
+              change_1d: protocol.change_1d,
+              change_7d: protocol.change_7d,
+              category: protocol.category,
+              url: protocol.url,
+              formattedTVL: formatTVL(protocol.chainTvls?.Aptos || 0)
+            }))
+            .sort((a: AptosProtocolData, b: AptosProtocolData) => b.tvl - a.tvl);
+
+          return aptosProtocols;
+        }
+      } catch (fallbackError) {
+        console.error("Fallback API call also failed:", fallbackError);
+      }
+
       // Return basic data with important protocols
       return IMPORTANT_PROTOCOLS.map((name, index) => ({
         name,

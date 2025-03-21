@@ -26,24 +26,47 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Fetch Aptos chain TVL data
-    const [tvlResponse, chartResponse] = await Promise.all([
+    // Fetch Aptos chain TVL data from two endpoints
+    const [chainsResponse, chartResponse] = await Promise.all([
       axios.get(`${DEFILLAMA_BASE_URL}/v2/chains`),
       axios.get(`${DEFILLAMA_BASE_URL}/charts/chains/Aptos`)
     ]);
 
-    const aptosData = tvlResponse.data.find(chain => chain.name.toLowerCase() === 'aptos');
+    // Find Aptos chain data from chains endpoint
+    const aptosData = chainsResponse.data.find(chain =>
+      chain.name.toLowerCase() === 'aptos'
+    );
 
+    // Return formatted data with both current TVL and historical data
     return res.status(200).json({
       currentTVL: aptosData?.tvl || 0,
       change_1d: aptosData?.change_1d || 0,
       change_7d: aptosData?.change_7d || 0,
-      historicalData: chartResponse.data
+      historicalData: chartResponse.data // Historical TVL data
     });
   } catch (error) {
     console.error('Error fetching Aptos TVL data from DefiLlama:', error);
-    return res.status(500).json({
-      error: error.response?.data?.message || 'Failed to fetch Aptos TVL data from DefiLlama'
-    });
+
+    // Try fallback to just the chart API if chains API fails
+    try {
+      const fallbackResponse = await axios.get(`${DEFILLAMA_BASE_URL}/charts/chains/Aptos`);
+      const data = fallbackResponse.data;
+      // Calculate approximate change percentages from historical data
+      const latestTvl = data[data.length - 1]?.tvl || 0;
+      const oneDayAgoTvl = data[data.length - 2]?.tvl || latestTvl;
+      const sevenDaysAgoTvl = data[data.length - 8]?.tvl || latestTvl;
+
+      return res.status(200).json({
+        currentTVL: latestTvl,
+        change_1d: ((latestTvl / oneDayAgoTvl) - 1) * 100,
+        change_7d: ((latestTvl / sevenDaysAgoTvl) - 1) * 100,
+        historicalData: data
+      });
+    } catch (fallbackError) {
+      console.error('Fallback also failed:', fallbackError);
+      return res.status(500).json({
+        error: 'Failed to fetch Aptos TVL data from DefiLlama'
+      });
+    }
   }
 }
