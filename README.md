@@ -86,12 +86,12 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 - 📊 Market trend analysis
 
 #### DeFi Operations
+- 💼 Portfolio management
 - 💰 Wallet management
 - 💸 Token transfers
 - 💱 DEX operations (Thala)
 - 💸 Lending operations (Joule)
 - 🌾 Staking operations (Amnis)
-- 💼 Portfolio management with rich text output
 
 ### 🖥️ Web App Features
 - 🚀 Modern landing page with gradient design
@@ -99,7 +99,6 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 - 🤖 Chat interface with Markdown support and persistent history
 - 📊 Analytics dashboard with protocol distribution
 - 💬 Context-aware example prompts based on selected agent
-- ⚙️ Settings and preferences
 
 <div align="center">
   <img src="./assets/webapp.png" alt="ADAS Web Interface" width="800" />
@@ -290,9 +289,44 @@ adas/
 │   ├── characters/    # Agent character definitions
 │   ├── client/        # Client implementations with Markdown support
 │   └── packages/      # ElizaOS packages
-├── n8n/               # n8n workflows and configuration
-└── resources/         # Development resources and references
+│       ├── plugin-aptos/           # Core Aptos blockchain interaction plugin
+│       │   └── src/                # Source code for Aptos operations
+│       │       └── actions/        # Implementations for 47+ Aptos actions
+│       │           ├── joule/      # Joule Finance protocol actions
+│       │           ├── amnis/      # Amnis Finance protocol actions
+│       │           ├── thala/      # Thala protocol actions
+│       │           ├── liquidswap/ # Liquidswap protocol actions
+│       │           ├── merkle-trade/ # Merkle Trade protocol actions
+│       │           └── aries/      # Aries protocol actions
+│       │
+│       └── plugin-aptos-analytics/ # Aptos DeFi analytics and market data plugin
+│           └── src/                # Source code for analytics operations
+│               └── analytics/      # Analytics implementations
+│                   ├── coingecko/  # CoinGecko integration for price data
+│                   ├── defillama/  # DefiLlama integration for TVL data
+│                   ├── geckoterminal/ # GeckoTerminal integration for DEX data
+│                   └── utils/      # Utility functions
+│
+└── n8n/               # n8n workflows and configuration
 ```
+
+#### Aptos Plugin Features
+- **Token Operations**: Transfers, creation, minting, burning
+- **NFT Management**: Creation, transfers, burning
+- **Wallet Operations**: Balance checking, account info, portfolio viewing
+- **DeFi Protocol Integrations**:
+  - **Joule Finance**: Lending, borrowing, withdrawal, position tracking
+  - **Amnis Finance**: Staking, unstaking operations
+  - **Thala Labs**: Token swapping, liquidity operations
+  - **Liquidswap**: DEX operations, pool management
+  - **Merkle Trade**: Trading positions, order placement
+  - **Aries Protocol**: Lending and borrowing
+
+#### Aptos Analytics Plugin Features
+- **CoinGecko Integration**: Real-time token prices, market caps, volume data
+- **DefiLlama Integration**: Protocol TVL, chain TVL, protocol rankings
+- **GeckoTerminal Integration**: DEX pools, trading volumes, liquidity data
+- **Market Analysis**: Price trends, TVL changes, protocol comparisons
 
 ## 👥 Community
 
