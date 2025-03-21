@@ -162,11 +162,11 @@ function Home() {
                                     >
                                         <Card className="bg-[#182424] border-[#27353A] hover:bg-[#1E2E2E] transition-colors h-full">
                                             <div className="p-6 flex flex-col items-center text-center space-y-6">
-                                                <div className="h-20 w-20 rounded-2xl bg-[#1E2E2E] flex items-center justify-center group-hover:scale-110 transition-transform ring-1 ring-[#27353A]">
+                                                <div className="h-20 w-20 rounded-full bg-[#1E2E2E] flex items-center justify-center group-hover:scale-110 transition-transform ring-1 ring-[#27353A] overflow-hidden">
                                                     <img
                                                         src={feature.icon}
                                                         alt={feature.title}
-                                                        className="h-20 w-20"
+                                                        className="h-full w-full object-cover rounded-full"
                                                     />
                                                 </div>
                                                 <div className="space-y-3">
@@ -280,7 +280,7 @@ function Home() {
                                 price: "Free",
                                 description: "Unlimited. Full control over your data and agents",
                                 buttonText: "View Documentation",
-                                href: "https://github.com/aptos-labs/adas",
+                                href: "https://github.com/nicoware-dev/adas",
                                 featured: true
                             },
                             {
@@ -363,7 +363,7 @@ function Home() {
                                 variant="outline"
                                 size="lg"
                                 className="border-[#27353A] hover:bg-[#01C0C9]/10 hover:border-[#01C0C9]/50 hover:text-[#01C0C9] transition-all duration-300 w-full sm:w-auto"
-                                onClick={() => handleExternalLink('https://github.com/aptos-labs/adas')}
+                                onClick={() => handleExternalLink('https://github.com/nicoware-dev/adas')}
                             >
                                 <img src={githubIcon} alt="GitHub" className="mr-2 h-4 w-4 opacity-60 group-hover:opacity-100 transition-opacity" />
                                 Contribute on GitHub
@@ -372,7 +372,7 @@ function Home() {
                                 variant="outline"
                                 size="lg"
                                 className="border-[#27353A] hover:bg-[#01C0C9]/10 hover:border-[#01C0C9]/50 hover:text-[#01C0C9] transition-all duration-300 w-full sm:w-auto"
-                                onClick={() => handleExternalLink('https://discord.gg/aptoslabs')}
+                                onClick={() => handleExternalLink('https://discord.gg/G6GaZYzRgN')}
                             >
                                 <img src={discordIcon} alt="Discord" className="mr-2 h-4 w-4 opacity-60 group-hover:opacity-100 transition-opacity" />
                                 Join Our Discord
@@ -390,7 +390,7 @@ function Home() {
                         </p>
                     </div>
                     <div className="flex justify-center gap-8">
-                        <a href="https://x.com/aptos_labs" target="_blank" rel="noopener noreferrer" className="group">
+                        <a href="https://twitter.com/ADAS_DefAI" target="_blank" rel="noopener noreferrer" className="group">
                             <Card className="bg-[#172625] border-[#1B3B3B] hover:bg-[#1B3B3B] transition-colors p-6">
                                 <div className="flex flex-col items-center space-y-4">
                                     <div className="w-24 h-24 rounded-full overflow-hidden ring-2 ring-[#015FCD] ring-offset-2 ring-offset-[#172625] group-hover:ring-4 transition-all duration-300">
@@ -443,7 +443,7 @@ function Home() {
                             <Button
                                 size="lg"
                                 className="bg-[#01C0C9] hover:bg-[#319CA0] text-white font-heading"
-                                onClick={() => handleExternalLink('https://t.me/ADAS_Coordinator_bot')}
+                                onClick={() => handleExternalLink('https://t.me/adascoordinator_bot')}
                             >
                                 <img src={telegramIcon} alt="Telegram" className="mr-2 h-5 w-5" />
                                 Chat with Coordinator Agent
@@ -478,7 +478,7 @@ function Home() {
                             <h4 className="text-sm font-semibold text-foreground text-center">Social</h4>
                             <div className="flex flex-col items-center gap-4 mt-4">
                                 <a
-                                    href="https://t.me/aptos_official"
+                                    href="https://t.me/+0BvBZ8KWJQNjZTIx"
                                     className="w-6 h-6 flex items-center justify-center"
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -486,7 +486,7 @@ function Home() {
                                     <img src={telegramIcon} alt="Telegram" className="w-full h-full opacity-60 hover:opacity-100 transition-opacity" />
                                 </a>
                                 <a
-                                    href="https://discord.gg/aptoslabs"
+                                    href="https://discord.gg/G6GaZYzRgN"
                                     className="w-6 h-6 flex items-center justify-center"
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -494,7 +494,7 @@ function Home() {
                                     <img src={discordIcon} alt="Discord" className="w-full h-full opacity-60 hover:opacity-100 transition-opacity" />
                                 </a>
                                 <a
-                                    href="https://github.com/aptos-labs/adas"
+                                    href="https://github.com/nicoware-dev/adas"
                                     className="w-6 h-6 flex items-center justify-center"
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -502,7 +502,7 @@ function Home() {
                                     <img src={githubIcon} alt="GitHub" className="w-full h-full opacity-60 hover:opacity-100 transition-opacity" />
                                 </a>
                                 <a
-                                    href="https://linktr.ee/aptoslabs"
+                                    href="https://linktr.ee/adas_ai"
                                     className="w-6 h-6 flex items-center justify-center"
                                     target="_blank"
                                     rel="noopener noreferrer"
