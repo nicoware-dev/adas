@@ -77,7 +77,7 @@ What's the current price of APT?
 Create and manage tokens:
 
 ```
-Create a new token named "MyToken3" with symbol "MTK3" and supply of 10003
+Create a new token named "MyToken23" with symbol "MTK23" and supply of 1234
 ```
 
 ```

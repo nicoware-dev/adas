@@ -1,8 +1,18 @@
 # ADAS: Aptos DefAI Agent Swarm
 
 <div align="center">
+  <img src="./assets/logos/hero.png" alt="ADAS Logo" width="200" />
   <h3>Revolutionizing Aptos DeFi with AI-Powered Agent Swarms</h3>
   <p>Simplify your DeFi experience on Aptos blockchain with the power of Multi-Agent Systems (MAS)</p>
+  
+  <p align="center">
+    <a href="https://adas-rose.vercel.app/" target="_blank">Website</a> •
+    <a href="https://twitter.com/ADAS_DefAI" target="_blank">Twitter</a> •
+    <a href="https://discord.gg/G6GaZYzRgN" target="_blank">Discord</a> •
+    <a href="https://t.me/+0BvBZ8KWJQNjZTIx" target="_blank">Telegram</a> •
+    <a href="https://github.com/nicoware-dev/adas" target="_blank">GitHub</a> •
+    <a href="https://adas-4.gitbook.io/adas" target="_blank">Docs</a>
+  </p>
 </div>
 
 ---
@@ -21,6 +31,7 @@
 - [🚀 Quick Start](#-quick-start)
 - [🧪 How to Use](#-how-to-use)
 - [🛠️ Development](#️-development)
+- [👥 Community](#-community)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
 
@@ -30,6 +41,8 @@
 ## 🌟 Overview
 
 ADAS is an innovative open-source project revolutionizing the Aptos DeFi landscape through AI-powered agent swarms. By employing a sophisticated multi-agent system, ADAS streamlines and automates DeFi operations on the Aptos blockchain, offering users a seamless and efficient experience. Its modular design ensures scalability and adaptability, empowering users to navigate the complexities of Aptos DeFi with ease and confidence.
+
+[![ADAS Demo](https://img.youtube.com/vi/PLACEHOLDER/0.jpg)](https://www.youtube.com/watch?v=PLACEHOLDER)
 
 ### Why Multi-Agent Systems (MAS)?
 
@@ -42,6 +55,7 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 - **🔄 Adaptability**: Seamless integration with new protocols on Aptos
 
 <div align="center">
+  <img src="./assets/architecture.png" alt="ADAS Architecture" width="800" />
   <p><em>ADAS Architecture</em></p>
 </div>
 
@@ -86,6 +100,11 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 - 📊 Analytics dashboard with protocol distribution
 - 💬 Context-aware example prompts based on selected agent
 - ⚙️ Settings and preferences
+
+<div align="center">
+  <img src="./assets/webapp.png" alt="ADAS Web Interface" width="800" />
+  <p><em>ADAS Web Interface</em></p>
+</div>
 
 ## 🧰 Tech Stack
 
@@ -274,6 +293,20 @@ adas/
 ├── n8n/               # n8n workflows and configuration
 └── resources/         # Development resources and references
 ```
+
+## 👥 Community
+
+Join our thriving community to get the latest updates, ask questions, and share your experience with ADAS:
+
+- 🐦 [Twitter: @ADAS_DefAI](https://twitter.com/ADAS_DefAI)
+- 💬 [Telegram Group](https://t.me/+0BvBZ8KWJQNjZTIx)
+- 🎛️ [Telegram Coordinator Bot](https://t.me/adascoordinator_bot)
+- 🗨️ [Discord Server](https://discord.gg/G6GaZYzRgN)
+- 🌍 [Website](https://adas-rose.vercel.app/)
+- 📺 [YouTube](https://youtube.com/placeholder)
+- 🔗 [LinkTree](https://linktr.ee/adas_ai)
+- 🛠 [GitHub Repository](https://github.com/nicoware-dev/adas)
+- 📖 [Documentation](https://adas-4.gitbook.io/adas)
 
 ## 🤝 Contributing
 

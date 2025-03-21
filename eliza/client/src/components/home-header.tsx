@@ -25,7 +25,7 @@ export function HomeHeader() {
         { name: "Pricing", path: "#pricing" },
         { name: "Contact", path: "#contact" },
         { name: "Contribute", path: "#opensource" },
-        { name: "Docs", path: "https://adas-1.gitbook.io/adas/" }
+        { name: "Docs", path: "https://adas-4.gitbook.io/adas" }
     ];
 
     return (
