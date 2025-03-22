@@ -42,7 +42,14 @@
 
 ADAS is an innovative open-source project revolutionizing the Aptos DeFi landscape through AI-powered agent swarms. By employing a sophisticated multi-agent system, ADAS streamlines and automates DeFi operations on the Aptos blockchain, offering users a seamless and efficient experience. Its modular design ensures scalability and adaptability, empowering users to navigate the complexities of Aptos DeFi with ease and confidence.
 
-[![ADAS Demo](https://img.youtube.com/vi/PLACEHOLDER/0.jpg)](https://www.youtube.com/watch?v=PLACEHOLDER)
+## Video Demo
+
+<div align="center">
+  <a href="https://youtu.be/OU0QgKNF1Pw">
+    <img src="https://img.youtube.com/vi/OU0QgKNF1Pw/maxresdefault.jpg" alt="ADAS Demo Video" width="600" />
+  </a>
+  <p><em>Click to watch the ADAS demo video on YouTube</em></p>
+</div>
 
 ### Why Multi-Agent Systems (MAS)?
 
@@ -86,12 +93,12 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 - 📊 Market trend analysis
 
 #### DeFi Operations
+- 💼 Portfolio management
 - 💰 Wallet management
 - 💸 Token transfers
 - 💱 DEX operations (Thala)
 - 💸 Lending operations (Joule)
 - 🌾 Staking operations (Amnis)
-- 💼 Portfolio management with rich text output
 
 ### 🖥️ Web App Features
 - 🚀 Modern landing page with gradient design
@@ -99,7 +106,6 @@ Our platform leverages a Multi-Agent System architecture where each agent specia
 - 🤖 Chat interface with Markdown support and persistent history
 - 📊 Analytics dashboard with protocol distribution
 - 💬 Context-aware example prompts based on selected agent
-- ⚙️ Settings and preferences
 
 <div align="center">
   <img src="./assets/webapp.png" alt="ADAS Web Interface" width="800" />
@@ -290,9 +296,44 @@ adas/
 │   ├── characters/    # Agent character definitions
 │   ├── client/        # Client implementations with Markdown support
 │   └── packages/      # ElizaOS packages
-├── n8n/               # n8n workflows and configuration
-└── resources/         # Development resources and references
+│       ├── plugin-aptos/           # Core Aptos blockchain interaction plugin
+│       │   └── src/                # Source code for Aptos operations
+│       │       └── actions/        # Implementations for 47+ Aptos actions
+│       │           ├── joule/      # Joule Finance protocol actions
+│       │           ├── amnis/      # Amnis Finance protocol actions
+│       │           ├── thala/      # Thala protocol actions
+│       │           ├── liquidswap/ # Liquidswap protocol actions
+│       │           ├── merkle-trade/ # Merkle Trade protocol actions
+│       │           └── aries/      # Aries protocol actions
+│       │
+│       └── plugin-aptos-analytics/ # Aptos DeFi analytics and market data plugin
+│           └── src/                # Source code for analytics operations
+│               └── analytics/      # Analytics implementations
+│                   ├── coingecko/  # CoinGecko integration for price data
+│                   ├── defillama/  # DefiLlama integration for TVL data
+│                   ├── geckoterminal/ # GeckoTerminal integration for DEX data
+│                   └── utils/      # Utility functions
+│
+└── n8n/               # n8n workflows and configuration
 ```
+
+#### Aptos Plugin Features
+- **Token Operations**: Transfers, creation, minting, burning
+- **NFT Management**: Creation, transfers, burning
+- **Wallet Operations**: Balance checking, account info, portfolio viewing
+- **DeFi Protocol Integrations**:
+  - **Joule Finance**: Lending, borrowing, withdrawal, position tracking
+  - **Amnis Finance**: Staking, unstaking operations
+  - **Thala Labs**: Token swapping, liquidity operations
+  - **Liquidswap**: DEX operations, pool management
+  - **Merkle Trade**: Trading positions, order placement
+  - **Aries Protocol**: Lending and borrowing
+
+#### Aptos Analytics Plugin Features
+- **CoinGecko Integration**: Real-time token prices, market caps, volume data
+- **DefiLlama Integration**: Protocol TVL, chain TVL, protocol rankings
+- **GeckoTerminal Integration**: DEX pools, trading volumes, liquidity data
+- **Market Analysis**: Price trends, TVL changes, protocol comparisons
 
 ## 👥 Community
 
@@ -303,7 +344,7 @@ Join our thriving community to get the latest updates, ask questions, and share 
 - 🎛️ [Telegram Coordinator Bot](https://t.me/adascoordinator_bot)
 - 🗨️ [Discord Server](https://discord.gg/G6GaZYzRgN)
 - 🌍 [Website](https://adas-rose.vercel.app/)
-- 📺 [YouTube](https://youtube.com/placeholder)
+- 📺 [YouTube](https://youtu.be/OU0QgKNF1Pw)
 - 🔗 [LinkTree](https://linktr.ee/adas_ai)
 - 🛠 [GitHub Repository](https://github.com/nicoware-dev/adas)
 - 📖 [Documentation](https://adas-4.gitbook.io/adas)
