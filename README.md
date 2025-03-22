@@ -42,7 +42,14 @@
 
 ADAS is an innovative open-source project revolutionizing the Aptos DeFi landscape through AI-powered agent swarms. By employing a sophisticated multi-agent system, ADAS streamlines and automates DeFi operations on the Aptos blockchain, offering users a seamless and efficient experience. Its modular design ensures scalability and adaptability, empowering users to navigate the complexities of Aptos DeFi with ease and confidence.
 
-[![ADAS Demo](https://img.youtube.com/vi/PLACEHOLDER/0.jpg)](https://www.youtube.com/watch?v=PLACEHOLDER)
+## Video Demo
+
+<div align="center">
+  <a href="https://youtu.be/OU0QgKNF1Pw">
+    <img src="https://img.youtube.com/vi/OU0QgKNF1Pw/maxresdefault.jpg" alt="ADAS Demo Video" width="600" />
+  </a>
+  <p><em>Click to watch the ADAS demo video on YouTube</em></p>
+</div>
 
 ### Why Multi-Agent Systems (MAS)?
 
@@ -337,7 +344,7 @@ Join our thriving community to get the latest updates, ask questions, and share 
 - 🎛️ [Telegram Coordinator Bot](https://t.me/adascoordinator_bot)
 - 🗨️ [Discord Server](https://discord.gg/G6GaZYzRgN)
 - 🌍 [Website](https://adas-rose.vercel.app/)
-- 📺 [YouTube](https://youtube.com/placeholder)
+- 📺 [YouTube](https://youtu.be/OU0QgKNF1Pw)
 - 🔗 [LinkTree](https://linktr.ee/adas_ai)
 - 🛠 [GitHub Repository](https://github.com/nicoware-dev/adas)
 - 📖 [Documentation](https://adas-4.gitbook.io/adas)
